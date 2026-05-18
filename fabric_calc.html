@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>원단 재단 계산기</title>
+<style>
+:root {
+  --bg: #F7F5F0;
+  --surface: #FFFFFF;
+  --surface2: #F0EDE6;
+  --border: #E0DCD4;
+  --text: #1A1814;
+  --text2: #6B6660;
+  --text3: #A8A4A0;
+  --accent: #2D5A3D;
+  --accent2: #E8F0EA;
+  --accent3: #4A7C5F;
+  --danger: #C0392B;
+  --danger2: #FDECEA;
+  --warn: #8B6914;
+  --warn2: #FDF5E0;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+.screen { display: none; min-height: 100vh; flex-direction: column; }
+.screen.active { display: flex; }
+
+/* Header */
+.header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 16px 20px 12px; position: sticky; top: 0; z-index: 100; }
+.header-row { display: flex; align-items: center; gap: 12px; }
+.back-btn { width: 36px; height: 36px; border: none; background: var(--surface2); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; flex-shrink: 0; }
+.header h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+.header p { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+/* Scroll content */
+.content { flex: 1; overflow-y: auto; padding: 16px; -webkit-overflow-scrolling: touch; }
+
+/* Cards */
+.card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 16px; margin-bottom: 12px; }
+.card-title { font-size: 12px; font-weight: 600; color: var(--text2); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 12px; }
+
+/* Product list */
+.product-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 10px; cursor: pointer; transition: all 0.15s; }
+.product-item:active { background: var(--surface2); transform: scale(0.99); }
+.product-item-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.product-item-info { font-size: 12px; color: var(--text2); }
+.product-item-actions { display: flex; gap: 8px; margin-top: 12px; }
+.btn-sm { padding: 7px 14px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; border: none; cursor: pointer; }
+.btn-edit { background: var(--accent2); color: var(--accent); }
+.btn-del { background: var(--danger2); color: var(--danger); }
+.btn-calc { background: var(--accent); color: white; flex: 1; }
+
+/* Buttons */
+.btn-primary { width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: var(--radius); font-size: 16px; font-weight: 700; cursor: pointer; letter-spacing: -0.3px; }
+.btn-primary:active { opacity: 0.85; transform: scale(0.99); }
+.btn-secondary { width: 100%; padding: 14px; background: var(--surface2); color: var(--text); border: none; border-radius: var(--radius); font-size: 15px; font-weight: 600; cursor: pointer; }
+
+/* Form */
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 13px; font-weight: 600; color: var(--text2); margin-bottom: 6px; display: block; }
+.form-input { width: 100%; padding: 13px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 16px; background: var(--surface); color: var(--text); outline: none; -webkit-appearance: none; }
+.form-input:focus { border-color: var(--accent); }
+.input-row { display: flex; gap: 8px; }
+.input-row .form-group { flex: 1; }
+
+/* Toggle */
+.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.toggle-row:last-child { border-bottom: none; }
+.toggle-label { font-size: 14px; font-weight: 500; }
+.toggle-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.toggle { width: 44px; height: 26px; background: var(--border); border-radius: 13px; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+.toggle.on { background: var(--accent); }
+.toggle-knob { width: 22px; height: 22px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: left 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+.toggle.on .toggle-knob { left: 20px; }
+
+/* Piece card */
+.piece-card { background: var(--surface2); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 10px; border: 1px solid var(--border); }
+.piece-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.piece-badge { font-size: 12px; font-weight: 700; background: var(--accent); color: white; padding: 3px 10px; border-radius: 20px; }
+.piece-del { width: 28px; height: 28px; background: var(--danger2); color: var(--danger); border: none; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+/* Mode selector */
+.mode-tabs { display: flex; background: var(--surface2); border-radius: var(--radius-sm); padding: 3px; margin-bottom: 16px; }
+.mode-tab { flex: 1; padding: 10px; text-align: center; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text2); transition: all 0.2s; }
+.mode-tab.active { background: var(--surface); color: var(--accent); box-shadow: var(--shadow); }
+
+/* Unit selector */
+.unit-tabs { display: flex; gap: 6px; margin-bottom: 6px; }
+.unit-tab { padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border); background: transparent; color: var(--text2); }
+.unit-tab.active { border-color: var(--accent); background: var(--accent2); color: var(--accent); }
+
+/* Result */
+.result-big { text-align: center; padding: 24px 16px; }
+.result-num { font-size: 56px; font-weight: 800; color: var(--accent); letter-spacing: -2px; line-height: 1; }
+.result-unit { font-size: 20px; font-weight: 600; color: var(--accent3); margin-top: 4px; }
+.result-label { font-size: 14px; color: var(--text2); margin-top: 8px; }
+
+.stat-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.stat-box { flex: 1; background: var(--surface2); border-radius: var(--radius-sm); padding: 12px; text-align: center; }
+.stat-box-val { font-size: 20px; font-weight: 700; color: var(--text); }
+.stat-box-label { font-size: 11px; color: var(--text2); margin-top: 3px; }
+
+.arrange-row { display: flex; align-items: flex-start; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.arrange-row:last-child { border-bottom: none; }
+.arrange-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; margin-top: 3px; }
+.arrange-info { flex: 1; }
+.arrange-name { font-size: 14px; font-weight: 600; }
+.arrange-detail { font-size: 12px; color: var(--text2); margin-top: 3px; line-height: 1.6; }
+
+/* Canvas */
+#vizCanvas { width: 100%; border-radius: var(--radius-sm); border: 1px solid var(--border); display: block; }
+
+/* Empty state */
+.empty { text-align: center; padding: 60px 20px; color: var(--text2); }
+.empty-icon { font-size: 48px; margin-bottom: 16px; }
+.empty-text { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: var(--text); }
+.empty-sub { font-size: 14px; line-height: 1.6; }
+
+/* Bottom safe area */
+.bottom-bar { padding: 16px; padding-bottom: calc(16px + env(safe-area-inset-bottom)); background: var(--surface); border-top: 1px solid var(--border); }
+
+/* Print */
+@media print {
+  body { background: white; }
+  .no-print { display: none !important; }
+  .screen { display: flex !important; }
+  #screen-result { display: flex !important; }
+}
+
+.divider { height: 1px; background: var(--border); margin: 12px 0; }
+.info-text { font-size: 12px; color: var(--text3); line-height: 1.6; }
+.tag { display: inline-block; padding: 3px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+.tag-fixed { background: #FDF5E0; color: #8B6914; }
+.tag-free { background: var(--accent2); color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- MAIN SCREEN -->
+<div id="screen-main" class="screen active">
+  <div class="header">
+    <div class="header-row">
+      <div style="flex:1">
+        <h1>✂️ 원단 재단 계산기</h1>
+        <p>저장된 제품을 선택하거나 새로 등록하세요</p>
+      </div>
+    </div>
+  </div>
+  <div class="content" id="product-list-wrap">
+    <div class="empty" id="empty-state">
+      <div class="empty-icon">📦</div>
+      <div class="empty-text">저장된 제품이 없어요</div>
+      <div class="empty-sub">아래 버튼으로 제품을 등록하면<br>다음에 바로 불러올 수 있어요</div>
+    </div>
+    <div id="product-list"></div>
+  </div>
+  <div class="bottom-bar no-print">
+    <button class="btn-primary" onclick="goToRegister()">+ 새 제품 등록</button>
+  </div>
+</div>
+
+<!-- REGISTER SCREEN -->
+<div id="screen-register" class="screen">
+  <div class="header no-print">
+    <div class="header-row">
+      <button class="back-btn" onclick="goBack('screen-main')">←</button>
+      <div>
+        <h1 id="reg-title">제품 등록</h1>
+        <p>피스 정보를 입력하고 저장하세요</p>
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="card-title">제품 정보</div>
+      <div class="form-group">
+        <label class="form-label">제품 이름</label>
+        <input type="text" id="prod-name" class="form-input" placeholder="예: 쿠션커버 40cm">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">피스 구성 (최대 4종류)</div>
+      <div id="pieces-container"></div>
+      <button class="btn-secondary" id="add-piece-btn" onclick="addPiece()" style="margin-top:8px">+ 피스 추가</button>
+    </div>
+
+    <div style="height:8px"></div>
+  </div>
+  <div class="bottom-bar no-print">
+    <button class="btn-primary" onclick="saveProduct()">저장하기</button>
+  </div>
+</div>
+
+<!-- CALC SCREEN -->
+<div id="screen-calc" class="screen">
+  <div class="header no-print">
+    <div class="header-row">
+      <button class="back-btn" onclick="goBack('screen-main')">←</button>
+      <div>
+        <h1 id="calc-prod-name">재단 계산</h1>
+        <p>원단 정보를 입력하세요</p>
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    <!-- Mode -->
+    <div class="card">
+      <div class="card-title">계산 모드</div>
+      <div class="mode-tabs">
+        <div class="mode-tab active" id="modeA-tab" onclick="setMode('A')">최대 수량</div>
+        <div class="mode-tab" id="modeB-tab" onclick="setMode('B')">필요 길이</div>
+      </div>
+      <div class="info-text" id="mode-desc">원단 폭과 길이를 입력하면 최대로 만들 수 있는 제품 수량을 계산해요</div>
+    </div>
+
+    <!-- Fabric input -->
+    <div class="card">
+      <div class="card-title">원단 정보</div>
+      <div class="form-group">
+        <label class="form-label">폭 (cm)</label>
+        <input type="number" id="fabric-width" class="form-input" placeholder="예: 140" inputmode="decimal">
+      </div>
+      <div class="form-group" id="fabric-length-group">
+        <label class="form-label">길이</label>
+        <div class="unit-tabs">
+          <button class="unit-tab active" id="unit-cm" onclick="setUnit('cm')">cm</button>
+          <button class="unit-tab" id="unit-yard" onclick="setUnit('yard')">야드</button>
+        </div>
+        <input type="number" id="fabric-length" class="form-input" placeholder="예: 900" inputmode="decimal">
+        <div class="info-text" style="margin-top:6px" id="yard-info" style="display:none"></div>
+      </div>
+      <div class="form-group" id="fabric-qty-group" style="display:none">
+        <label class="form-label">목표 수량 (개)</label>
+        <input type="number" id="target-qty" class="form-input" placeholder="예: 50" inputmode="numeric">
+      </div>
+    </div>
+
+    <div style="height:8px"></div>
+  </div>
+  <div class="bottom-bar no-print">
+    <button class="btn-primary" onclick="calculate()">계산하기</button>
+  </div>
+</div>
+
+<!-- RESULT SCREEN -->
+<div id="screen-result" class="screen">
+  <div class="header no-print">
+    <div class="header-row">
+      <button class="back-btn" onclick="goBack('screen-calc')">←</button>
+      <div>
+        <h1>계산 결과</h1>
+        <p id="result-prod-name"></p>
+      </div>
+    </div>
+  </div>
+  <div class="content" id="result-content">
+  </div>
+  <div class="bottom-bar no-print">
+    <div style="display:flex;gap:8px">
+      <button class="btn-secondary" style="flex:1" onclick="goBack('screen-calc')">다시 계산</button>
+      <button class="btn-primary" style="flex:1" onclick="printResult()">출력 / PDF</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ──
+let products = JSON.parse(localStorage.getItem('fabric_products') || '[]');
+let currentProduct = null;
+let editingIndex = -1;
+let calcMode = 'A';
+let lengthUnit = 'cm';
+let pieceCount = 0;
+const PIECE_COLORS = ['#2D5A3D','#C0392B','#1A5276','#7D6608'];
+const PIECE_LIGHT  = ['#E8F0EA','#FDECEA','#D6EAF8','#FDF5E0'];
+
+// ── Navigation ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function goBack(id) { showScreen(id); }
+function goToRegister(idx = -1) {
+  editingIndex = idx;
+  pieceCount = 0;
+  document.getElementById('pieces-container').innerHTML = '';
+  document.getElementById('reg-title').textContent = idx >= 0 ? '제품 수정' : '제품 등록';
+  if (idx >= 0) {
+    const p = products[idx];
+    document.getElementById('prod-name').value = p.name;
+    p.pieces.forEach(pc => addPiece(pc));
+  } else {
+    document.getElementById('prod-name').value = '';
+    addPiece();
+  }
+  showScreen('screen-register');
+}
+
+// ── Product list ──
+function renderProductList() {
+  const list = document.getElementById('product-list');
+  const empty = document.getElementById('empty-state');
+  if (products.length === 0) {
+    empty.style.display = 'block';
+    list.innerHTML = '';
+    return;
+  }
+  empty.style.display = 'none';
+  list.innerHTML = products.map((p, i) => `
+    <div class="product-item">
+      <div class="product-item-name">${p.name}</div>
+      <div class="product-item-info">피스 ${p.pieces.length}종 · ${p.pieces.map(pc=>`${pc.name}(${pc.qty}장)`).join(', ')}</div>
+      <div class="product-item-actions">
+        <button class="btn-sm btn-edit" onclick="goToRegister(${i})">수정</button>
+        <button class="btn-sm btn-del" onclick="deleteProduct(${i})">삭제</button>
+        <button class="btn-sm btn-calc" onclick="goToCalc(${i})">재단 계산 →</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── Piece management ──
+function addPiece(data = null) {
+  if (pieceCount >= 4) return;
+  const i = pieceCount++;
+  const labels = ['A','B','C','D'];
+  const div = document.createElement('div');
+  div.className = 'piece-card';
+  div.id = `piece-${i}`;
+  div.innerHTML = `
+    <div class="piece-card-header">
+      <span class="piece-badge">피스 ${labels[i]}</span>
+      ${i > 0 ? `<button class="piece-del" onclick="removePiece(${i})">×</button>` : ''}
+    </div>
+    <div class="form-group">
+      <label class="form-label">피스 이름</label>
+      <input type="text" class="form-input" id="p${i}-name" placeholder="예: 앞판" value="${data ? data.name : ''}">
+    </div>
+    <div class="input-row">
+      <div class="form-group">
+        <label class="form-label">가로 (cm)</label>
+        <input type="number" class="form-input" id="p${i}-w" placeholder="0" inputmode="decimal" value="${data ? data.w : ''}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">세로 (cm)</label>
+        <input type="number" class="form-input" id="p${i}-h" placeholder="0" inputmode="decimal" value="${data ? data.h : ''}">
+      </div>
+    </div>
+    <div class="input-row">
+      <div class="form-group">
+        <label class="form-label">1제품당 수량</label>
+        <input type="number" class="form-input" id="p${i}-qty" placeholder="1" inputmode="numeric" value="${data ? data.qty : '1'}">
+      </div>
+      <div class="form-group" style="display:flex;align-items:flex-end;padding-bottom:0">
+        <div style="width:100%">
+          <label class="form-label">회전 가능</label>
+          <div class="toggle ${data && data.rotatable ? 'on' : ''}" id="p${i}-rot" onclick="this.classList.toggle('on')">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('pieces-container').appendChild(div);
+  updateAddBtn();
+}
+
+function removePiece(i) {
+  const el = document.getElementById(`piece-${i}`);
+  if (el) el.remove();
+  pieceCount--;
+  updateAddBtn();
+}
+
+function updateAddBtn() {
+  document.getElementById('add-piece-btn').style.display = pieceCount >= 4 ? 'none' : 'block';
+}
+
+function getPieceData() {
+  const pieces = [];
+  const labels = ['A','B','C','D'];
+  for (let i = 0; i < 4; i++) {
+    const el = document.getElementById(`piece-${i}`);
+    if (!el) continue;
+    const name = document.getElementById(`p${i}-name`).value.trim() || `피스 ${labels[i]}`;
+    const w = parseFloat(document.getElementById(`p${i}-w`).value);
+    const h = parseFloat(document.getElementById(`p${i}-h`).value);
+    const qty = parseInt(document.getElementById(`p${i}-qty`).value) || 1;
+    const rotatable = document.getElementById(`p${i}-rot`).classList.contains('on');
+    if (!w || !h) continue;
+    pieces.push({ name, w, h, qty, rotatable });
+  }
+  return pieces;
+}
+
+// ── Save / Delete ──
+function saveProduct() {
+  const name = document.getElementById('prod-name').value.trim();
+  if (!name) { alert('제품 이름을 입력해주세요'); return; }
+  const pieces = getPieceData();
+  if (pieces.length === 0) { alert('피스 정보를 하나 이상 입력해주세요'); return; }
+  const prod = { name, pieces };
+  if (editingIndex >= 0) products[editingIndex] = prod;
+  else products.push(prod);
+  localStorage.setItem('fabric_products', JSON.stringify(products));
+  renderProductList();
+  showScreen('screen-main');
+}
+
+function deleteProduct(i) {
+  if (!confirm(`"${products[i].name}"을 삭제할까요?`)) return;
+  products.splice(i, 1);
+  localStorage.setItem('fabric_products', JSON.stringify(products));
+  renderProductList();
+}
+
+// ── Calc screen ──
+function goToCalc(i) {
+  currentProduct = products[i];
+  document.getElementById('calc-prod-name').textContent = currentProduct.name;
+  document.getElementById('fabric-width').value = '';
+  document.getElementById('fabric-length').value = '';
+  document.getElementById('target-qty').value = '';
+  setMode('A');
+  setUnit('cm');
+  showScreen('screen-calc');
+}
+
+function setMode(m) {
+  calcMode = m;
+  document.getElementById('modeA-tab').classList.toggle('active', m === 'A');
+  document.getElementById('modeB-tab').classList.toggle('active', m === 'B');
+  document.getElementById('fabric-length-group').style.display = m === 'A' ? 'block' : 'none';
+  document.getElementById('fabric-qty-group').style.display = m === 'B' ? 'block' : 'none';
+  document.getElementById('mode-desc').textContent = m === 'A'
+    ? '원단 폭과 길이를 입력하면 최대로 만들 수 있는 제품 수량을 계산해요'
+    : '원단 폭과 목표 수량을 입력하면 필요한 원단 길이를 계산해요';
+}
+
+function setUnit(u) {
+  lengthUnit = u;
+  document.getElementById('unit-cm').classList.toggle('active', u === 'cm');
+  document.getElementById('unit-yard').classList.toggle('active', u === 'yard');
+  document.getElementById('fabric-length').placeholder = u === 'cm' ? '예: 900' : '예: 10';
+  const info = document.getElementById('yard-info');
+  const val = parseFloat(document.getElementById('fabric-length').value);
+  if (u === 'yard' && val) info.textContent = `= ${(val * 91.44).toFixed(0)}cm`;
+  else info.textContent = '';
+}
+
+document.addEventListener('input', e => {
+  if (e.target.id === 'fabric-length' && lengthUnit === 'yard') {
+    const val = parseFloat(e.target.value);
+    const info = document.getElementById('yard-info');
+    info.textContent = val ? `= ${(val * 91.44).toFixed(0)}cm` : '';
+  }
+});
+
+// ── Core Calculation ──
+function bestFit(pieceW, pieceH, fabricW, rotatable) {
+  // Returns {perRow, usedH, dir} — best orientation
+  const opts = [{w: pieceW, h: pieceH}];
+  if (rotatable && pieceW !== pieceH) opts.push({w: pieceH, h: pieceW});
+  let best = null;
+  for (const o of opts) {
+    const perRow = Math.floor(fabricW / o.w);
+    if (perRow > 0 && (!best || perRow > best.perRow)) {
+      best = { perRow, usedW: perRow * o.w, pieceW: o.w, pieceH: o.h };
+    }
+  }
+  return best;
+}
+
+function calcLayout(fabricW, fabricLen, targetQty) {
+  // For each piece, find best fit per row
+  const pieces = currentProduct.pieces;
+  const fits = pieces.map(p => {
+    const f = bestFit(p.w, p.h, fabricW, p.rotatable);
+    return { ...p, ...f };
+  });
+
+  // Check if any piece can't fit
+  if (fits.some(f => !f || f.perRow === 0)) {
+    return { error: '원단 폭이 너무 좁아 일부 피스가 들어가지 않아요' };
+  }
+
+  if (calcMode === 'A') {
+    // Mode A: maximize products from given fabric length
+    return solveMaxProducts(fits, fabricW, fabricLen);
+  } else {
+    // Mode B: find minimum length for target qty
+    return solveMinLength(fits, fabricW, targetQty);
+  }
+}
+
+function solveMaxProducts(fits, fabricW, fabricLen) {
+  // Try multiple layout strategies and pick best
+  const strategies = generateStrategies(fits, fabricW, fabricLen);
+  let best = null;
+  for (const s of strategies) {
+    if (!best || s.products > best.products || (s.products === best.products && s.waste < best.waste)) {
+      best = s;
+    }
+  }
+  return best;
+}
+
+function solveMinLength(fits, fabricW, targetQty) {
+  // Find layout that gives targetQty products with minimum length
+  const strategies = generateStrategies(fits, fabricW, null, targetQty);
+  let best = null;
+  for (const s of strategies) {
+    if (s.products >= targetQty) {
+      if (!best || s.totalLength < best.totalLength) best = s;
+    }
+  }
+  if (!best) {
+    // Find minimum length needed
+    const s = generateStrategies(fits, fabricW, null, targetQty * 2)[0];
+    return s;
+  }
+  return best;
+}
+
+function generateStrategies(fits, fabricW, fabricLen, targetQty) {
+  const results = [];
+
+  // Strategy 1: Each piece gets its own rows (independent)
+  results.push(strategyIndependent(fits, fabricW, fabricLen, targetQty));
+
+  // Strategy 2: Try mixing pieces in same row where possible
+  results.push(...strategyMixed(fits, fabricW, fabricLen, targetQty));
+
+  return results.filter(Boolean);
+}
+
+function strategyIndependent(fits, fabricW, fabricLen, targetQty) {
+  // Each piece type has dedicated rows
+  // Find how many products per "set of rows"
+  // LCM approach: find ratio of rows needed per product per piece
+  const pieces = fits;
+
+  if (fabricLen !== null) {
+    // Mode A: given total length, maximize products
+    // Try all possible product counts from high to low
+    let bestProducts = 0;
+    let bestArrangement = null;
+
+    // Quick estimate: for each piece, rows needed per product
+    // Total rows available = fabricLen / pieceH (approx)
+    // We allocate rows proportionally
+
+    // Find max possible by trying product counts
+    const maxEstimate = Math.min(
+      ...pieces.map(p => Math.floor(fabricLen / p.pieceH) * p.perRow / p.qty)
+    );
+    const maxTry = Math.ceil(maxEstimate) + 5;
+
+    for (let n = maxTry; n >= 1; n--) {
+      const arrangement = calcArrangementForN(pieces, fabricW, fabricLen, n);
+      if (arrangement && arrangement.totalLength <= fabricLen) {
+        return { ...arrangement, strategy: '구간별 재단' };
+      }
+    }
+    return null;
+  } else {
+    // Mode B: given target qty, find minimum length
+    const arrangement = calcArrangementForN(pieces, fabricW, fabricLen, targetQty);
+    return arrangement ? { ...arrangement, strategy: '구간별 재단' } : null;
+  }
+}
+
+function calcArrangementForN(pieces, fabricW, fabricLen, n) {
+  const segments = pieces.map(p => {
+    const totalNeeded = n * p.qty;
+    const rows = Math.ceil(totalNeeded / p.perRow);
+    const length = rows * p.pieceH;
+    return {
+      pieceName: p.name,
+      pieceW: p.pieceW,
+      pieceH: p.pieceH,
+      perRow: p.perRow,
+      qty: p.qty,
+      totalNeeded,
+      rows,
+      length,
+      rotatable: p.rotatable,
+      color: PIECE_COLORS[pieces.indexOf(p)],
+      light: PIECE_LIGHT[pieces.indexOf(p)]
+    };
+  });
+
+  const totalLength = segments.reduce((s, seg) => s + seg.length, 0);
+  if (fabricLen !== null && totalLength > fabricLen) return null;
+
+  const usedArea = segments.reduce((s, seg) => s + seg.perRow * seg.pieceW * seg.pieceH * seg.rows, 0);
+  const totalArea = totalLength * fabricW;
+  const waste = totalArea > 0 ? Math.round((1 - usedArea / totalArea) * 100) : 0;
+
+  return { products: n, segments, totalLength, waste, fabricW };
+}
+
+function strategyMixed(fits, fabricW, fabricLen, targetQty) {
+  if (fits.length < 2) return [];
+  const results = [];
+
+  // Try pairing pieces in same row
+  for (let i = 0; i < fits.length; i++) {
+    for (let j = i + 1; j < fits.length; j++) {
+      const pi = fits[i], pj = fits[j];
+      // Only mix if heights match or one fits in leftover of other
+      const leftover = fabricW - pi.perRow * pi.pieceW;
+      const extraJ = Math.floor(leftover / pj.pieceW);
+      if (extraJ > 0) {
+        // Try this mixed layout
+        const r = calcMixedStrategy(fits, fabricW, fabricLen, targetQty, i, j, extraJ);
+        if (r) results.push(r);
+      }
+    }
+  }
+  return results;
+}
+
+function calcMixedStrategy(fits, fabricW, fabricLen, targetQty, mixI, mixJ, extraPerRow) {
+  try {
+    const n = fabricLen !== null
+      ? Math.floor(fabricLen / fits[mixI].pieceH) * fits[mixI].perRow
+      : targetQty || 10;
+
+    const segments = fits.map((p, idx) => {
+      let perRow = p.perRow;
+      let note = '';
+      if (idx === mixI) {
+        note = `(자투리에 ${fits[mixJ].name} +${extraPerRow}개/줄)`;
+      }
+      const totalNeeded = n * p.qty;
+      let rows, mixedRows = 0;
+      if (idx === mixJ) {
+        // Some from mixed rows, rest from own rows
+        const fromMixed = Math.min(extraPerRow * Math.ceil(n * fits[mixI].qty / fits[mixI].perRow), totalNeeded);
+        const remaining = totalNeeded - fromMixed;
+        rows = remaining > 0 ? Math.ceil(remaining / perRow) : 0;
+        mixedRows = Math.ceil(n * fits[mixI].qty / fits[mixI].perRow);
+      } else {
+        rows = Math.ceil(totalNeeded / perRow);
+      }
+      const length = rows * p.pieceH;
+      return {
+        pieceName: p.name, pieceW: p.pieceW, pieceH: p.pieceH,
+        perRow, qty: p.qty, totalNeeded,
+        rows, length, rotatable: p.rotatable, note,
+        color: PIECE_COLORS[idx], light: PIECE_LIGHT[idx]
+      };
+    });
+
+    const totalLength = segments.reduce((s, seg) => s + seg.length, 0);
+    if (fabricLen !== null && totalLength > fabricLen) return null;
+    const waste = 100 - Math.round(segments.reduce((s,seg)=>s+seg.perRow*seg.pieceW*seg.pieceH*seg.rows,0) / (totalLength * fabricW) * 100);
+
+    return { products: n, segments, totalLength, waste, fabricW, strategy: '혼합 배치' };
+  } catch(e) { return null; }
+}
+
+// ── Calculate ──
+function calculate() {
+  const w = parseFloat(document.getElementById('fabric-width').value);
+  if (!w || w <= 0) { alert('원단 폭을 입력해주세요'); return; }
+
+  let fabricLen = null;
+  let targetQty = null;
+
+  if (calcMode === 'A') {
+    let lenVal = parseFloat(document.getElementById('fabric-length').value);
+    if (!lenVal || lenVal <= 0) { alert('원단 길이를 입력해주세요'); return; }
+    fabricLen = lengthUnit === 'yard' ? lenVal * 91.44 : lenVal;
+  } else {
+    targetQty = parseInt(document.getElementById('target-qty').value);
+    if (!targetQty || targetQty <= 0) { alert('목표 수량을 입력해주세요'); return; }
+  }
+
+  const result = calcLayout(w, fabricLen, targetQty);
+
+  if (!result || result.error) {
+    alert(result ? result.error : '계산할 수 없어요. 입력값을 확인해주세요.');
+    return;
+  }
+
+  renderResult(result, w, fabricLen, targetQty);
+  showScreen('screen-result');
+}
+
+// ── Render Result ──
+function renderResult(result, fabricW, fabricLen, targetQty) {
+  document.getElementById('result-prod-name').textContent = currentProduct.name;
+
+  const isA = calcMode === 'A';
+  const lenDisplay = fabricLen ? `${Math.round(fabricLen)}cm` : '';
+
+  let html = '';
+
+  // Big number
+  html += `<div class="card result-big">`;
+  if (isA) {
+    html += `<div class="result-num">${result.products}</div>
+             <div class="result-unit">개 생산 가능</div>
+             <div class="result-label">원단 ${fabricW}cm × ${lenDisplay}</div>`;
+  } else {
+    html += `<div class="result-num">${Math.round(result.totalLength)}</div>
+             <div class="result-unit">cm 필요</div>
+             <div class="result-label">${targetQty}개 생산 기준 · ${(result.totalLength/91.44).toFixed(2)}야드</div>`;
+  }
+  html += `</div>`;
+
+  // Stats
+  html += `<div class="stat-row">
+    <div class="stat-box">
+      <div class="stat-box-val">${result.waste}%</div>
+      <div class="stat-box-label">원단 손실률</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-box-val">${result.segments.length}종</div>
+      <div class="stat-box-label">피스 종류</div>
+    </div>
+  </div>`;
+
+  // Arrangement
+  html += `<div class="card">
+    <div class="card-title">재단 방법 (${result.strategy || '구간별 재단'})</div>`;
+
+  result.segments.forEach(seg => {
+    html += `<div class="arrange-row">
+      <div class="arrange-dot" style="background:${seg.color}"></div>
+      <div class="arrange-info">
+        <div class="arrange-name">${seg.pieceName} — ${seg.pieceW}×${seg.pieceH}cm
+          <span class="tag ${seg.rotatable ? 'tag-free' : 'tag-fixed'}">${seg.rotatable ? '회전가능' : '식서고정'}</span>
+        </div>
+        <div class="arrange-detail">
+          폭에 <b>${seg.perRow}개</b> 배치 · <b>${seg.rows}줄</b> 재단 · 총 ${seg.totalNeeded}장 필요<br>
+          이 구간 길이: <b>${Math.round(seg.length)}cm</b>${seg.note ? ' ' + seg.note : ''}
+        </div>
+      </div>
+    </div>`;
+  });
+
+  html += `</div>`;
+
+  // Visualization
+  html += `<div class="card">
+    <div class="card-title">배치 시각화</div>
+    <canvas id="vizCanvas"></canvas>
+  </div>`;
+
+  document.getElementById('result-content').innerHTML = html;
+
+  // Draw canvas
+  setTimeout(() => drawViz(result, fabricW, fabricLen), 100);
+}
+
+function drawViz(result, fabricW, fabricLen) {
+  const canvas = document.getElementById('vizCanvas');
+  if (!canvas) return;
+
+  const totalLen = result.totalLength;
+  const canvasW = canvas.offsetWidth || 340;
+  const scale = canvasW / fabricW;
+  const maxH = Math.min(totalLen * scale, 600);
+  const scale2 = maxH / totalLen;
+  const finalScale = Math.min(scale, scale2);
+
+  canvas.width = canvasW * 2;
+  canvas.height = Math.round(totalLen * finalScale) * 2 + 40;
+  canvas.style.height = (Math.round(totalLen * finalScale) + 20) + 'px';
+
+  const ctx = canvas.getContext('2d');
+  ctx.scale(2, 2);
+  ctx.fillStyle = '#F7F5F0';
+  ctx.fillRect(0, 0, canvasW, canvas.height/2);
+
+  let y = 10;
+  result.segments.forEach((seg, si) => {
+    const segH = seg.rows * seg.pieceH * finalScale;
+
+    // Background
+    ctx.fillStyle = seg.light;
+    ctx.fillRect(0, y, fabricW * finalScale, segH);
+    ctx.strokeStyle = seg.color;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0, y, fabricW * finalScale, segH);
+
+    // Draw pieces
+    ctx.fillStyle = seg.color + '55';
+    ctx.strokeStyle = seg.color;
+    ctx.lineWidth = 0.5;
+    for (let row = 0; row < seg.rows; row++) {
+      for (let col = 0; col < seg.perRow; col++) {
+        const px = col * seg.pieceW * finalScale;
+        const py = y + row * seg.pieceH * finalScale;
+        const pw = seg.pieceW * finalScale - 1;
+        const ph = seg.pieceH * finalScale - 1;
+        ctx.fillRect(px+0.5, py+0.5, pw, ph);
+        ctx.strokeRect(px+0.5, py+0.5, pw, ph);
+      }
+    }
+
+    // Label
+    ctx.fillStyle = seg.color;
+    ctx.font = `bold ${Math.max(9,11)}px sans-serif`;
+    ctx.fillText(`${seg.pieceName} × ${seg.perRow}/줄 × ${seg.rows}줄`, 6, y + 14);
+
+    y += segH + 4;
+  });
+
+  // Ruler on right
+  ctx.fillStyle = '#6B6660';
+  ctx.font = '9px sans-serif';
+  ctx.fillText(`← ${Math.round(fabricW)}cm →`, canvasW/2 - 30, 8);
+}
+
+function printResult() {
+  window.print();
+}
+
+// Init
+renderProductList();
+</script>
+</body>
+</html>
