@@ -9,29 +9,47 @@
 <title>홈패션 연단 계산기</title>
 <style>
 :root {
-  --bg: #F5F3EE; --surface: #FFFFFF; --surface2: #F0EEEC;
-  --border: #E0DCD6; --text: #1A1814; --text2: #6B6660; --text3: #A8A4A0;
-  --accent: #2D5A3D; --accent2: #E4EDE6; --accent3: #4A7C5F;
-  --danger: #B03020; --danger2: #FDECEA;
-  --warn: #7A5C10; --warn2: #FDF3DC;
-  --info: #1A4A7A; --info2: #E0ECFA;
-  --radius: 16px; --radius-sm: 12px;
+  --bg: #F5F3EE;
+  --surface: #FFFFFF;
+  --surface2: #F0EEEC;
+  --border: #E0DCD6;
+  --text: #1A1814;
+  --text2: #6B6660;
+  --text3: #A8A4A0;
+  --accent: #2D5A3D;
+  --accent2: #E4EDE6;
+  --accent3: #4A7C5F;
+  --danger: #B03020;
+  --danger2: #FDECEA;
+  --warn: #7A5C10;
+  --warn2: #FDF3DC;
+  --info: #1A4A7A;
+  --info2: #E0ECFA;
+  --radius: 16px;
+  --radius-sm: 12px;
   --shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html { -webkit-text-size-adjust: 100%; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo','Noto Sans KR',sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 16px; line-height: 1.5; overscroll-behavior-y: none; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo','Noto Sans KR',sans-serif; background: var(--bg); color: var(--text); min-height: 100dvh; font-size: 16px; line-height: 1.5; overscroll-behavior-y: none; }
 .screen { display: none; min-height: 100dvh; flex-direction: column; }
 .screen.active { display: flex; }
-.header { background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 52px 16px 12px; position: sticky; top: 0; z-index: 100; }
+
+/* Header */
+.header { background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 52px 16px 12px; position: sticky; top: 0; z-index: 100; }
 .header-row { display: flex; align-items: center; gap: 10px; }
 .back-btn { width: 40px; height: 40px; border: none; background: var(--surface2); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; flex-shrink: 0; touch-action: manipulation; }
 .header h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.6px; }
 .header p { font-size: 13px; color: var(--text2); margin-top: 2px; font-weight: 500; }
+
+/* Content */
 .content { flex: 1; overflow-y: auto; padding: 12px 16px 24px; -webkit-overflow-scrolling: touch; }
-.content::-webkit-scrollbar { display: none; }
+
+/* Card */
 .card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow); }
 .card-title { font-size: 12px; font-weight: 700; color: var(--text2); letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 14px; }
+
+/* Product list */
 .product-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 10px; box-shadow: var(--shadow); }
 .product-item-name { font-size: 18px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.4px; }
 .product-item-info { font-size: 13px; color: var(--text2); line-height: 1.7; font-weight: 500; }
@@ -40,76 +58,114 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo','No
 .btn-edit { background: var(--surface2); color: var(--text); }
 .btn-del { background: var(--danger2); color: var(--danger); }
 .btn-calc { background: var(--accent); color: white; flex: 1; }
+
+/* Buttons */
 .btn-primary { width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: var(--radius); font-size: 17px; font-weight: 800; cursor: pointer; letter-spacing: -0.3px; transition: opacity 0.15s; min-height: 56px; touch-action: manipulation; }
 .btn-primary:active { opacity: 0.85; transform: scale(0.98); }
 .btn-secondary { width: 100%; padding: 14px; background: var(--surface2); color: var(--text); border: none; border-radius: var(--radius); font-size: 16px; font-weight: 700; cursor: pointer; min-height: 52px; touch-action: manipulation; }
 .btn-row { display: flex; gap: 10px; }
 .btn-row .btn-primary, .btn-row .btn-secondary { flex: 1; }
+.btn-ghost { width: 100%; padding: 12px; background: transparent; color: var(--text2); border: 1.5px solid var(--border); border-radius: var(--radius); font-size: 14px; font-weight: 700; cursor: pointer; min-height: 48px; touch-action: manipulation; }
+.btn-link { background: none; border: none; color: var(--accent); font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: underline; padding: 4px; }
+
+/* Form */
 .form-group { margin-bottom: 16px; }
 .form-label { font-size: 14px; font-weight: 700; color: var(--text2); margin-bottom: 8px; display: block; }
 .form-input { width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 18px; background: var(--surface); color: var(--text); outline: none; -webkit-appearance: none; transition: border-color 0.15s; font-weight: 600; min-height: 52px; }
 .form-input:focus { border-color: var(--accent); }
 .input-row { display: flex; gap: 10px; }
 .input-row .form-group { flex: 1; }
-.tab-group { display: flex; background: var(--surface2); border-radius: var(--radius-sm); padding: 4px; margin-bottom: 14px; gap: 4px; }
-.tab-btn { flex: 1; padding: 12px 4px; text-align: center; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; color: var(--text2); transition: all 0.2s; border: none; background: transparent; touch-action: manipulation; min-height: 44px; }
-.tab-btn.active { background: var(--surface); color: var(--accent); box-shadow: var(--shadow); }
-.piece-card { background: var(--surface2); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 12px; border: 1px solid var(--border); }
-.piece-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.piece-badge { font-size: 13px; font-weight: 800; background: var(--accent); color: white; padding: 5px 14px; border-radius: 20px; }
-.piece-del { width: 32px; height: 32px; background: var(--danger2); color: var(--danger); border: none; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; touch-action: manipulation; }
-.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
-.toggle-label { font-size: 14px; font-weight: 700; }
-.toggle-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+/* Toggle */
+.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border); }
+.toggle-row:last-child { border-bottom: none; }
+.toggle-label { font-size: 15px; font-weight: 700; }
+.toggle-sub { font-size: 12px; color: var(--text3); margin-top: 2px; font-weight: 500; }
 .toggle { width: 50px; height: 30px; background: var(--border); border-radius: 15px; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; border: none; touch-action: manipulation; }
 .toggle.on { background: var(--accent); }
 .toggle-knob { width: 26px; height: 26px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: left 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.2); pointer-events: none; }
 .toggle.on .toggle-knob { left: 22px; }
-.grid-btns { display: grid; gap: 8px; margin-bottom: 8px; }
-.grid-4 { grid-template-columns: repeat(4, 1fr); }
-.grid-5 { grid-template-columns: repeat(5, 1fr); }
-.grid-btn { padding: 14px 4px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 15px; font-weight: 800; background: var(--surface); color: var(--text2); cursor: pointer; text-align: center; transition: all 0.15s; touch-action: manipulation; min-height: 52px; }
-.grid-btn.active { border-color: var(--accent); background: var(--accent2); color: var(--accent); }
-.result-hero { text-align: center; padding: 28px 16px 22px; background: var(--accent2); border: 2px solid #B8D4C0; border-radius: var(--radius); margin-bottom: 12px; }
+
+/* Piece card */
+.piece-card { background: var(--surface2); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 12px; border: 1px solid var(--border); }
+.piece-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.piece-badge { font-size: 13px; font-weight: 800; background: var(--accent); color: white; padding: 5px 14px; border-radius: 20px; letter-spacing: 0.3px; }
+.piece-del { width: 32px; height: 32px; background: var(--danger2); color: var(--danger); border: none; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; touch-action: manipulation; }
+
+/* Tabs */
+.tab-group { display: flex; background: var(--surface2); border-radius: var(--radius-sm); padding: 4px; margin-bottom: 14px; gap: 4px; }
+.tab-btn { flex: 1; padding: 12px 4px; text-align: center; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; color: var(--text2); transition: all 0.2s; border: none; background: transparent; touch-action: manipulation; min-height: 44px; }
+.tab-btn.active { background: var(--surface); color: var(--accent); box-shadow: var(--shadow); }
+
+/* Guide & Margin buttons */
+.guide-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 8px; }
+.margin-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.guide-btn { padding: 14px 4px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 16px; font-weight: 800; background: var(--surface); color: var(--text2); cursor: pointer; text-align: center; transition: all 0.15s; touch-action: manipulation; min-height: 56px; }
+.guide-btn.active { border-color: var(--accent); background: var(--accent2); color: var(--accent); }
+
+/* Result hero */
+.result-hero { text-align: center; padding: 28px 16px 22px; background: var(--accent2); border: 2px solid #B8D4C0; }
 .result-num { font-size: 56px; font-weight: 900; color: var(--accent); letter-spacing: -3px; line-height: 1; }
 .result-unit-text { font-size: 22px; font-weight: 800; color: var(--accent3); margin-top: 8px; }
 .result-label { font-size: 14px; color: var(--text2); margin-top: 10px; font-weight: 600; }
+
+/* Stat boxes */
 .stat-row { display: flex; gap: 10px; margin-bottom: 12px; }
 .stat-box { flex: 1; background: var(--surface2); border-radius: var(--radius-sm); padding: 16px 10px; text-align: center; border: 1px solid var(--border); }
-.stat-val { font-size: 22px; font-weight: 900; }
+.stat-val { font-size: 24px; font-weight: 900; }
 .stat-label { font-size: 12px; color: var(--text2); margin-top: 4px; font-weight: 700; }
-.plan-card { background: var(--surface); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 12px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+
+/* Plan card */
+.plan-card { background: var(--surface2); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 12px; border: 1px solid var(--border); }
 .plan-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
 .plan-dot { width: 14px; height: 14px; border-radius: 4px; flex-shrink: 0; }
-.plan-name { font-size: 16px; font-weight: 800; flex: 1; }
-.plan-tag { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px; }
+.plan-name { font-size: 16px; font-weight: 800; }
+.plan-tag { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 12px; margin-left: auto; }
 .plan-tag-ok { background: var(--accent2); color: var(--accent); }
 .plan-tag-warn { background: var(--warn2); color: var(--warn); }
-.plan-body { font-size: 14px; line-height: 1.9; color: var(--text2); font-weight: 600; }
+.plan-body { font-size: 14px; line-height: 1.8; color: var(--text2); font-weight: 600; }
 .plan-body strong { color: var(--text); font-weight: 800; }
-.sheet-wrap { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
-.sheet-label { font-size: 12px; font-weight: 700; color: var(--text3); margin-bottom: 6px; }
-.sheet-canvas { position: relative; background: #fff; border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; width: 100%; }
-.sheet-piece-row { position: absolute; left: 0; right: 0; display: flex; }
-.sheet-piece-cell { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.9); border-right: 1px dashed rgba(255,255,255,0.3); }
-.sheet-piece-cell:last-child { border-right: none; }
-.sheet-margin-stripe { position: absolute; left: 0; right: 0; background: repeating-linear-gradient(45deg,#FDF3DC,#FDF3DC 4px,#FEF9EE 4px,#FEF9EE 8px); }
-.highlight-box { border-radius: var(--radius-sm); padding: 14px; margin-bottom: 12px; }
+
+/* Sheet visualization */
+.sheet-viz { background: var(--surface); border-radius: var(--radius-sm); border: 1px solid var(--border); padding: 12px; margin-top: 12px; overflow: hidden; }
+.sheet-viz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.sheet-viz-title { font-size: 13px; font-weight: 800; color: var(--text2); }
+.sheet-viz-size { font-size: 12px; color: var(--text3); font-weight: 700; }
+.sheet-canvas { position: relative; background: #fff; border: 1.5px solid var(--text3); border-radius: 6px; overflow: hidden; margin: 0 auto; width: 100%; max-width: 400px; }
+.sheet-row-viz { position: absolute; left: 0; right: 0; display: flex; border-bottom: 1px dashed var(--border); }
+.sheet-row-viz:last-child { border-bottom: none; }
+.sheet-piece-viz { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.95); text-shadow: 0 1px 2px rgba(0,0,0,0.3); border-right: 1px dashed rgba(255,255,255,0.4); }
+.sheet-piece-viz:last-child { border-right: none; }
+.sheet-margin-top, .sheet-margin-bottom { position: absolute; left: 0; right: 0; background: repeating-linear-gradient(45deg, var(--warn2), var(--warn2) 4px, #FDF3DC 4px, #FDF3DC 8px); opacity: 0.5; }
+
+/* Highlight box */
+.highlight-box { border-radius: var(--radius-sm); padding: 16px; margin-bottom: 12px; }
+.highlight-box.green { background: var(--accent2); border: 1.5px solid #B8D4C0; }
 .highlight-box.yellow { background: var(--warn2); border: 1.5px solid #E0C870; }
-.highlight-box-title { font-size: 12px; font-weight: 800; color: var(--text2); margin-bottom: 6px; }
-.highlight-box-val { font-size: 14px; font-weight: 700; line-height: 1.7; }
-.empty { text-align: center; padding: 80px 20px; }
+.highlight-box.blue { background: var(--info2); border: 1.5px solid #A0C4E8; }
+.highlight-box-title { font-size: 12px; font-weight: 800; color: var(--text2); margin-bottom: 8px; letter-spacing: 0.5px; }
+.highlight-box-val { font-size: 15px; font-weight: 700; line-height: 1.7; }
+
+/* Sync status */
+.sync-bar { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--accent2); border: 1.5px solid #B8D4C0; border-radius: var(--radius-sm); margin-bottom: 12px; font-size: 13px; font-weight: 700; color: var(--accent); }
+.sync-bar.off { background: var(--surface2); border-color: var(--border); color: var(--text3); }
+.sync-bar.warn { background: var(--warn2); border-color: #E0C870; color: var(--warn); }
+
+/* Empty */
+.empty { text-align: center; padding: 80px 20px; color: var(--text2); }
 .empty-icon { font-size: 56px; margin-bottom: 20px; }
-.empty-text { font-size: 19px; font-weight: 800; margin-bottom: 10px; }
-.empty-sub { font-size: 15px; color: var(--text2); line-height: 1.7; }
-.bottom-bar { padding: 14px 16px; padding-bottom: max(14px, env(safe-area-inset-bottom)); background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--border); }
-.info-text { font-size: 13px; color: var(--text3); line-height: 1.7; font-weight: 500; }
-.sync-bar { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: var(--radius-sm); margin-bottom: 12px; font-size: 13px; font-weight: 700; }
-.sync-bar.ok { background: var(--accent2); color: var(--accent); }
-.sync-bar.err { background: var(--danger2); color: var(--danger); }
-.sync-bar.loading { background: var(--surface2); color: var(--text2); }
-.spinner { width: 16px; height: 16px; border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
-@keyframes spin { to { transform: rotate(360deg); } }
+.empty-text { font-size: 19px; font-weight: 800; margin-bottom: 10px; color: var(--text); }
+.empty-sub { font-size: 15px; line-height: 1.7; font-weight: 500; }
+
+/* Bottom bar */
+.bottom-bar { padding: 14px 16px; padding-bottom: max(14px, env(safe-area-inset-bottom)); background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--border); position: sticky; bottom: 0; }
+
+/* Info text */
+.info-text { font-size: 13px; color: var(--text3); line-height: 1.7; font-weight: 600; }
+
+/* Scrollbar hide */
+.content::-webkit-scrollbar { display: none; }
+
 @media print {
   .no-print { display: none !important; }
   .screen { display: flex !important; }
@@ -119,10 +175,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo','No
   .bottom-bar { display: none !important; }
 }
 </style>
+<base target="_blank">
 </head>
 <body>
 
-<!-- MAIN -->
+<!-- ==================== MAIN ==================== -->
 <div id="screen-main" class="screen active">
   <div class="header no-print">
     <div class="header-row">
@@ -130,15 +187,18 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo','No
         <h1>🏠 홈패션 연단 계산기</h1>
         <p>제품을 선택하거나 새로 등록하세요</p>
       </div>
-      <button class="back-btn" onclick="syncNow()" title="동기화">↺</button>
     </div>
-    <div id="sync-status"></div>
   </div>
   <div class="content">
+    <div id="sync-status" class="sync-bar off" onclick="goToSync()" style="cursor:pointer;">
+      <span id="sync-icon">☁️</span>
+      <span id="sync-text">동기화 설정하기</span>
+    </div>
+
     <div class="empty" id="empty-state">
       <div class="empty-icon">📦</div>
       <div class="empty-text">저장된 제품이 없어요</div>
-      <div class="empty-sub">아래 버튼으로 제품을 등록하면<br>모든 기기에서 공유돼요</div>
+      <div class="empty-sub">아래 버튼으로 제품을 등록하면<br>다음에 바로 불러올 수 있어요</div>
     </div>
     <div id="product-list"></div>
     <div style="height:20px"></div>
@@ -148,7 +208,70 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo','No
   </div>
 </div>
 
-<!-- REGISTER -->
+<!-- ==================== SYNC SETTINGS ==================== -->
+<div id="screen-sync" class="screen">
+  <div class="header no-print">
+    <div class="header-row">
+      <button class="back-btn" onclick="showScreen('screen-main')">←</button>
+      <div>
+        <h1>☁️ 동기화 설정</h1>
+        <p>GitHub Gist로 여러 기기 동기화</p>
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="card-title">1. GitHub 토큰 입력</div>
+      <div class="info-text" style="margin-bottom:12px">
+        GitHub 계정이 있으면 무료로 데이터를 클라우드에 저장하고<br>아이폰, PC 등 모든 기기에서 자동 동기화됩니다.
+      </div>
+      <div class="form-group">
+        <label class="form-label">Personal Access Token</label>
+        <input type="password" id="github-token" class="form-input" placeholder="ghp_xxxxxxxxxxxxxxxx">
+        <div class="info-text" style="margin-top:6px">
+          <button class="btn-link" onclick="showTokenGuide()">토큰 발급 방법 보기 ↗</button>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="verifyToken()" style="margin-bottom:10px">토큰 확인 & 연결</button>
+      <div id="sync-verify-result"></div>
+    </div>
+
+    <div class="card" id="sync-action-card" style="display:none">
+      <div class="card-title">2. 동기화 관리</div>
+      <div class="form-group">
+        <label class="form-label">연결된 Gist</label>
+        <div id="sync-gist-info" class="info-text" style="color:var(--text);font-weight:700"></div>
+      </div>
+      <div class="btn-row" style="margin-bottom:10px">
+        <button class="btn-secondary" onclick="syncPull()">📥 받아오기</button>
+        <button class="btn-primary" onclick="syncPush()">📤 지금 업로드</button>
+      </div>
+      <div class="toggle-row" style="border-bottom:none">
+        <div>
+          <div class="toggle-label">자동 동기화</div>
+          <div class="toggle-sub">제품 저장 시 자동으로 업로드</div>
+        </div>
+        <button class="toggle" id="auto-sync-toggle" onclick="this.classList.toggle('on');saveAutoSync()">
+          <div class="toggle-knob"></div>
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">수동 백업 / 복원</div>
+      <div class="btn-row" style="margin-bottom:10px">
+        <button class="btn-secondary" onclick="backupFile()">💾 파일 백업</button>
+        <button class="btn-ghost" onclick="document.getElementById('restore-input').click()">📂 파일 복원</button>
+      </div>
+      <input type="file" id="restore-input" accept=".json" style="display:none" onchange="restoreFile(this)">
+      <div class="info-text">토큰 없이도 파일로 데이터를 옮길 수 있어요</div>
+    </div>
+
+    <div style="height:20px"></div>
+  </div>
+</div>
+
+<!-- ==================== REGISTER ==================== -->
 <div id="screen-register" class="screen">
   <div class="header no-print">
     <div class="header-row">
@@ -179,7 +302,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo','No
   </div>
 </div>
 
-<!-- CALC -->
+<!-- ==================== CALC ==================== -->
 <div id="screen-calc" class="screen">
   <div class="header no-print">
     <div class="header-row">
@@ -199,11 +322,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo','No
       </div>
       <div class="info-text" id="mode-desc">원단 길이를 입력하면 최대 생산 수량을 계산합니다</div>
     </div>
+
     <div class="card">
       <div class="card-title">원단 정보</div>
       <div class="form-group">
         <label class="form-label">원단 폭 (cm)</label>
-        <input type="number" id="fabric-width" class="form-input" placeholder="예: 157" inputmode="decimal">
+        <input type="number" id="fabric-width" class="form-input" placeholder="예: 110" inputmode="decimal">
       </div>
       <div id="fabric-length-group">
         <div class="form-group">
@@ -212,39 +336,40 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo','No
             <button class="tab-btn active" id="unit-cm" onclick="setUnit('cm')">cm</button>
             <button class="tab-btn" id="unit-yard" onclick="setUnit('yard')">야드</button>
           </div>
-          <input type="number" id="fabric-length" class="form-input" placeholder="예: 900" inputmode="decimal">
+          <input type="number" id="fabric-length" class="form-input" placeholder="예: 500" inputmode="decimal">
           <div class="info-text" style="margin-top:6px" id="yard-info"></div>
         </div>
       </div>
       <div id="fabric-qty-group" style="display:none">
         <div class="form-group">
           <label class="form-label">목표 수량 (세트)</label>
-          <input type="number" id="target-qty" class="form-input" placeholder="예: 100" inputmode="numeric">
+          <input type="number" id="target-qty" class="form-input" placeholder="예: 50" inputmode="numeric">
         </div>
       </div>
     </div>
+
     <div class="card">
       <div class="card-title">재단 설정</div>
       <div class="form-group">
-        <label class="form-label">커팅 가이드 줄 수</label>
-        <div class="grid-btns grid-4">
-          <button class="grid-btn active" id="guide-1" onclick="setGuide(1)">1줄</button>
-          <button class="grid-btn" id="guide-2" onclick="setGuide(2)">2줄</button>
-          <button class="grid-btn" id="guide-3" onclick="setGuide(3)">3줄</button>
-          <button class="grid-btn" id="guide-4" onclick="setGuide(4)">4줄</button>
+        <label class="form-label">하단 가이드 줄 수</label>
+        <div class="guide-grid">
+          <button class="guide-btn active" id="guide-1" onclick="setGuide(1)">1줄</button>
+          <button class="guide-btn" id="guide-2" onclick="setGuide(2)">2줄</button>
+          <button class="guide-btn" id="guide-3" onclick="setGuide(3)">3줄</button>
+          <button class="guide-btn" id="guide-4" onclick="setGuide(4)">4줄</button>
         </div>
-        <div class="info-text">재단 바닥에 세팅된 커팅 가이드 줄 수</div>
+        <div class="info-text">한 연단에서 가이드로 세로 자를 줄 수</div>
       </div>
       <div class="form-group" style="margin-bottom:0">
-        <label class="form-label">위아래 여유 (cm)</label>
-        <div class="grid-btns grid-5">
-          <button class="grid-btn" id="margin-0" onclick="setMargin(0)">0</button>
-          <button class="grid-btn active" id="margin-1" onclick="setMargin(1)">1</button>
-          <button class="grid-btn" id="margin-2" onclick="setMargin(2)">2</button>
-          <button class="grid-btn" id="margin-3" onclick="setMargin(3)">3</button>
-          <button class="grid-btn" id="margin-5" onclick="setMargin(5)">5</button>
+        <label class="form-label">위아래 여유 (margin)</label>
+        <div class="margin-grid">
+          <button class="guide-btn" id="margin-0" onclick="setMargin(0)">0cm</button>
+          <button class="guide-btn active" id="margin-1" onclick="setMargin(1)">1cm</button>
+          <button class="guide-btn" id="margin-2" onclick="setMargin(2)">2cm</button>
+          <button class="guide-btn" id="margin-3" onclick="setMargin(3)">3cm</button>
+          <button class="guide-btn" id="margin-5" onclick="setMargin(5)">5cm</button>
         </div>
-        <div class="info-text" style="margin-top:6px">연단 위아래 재단 여유분</div>
+        <div class="info-text" style="margin-top:6px">연단 위아래 재단기/가이드 틀 조정 여유</div>
       </div>
     </div>
     <div style="height:20px"></div>
@@ -254,7 +379,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo','No
   </div>
 </div>
 
-<!-- RESULT -->
+<!-- ==================== RESULT ==================== -->
 <div id="screen-result" class="screen">
   <div class="header no-print">
     <div class="header-row">
@@ -275,238 +400,350 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo','No
 </div>
 
 <script>
-// ==================== GitHub 설정 ====================
-const GH_TOKEN  = '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';
-const GH_OWNER  = 'psw9715-debug';
-const GH_REPO   = 'fabric-calc';
-const GH_FILE   = 'products.json';
-const GH_BRANCH = 'main';
-const API_BASE  = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}`;
+// ==================== Storage ====================
+const STORAGE_KEY = 'fabric_home_v3';
+const SYNC_KEY = 'fabric_sync_v1';
 
-// ==================== GitHub API ====================
-async function ghGet() {
-  const res = await fetch(API_BASE + '?ref=' + GH_BRANCH, {
-    headers: { Authorization: `token ${GH_TOKEN}`, Accept: 'application/vnd.github.v3+json' }
-  });
-  if (res.status === 404) return { content: [], sha: null };
-  if (!res.ok) throw new Error('읽기 실패 ' + res.status);
-  const data = await res.json();
-  const content = JSON.parse(atob(data.content.replace(/\n/g,'')));
-  return { content, sha: data.sha };
+function saveToStorage(data) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); return true; }
+  catch(e) { return false; }
+}
+function loadFromStorage() {
+  try { const d = localStorage.getItem(STORAGE_KEY); if(d) return JSON.parse(d); } catch(e){}
+  return [];
 }
 
-async function ghPut(content, sha) {
-  const body = { message: '제품 데이터 업데이트', content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))), branch: GH_BRANCH };
-  if (sha) body.sha = sha;
-  const res = await fetch(API_BASE, {
-    method: 'PUT',
-    headers: { Authorization: `token ${GH_TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  if (!res.ok) throw new Error('저장 실패 ' + res.status);
-  const data = await res.json();
-  return data.content.sha;
+// ==================== GitHub Gist Sync ====================
+let syncConfig = { token: '', gistId: '', autoSync: false };
+try {
+  const s = localStorage.getItem(SYNC_KEY);
+  if(s) syncConfig = JSON.parse(s);
+} catch(e){}
+
+function saveSyncConfig() {
+  localStorage.setItem(SYNC_KEY, JSON.stringify(syncConfig));
+  updateSyncBar();
+}
+
+function updateSyncBar() {
+  const bar = document.getElementById('sync-status');
+  const icon = document.getElementById('sync-icon');
+  const text = document.getElementById('sync-text');
+  if(syncConfig.token && syncConfig.gistId) {
+    bar.className = 'sync-bar';
+    icon.textContent = '✅';
+    text.textContent = syncConfig.autoSync ? '자동 동기화 중' : '수동 동기화 설정됨';
+  } else {
+    bar.className = 'sync-bar off';
+    icon.textContent = '☁️';
+    text.textContent = '동기화 설정하기';
+  }
+}
+
+function goToSync() {
+  showScreen('screen-sync');
+  document.getElementById('github-token').value = syncConfig.token || '';
+  if(syncConfig.token) verifyToken(true);
+}
+
+function showTokenGuide() {
+  alert('토큰 발급 방법:
+
+1. github.com 에서 로그인
+2. 우측 상단 프로필 → Settings
+3. 하단 Developer settings → Personal access tokens → Tokens (classic)
+4. Generate new token (classic)
+5. Note: 연단계산기
+6. Expiration: No expiration
+7. ✅ gist 체크 (이것만!)
+8. Generate token → 복사해서 붙여넣기
+
+⚠️ 토큰은 한 번만 보이니 꼭 복사하세요!');
+}
+
+async function verifyToken(silent=false) {
+  const token = document.getElementById('github-token').value.trim();
+  const resultDiv = document.getElementById('sync-verify-result');
+  if(!token) { resultDiv.innerHTML = '<div class="highlight-box yellow" style="margin-top:10px"><div class="highlight-box-val">토큰을 입력해주세요</div></div>'; return; }
+
+  resultDiv.innerHTML = '<div class="info-text" style="margin-top:10px">확인 중...</div>';
+
+  try {
+    const res = await fetch('https://api.github.com/user', { headers: { 'Authorization': 'token ' + token } });
+    if(!res.ok) throw new Error('토큰 오류');
+    const user = await res.json();
+
+    syncConfig.token = token;
+
+    const gistsRes = await fetch('https://api.github.com/gists', { headers: { 'Authorization': 'token ' + token } });
+    const gists = await gistsRes.json();
+    const existing = gists.find(g => g.description === '홈패션 연단 계산기 데이터');
+
+    if(existing) {
+      syncConfig.gistId = existing.id;
+      resultDiv.innerHTML = '<div class="highlight-box green" style="margin-top:10px"><div class="highlight-box-val">✅ ' + user.login + '님 연결됨<br>기존 Gist를 찾았습니다.</div></div>';
+    } else {
+      resultDiv.innerHTML = '<div class="highlight-box green" style="margin-top:10px"><div class="highlight-box-val">✅ ' + user.login + '님 연결됨<br>새 Gist를 생성하려면 [지금 업로드]를 누르세요.</div></div>';
+    }
+
+    saveSyncConfig();
+    renderSyncActionCard(user.login, existing);
+  } catch(err) {
+    resultDiv.innerHTML = '<div class="highlight-box yellow" style="margin-top:10px"><div class="highlight-box-val">❌ 토큰이 유효하지 않습니다.<br>다시 확인해주세요.</div></div>';
+  }
+}
+
+function renderSyncActionCard(username, gist) {
+  document.getElementById('sync-action-card').style.display = 'block';
+  document.getElementById('sync-gist-info').innerHTML = gist
+    ? '✅ ' + username + ' / Gist ID: ' + gist.id.slice(0,8) + '...'
+    : '⏳ ' + username + ' / 아직 Gist 없음';
+  document.getElementById('auto-sync-toggle').classList.toggle('on', syncConfig.autoSync);
+}
+
+function saveAutoSync() {
+  syncConfig.autoSync = document.getElementById('auto-sync-toggle').classList.contains('on');
+  saveSyncConfig();
+}
+
+async function syncPush() {
+  if(!syncConfig.token) { alert('토큰을 먼저 설정해주세요'); return; }
+  const data = { products: products, updatedAt: new Date().toISOString() };
+  const body = {
+    description: '홈패션 연단 계산기 데이터',
+    public: false,
+    files: { 'fabric_data.json': { content: JSON.stringify(data, null, 2) } }
+  };
+
+  try {
+    let url = 'https://api.github.com/gists';
+    let method = 'POST';
+    if(syncConfig.gistId) { url += '/' + syncConfig.gistId; method = 'PATCH'; }
+
+    const res = await fetch(url, {
+      method: method,
+      headers: { 'Authorization': 'token ' + syncConfig.token, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const gist = await res.json();
+    if(gist.id) {
+      syncConfig.gistId = gist.id;
+      saveSyncConfig();
+      alert('✅ 업로드 완료!');
+      renderSyncActionCard(gist.owner?.login || '사용자', gist);
+    } else { alert('업로드 실패: ' + (gist.message || '알 수 없는 오류')); }
+  } catch(err) { alert('업로드 중 오류: ' + err.message); }
+}
+
+async function syncPull() {
+  if(!syncConfig.token || !syncConfig.gistId) { alert('토큰과 Gist가 설정되지 않았습니다'); return; }
+  try {
+    const res = await fetch('https://api.github.com/gists/' + syncConfig.gistId, {
+      headers: { 'Authorization': 'token ' + syncConfig.token }
+    });
+    const gist = await res.json();
+    const content = gist.files['fabric_data.json']?.content;
+    if(content) {
+      const data = JSON.parse(content);
+      if(data.products && Array.isArray(data.products)) {
+        products = data.products;
+        saveToStorage(products);
+        renderProductList();
+        alert('✅ 다운로드 완료! ' + products.length + '개 제품 불러옴');
+      } else { alert('Gist에 저장된 데이터가 없습니다'); }
+    } else { alert('Gist에서 파일을 찾을 수 없습니다'); }
+  } catch(err) { alert('다운로드 중 오류: ' + err.message); }
+}
+
+async function autoSyncIfEnabled() {
+  if(syncConfig.autoSync && syncConfig.token && syncConfig.gistId) {
+    await syncPush();
+  }
+}
+
+// ==================== Backup / Restore File ====================
+function backupFile() {
+  const blob = new Blob([JSON.stringify(products, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'fabric_products_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+function restoreFile(input) {
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if(Array.isArray(data)) { products = data; }
+      else if(data.products && Array.isArray(data.products)) { products = data.products; }
+      else { alert('올바른 백업 파일이 아닙니다.'); return; }
+      saveToStorage(products);
+      renderProductList();
+      if(syncConfig.autoSync) autoSyncIfEnabled();
+      alert('복원이 완료되었습니다.');
+    } catch(err) { alert('파일을 읽을 수 없습니다.'); }
+  };
+  reader.readAsText(file);
+  input.value = '';
 }
 
 // ==================== State ====================
-let products = [];
-let fileSha = null;
+let products = loadFromStorage();
+let currentProduct = null;
+let editingIndex = -1;
 let calcMode = 'A';
 let lengthUnit = 'cm';
 let guideLines = 1;
 let marginCm = 1;
-let editingIndex = -1;
 let pieceCount = 0;
 
 const COLORS = ['#2D5A3D','#B03020','#1A4A7A','#7A5C10'];
-const LIGHTS = ['#E4EDE6','#FDECEA','#E0ECFA','#FDF3DC'];
-
-// ==================== Sync ====================
-function setSyncStatus(type, msg) {
-  const el = document.getElementById('sync-status');
-  if (!msg) { el.innerHTML = ''; return; }
-  const spinner = type === 'loading' ? '<div class="spinner"></div>' : '';
-  el.innerHTML = `<div class="sync-bar ${type}">${spinner}${msg}</div>`;
-}
-
-async function syncNow() {
-  setSyncStatus('loading', '서버에서 불러오는 중...');
-  try {
-    const { content, sha } = await ghGet();
-    products = content;
-    fileSha = sha;
-    // 로컬에도 캐시
-    try { localStorage.setItem('fabric_cache', JSON.stringify({ products, sha })); } catch(e) {}
-    renderProductList();
-    setSyncStatus('ok', '✓ 최신 데이터 불러왔어요');
-    setTimeout(() => setSyncStatus('', ''), 2500);
-  } catch(e) {
-    setSyncStatus('err', '⚠ 불러오기 실패 — 로컬 데이터 사용 중');
-  }
-}
-
-async function saveToGitHub() {
-  setSyncStatus('loading', '저장 중...');
-  try {
-    fileSha = await ghPut(products, fileSha);
-    try { localStorage.setItem('fabric_cache', JSON.stringify({ products, sha: fileSha })); } catch(e) {}
-    setSyncStatus('ok', '✓ 저장됐어요');
-    setTimeout(() => setSyncStatus('', ''), 2500);
-    return true;
-  } catch(e) {
-    setSyncStatus('err', '⚠ 저장 실패: ' + e.message);
-    return false;
-  }
-}
-
-function loadLocalCache() {
-  try {
-    const c = localStorage.getItem('fabric_cache');
-    if (c) { const d = JSON.parse(c); products = d.products || []; fileSha = d.sha || null; }
-  } catch(e) {}
-}
 
 // ==================== Navigation ====================
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  window.scrollTo(0, 0);
+  window.scrollTo(0,0);
 }
 
-function esc(s) { return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
-
-// ==================== Product List ====================
+// ==================== Main ====================
 function renderProductList() {
   const list = document.getElementById('product-list');
   const empty = document.getElementById('empty-state');
-  if (!products.length) { empty.style.display = 'block'; list.innerHTML = ''; return; }
-  empty.style.display = 'none';
-  list.innerHTML = products.map((p, i) => `
+  if(!products.length){ empty.style.display='block'; list.innerHTML=''; return; }
+  empty.style.display='none';
+  list.innerHTML = products.map((p,i)=>`
     <div class="product-item">
       <div class="product-item-name">${esc(p.name)}</div>
-      <div class="product-item-info">${p.pieces.map(pc =>
-        `${esc(pc.name)} ${pc.w}×${pc.h}cm × ${pc.qty}장 <span style="font-size:11px;background:${pc.rotatable?'var(--accent2)':'var(--warn2)'};color:${pc.rotatable?'var(--accent)':'var(--warn)'};padding:2px 6px;border-radius:8px;font-weight:700;">${pc.rotatable?'회전가능':'식서고정'}</span>`
-      ).join('<br>')}</div>
+      <div class="product-item-info">${p.pieces.map(pc=>{
+        const rot = pc.rotatable ? '회전가능' : '식서고정';
+        return esc(pc.name) + ' ' + pc.w + 'x' + pc.h + 'cm x ' + pc.qty + '장/세트 (' + rot + ')';
+      }).join('<br>')}</div>
       <div class="product-item-actions">
         <button class="btn-sm btn-edit" onclick="goToRegister(${i})">수정</button>
         <button class="btn-sm btn-del" onclick="deleteProduct(${i})">삭제</button>
-        <button class="btn-sm btn-calc" onclick="goToCalc(${i})">계산 →</button>
+        <button class="btn-sm btn-calc" onclick="goToCalc(${i})">연단 계산 →</button>
       </div>
     </div>
   `).join('');
 }
+function esc(s){ return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
 // ==================== Register ====================
-function goToRegister(idx = -1) {
-  editingIndex = idx; pieceCount = 0;
-  document.getElementById('pieces-container').innerHTML = '';
-  document.getElementById('reg-title').textContent = idx >= 0 ? '제품 수정' : '제품 등록';
-  if (idx >= 0) {
+function goToRegister(idx=-1){
+  editingIndex=idx; pieceCount=0;
+  document.getElementById('pieces-container').innerHTML='';
+  document.getElementById('reg-title').textContent = idx>=0 ? '제품 수정' : '제품 등록';
+  if(idx>=0){
     document.getElementById('prod-name').value = products[idx].name;
-    products[idx].pieces.forEach(pc => addPiece(pc));
+    products[idx].pieces.forEach(pc=>addPiece(pc));
   } else {
-    document.getElementById('prod-name').value = '';
+    document.getElementById('prod-name').value='';
     addPiece();
   }
   showScreen('screen-register');
 }
-
-function addPiece(data = null) {
-  if (pieceCount >= 4) return;
-  const i = pieceCount++;
-  const labels = ['A','B','C','D'];
-  const isRotatable = data ? data.rotatable : false; // 기본값: 식서고정
-  const div = document.createElement('div');
-  div.className = 'piece-card';
-  div.id = `piece-${i}`;
-  div.innerHTML = `
+function addPiece(data=null){
+  if(pieceCount>=4) return;
+  const i=pieceCount++;
+  const labels=['A','B','C','D'];
+  const div=document.createElement('div');
+  div.className='piece-card';
+  div.id='piece-'+i;
+  const rotOn = data && data.rotatable ? 'on' : '';
+  const rotLabel = data && data.rotatable ? '회전가능' : '식서고정';
+  div.innerHTML=`
     <div class="piece-card-header">
       <span class="piece-badge">피스 ${labels[i]}</span>
-      ${i > 0 ? `<button class="piece-del" onclick="removePiece('piece-${i}')">×</button>` : ''}
+      ${i>0?'<button class="piece-del" onclick="removePiece('+i+')">×</button>':''}
     </div>
     <div class="form-group">
       <label class="form-label">피스 이름</label>
-      <input type="text" class="form-input" id="p${i}-name" placeholder="예: 앞판" value="${data ? esc(data.name) : ''}">
+      <input type="text" class="form-input" id="p${i}-name" placeholder="예: 앞판" value="${data?esc(data.name):''}">
     </div>
     <div class="input-row">
       <div class="form-group">
         <label class="form-label">가로 (cm)</label>
-        <input type="number" class="form-input" id="p${i}-w" placeholder="0" inputmode="decimal" value="${data ? data.w : ''}">
+        <input type="number" class="form-input" id="p${i}-w" placeholder="0" inputmode="decimal" value="${data?data.w:''}">
       </div>
       <div class="form-group">
         <label class="form-label">세로 (cm)</label>
-        <input type="number" class="form-input" id="p${i}-h" placeholder="0" inputmode="decimal" value="${data ? data.h : ''}">
+        <input type="number" class="form-input" id="p${i}-h" placeholder="0" inputmode="decimal" value="${data?data.h:''}">
       </div>
     </div>
     <div class="input-row">
       <div class="form-group">
         <label class="form-label">1세트당 수량</label>
-        <input type="number" class="form-input" id="p${i}-qty" placeholder="1" inputmode="numeric" value="${data ? data.qty : '1'}">
+        <input type="number" class="form-input" id="p${i}-qty" placeholder="1" inputmode="numeric" value="${data?data.qty:'1'}">
       </div>
-      <div class="form-group">
-        <div class="toggle-row" style="padding-top:30px">
-          <div>
-            <div class="toggle-label">회전 가능</div>
-            <div class="toggle-sub">식서 방향 무관</div>
-          </div>
-          <button type="button" class="toggle ${isRotatable ? 'on' : ''}" id="p${i}-rot" onclick="this.classList.toggle('on')">
-            <div class="toggle-knob"></div>
-          </button>
-        </div>
+      <div class="form-group" style="display:flex;flex-direction:column;align-items:flex-start;justify-content:center;">
+        <label class="form-label" style="margin-bottom:4px;">식서 방향</label>
+        <button type="button" class="toggle ${rotOn}" id="p${i}-rot" onclick="toggleRot(${i})">
+          <div class="toggle-knob"></div>
+        </button>
+        <span style="font-size:12px;color:var(--text3);margin-top:4px;font-weight:600;" id="p${i}-rot-label">${rotLabel}</span>
       </div>
     </div>
   `;
   document.getElementById('pieces-container').appendChild(div);
   updateAddBtn();
 }
-
-function removePiece(id) {
-  const el = document.getElementById(id);
-  if (el) { el.remove(); pieceCount--; updateAddBtn(); }
+function toggleRot(i){
+  const btn = document.getElementById('p'+i+'-rot');
+  const lbl = document.getElementById('p'+i+'-rot-label');
+  btn.classList.toggle('on');
+  lbl.textContent = btn.classList.contains('on') ? '회전가능' : '식서고정';
 }
-
-function updateAddBtn() {
-  document.getElementById('add-piece-btn').style.display = pieceCount >= 4 ? 'none' : 'block';
+function removePiece(i){
+  const el=document.getElementById('piece-'+i);
+  if(el){ el.remove(); pieceCount--; updateAddBtn(); }
 }
-
-function getPieceData() {
-  const labels = ['A','B','C','D'];
-  return Array.from({ length: 4 }, (_, i) => {
-    const el = document.getElementById(`piece-${i}`);
-    if (!el) return null;
-    const w = parseFloat(document.getElementById(`p${i}-w`).value);
-    const h = parseFloat(document.getElementById(`p${i}-h`).value);
-    if (!w || !h || w <= 0 || h <= 0) return null;
+function updateAddBtn(){
+  document.getElementById('add-piece-btn').style.display = pieceCount>=4?'none':'block';
+}
+function getPieceData(){
+  const labels=['A','B','C','D'];
+  return Array.from({length:4},(_,i)=>{
+    const el=document.getElementById('piece-'+i);
+    if(!el) return null;
+    const w=parseFloat(document.getElementById('p'+i+'-w').value);
+    const h=parseFloat(document.getElementById('p'+i+'-h').value);
+    if(!w||!h||w<=0||h<=0) return null;
     return {
-      name: document.getElementById(`p${i}-name`).value.trim() || `피스 ${labels[i]}`,
+      name: document.getElementById('p'+i+'-name').value.trim() || '피스 '+labels[i],
       w, h,
-      qty: parseInt(document.getElementById(`p${i}-qty`).value) || 1,
-      rotatable: document.getElementById(`p${i}-rot`).classList.contains('on')
+      qty: parseInt(document.getElementById('p'+i+'-qty').value)||1,
+      rotatable: document.getElementById('p'+i+'-rot').classList.contains('on')
     };
   }).filter(Boolean);
 }
-
-async function saveProduct() {
-  const name = document.getElementById('prod-name').value.trim();
-  if (!name) { alert('제품 이름을 입력해주세요'); return; }
-  const pieces = getPieceData();
-  if (!pieces.length) { alert('피스 정보를 하나 이상 입력해주세요'); return; }
-  const prod = { name, pieces };
-  if (editingIndex >= 0) products[editingIndex] = prod;
+function saveProduct(){
+  const name=document.getElementById('prod-name').value.trim();
+  if(!name){ alert('제품 이름을 입력해주세요'); return; }
+  const pieces=getPieceData();
+  if(!pieces.length){ alert('피스 정보를 하나 이상 입력해주세요'); return; }
+  const prod={name, pieces};
+  if(editingIndex>=0) products[editingIndex]=prod;
   else products.push(prod);
-  const ok = await saveToGitHub();
-  if (ok) { renderProductList(); showScreen('screen-main'); }
+  saveToStorage(products);
+  autoSyncIfEnabled();
+  renderProductList();
+  showScreen('screen-main');
 }
-
-async function deleteProduct(i) {
-  if (!confirm(`"${products[i].name}"을 삭제할까요?`)) return;
-  products.splice(i, 1);
-  const ok = await saveToGitHub();
-  if (ok) renderProductList();
+function deleteProduct(i){
+  if(!confirm('"'+products[i].name+'"을 삭제할까요?')) return;
+  products.splice(i,1);
+  saveToStorage(products);
+  autoSyncIfEnabled();
+  renderProductList();
 }
 
 // ==================== Calc Setup ====================
-function goToCalc(i) {
+function goToCalc(i){
   currentProduct = products[i];
   document.getElementById('calc-prod-name').textContent = currentProduct.name;
   document.getElementById('fabric-width').value = '';
@@ -515,249 +752,252 @@ function goToCalc(i) {
   setMode('A'); setUnit('cm'); setGuide(1); setMargin(1);
   showScreen('screen-calc');
 }
-
-let currentProduct = null;
-
-function setMode(m) {
-  calcMode = m;
-  document.getElementById('modeA-tab').classList.toggle('active', m === 'A');
-  document.getElementById('modeB-tab').classList.toggle('active', m === 'B');
-  document.getElementById('fabric-length-group').style.display = m === 'A' ? 'block' : 'none';
-  document.getElementById('fabric-qty-group').style.display = m === 'B' ? 'block' : 'none';
-  document.getElementById('mode-desc').textContent = m === 'A'
+function setMode(m){
+  calcMode=m;
+  document.getElementById('modeA-tab').classList.toggle('active', m==='A');
+  document.getElementById('modeB-tab').classList.toggle('active', m==='B');
+  document.getElementById('fabric-length-group').style.display = m==='A'?'block':'none';
+  document.getElementById('fabric-qty-group').style.display = m==='B'?'block':'none';
+  document.getElementById('mode-desc').textContent = m==='A'
     ? '원단 길이를 입력하면 최대 생산 수량을 계산합니다'
     : '목표 수량을 입력하면 필요한 원단 길이를 계산합니다';
 }
-
-function setUnit(u) {
-  lengthUnit = u;
-  document.getElementById('unit-cm').classList.toggle('active', u === 'cm');
-  document.getElementById('unit-yard').classList.toggle('active', u === 'yard');
-  document.getElementById('fabric-length').placeholder = u === 'cm' ? '예: 900' : '예: 10';
+function setUnit(u){
+  lengthUnit=u;
+  document.getElementById('unit-cm').classList.toggle('active', u==='cm');
+  document.getElementById('unit-yard').classList.toggle('active', u==='yard');
+  document.getElementById('fabric-length').placeholder = u==='cm'?'예: 500':'예: 5';
   updateYardInfo();
 }
-
-function updateYardInfo() {
-  const v = parseFloat(document.getElementById('fabric-length').value);
-  document.getElementById('yard-info').textContent = (lengthUnit === 'yard' && v) ? `= ${(v * 91.44).toFixed(0)}cm` : '';
+function updateYardInfo(){
+  const v=parseFloat(document.getElementById('fabric-length').value);
+  document.getElementById('yard-info').textContent = (lengthUnit==='yard'&&v)?'= '+(v*91.44).toFixed(0)+'cm':'';
 }
-
-function setGuide(n) {
-  guideLines = n;
-  [1,2,3,4].forEach(i => document.getElementById(`guide-${i}`).classList.toggle('active', i === n));
+function setGuide(n){
+  guideLines=n;
+  [1,2,3,4].forEach(i=>document.getElementById('guide-'+i).classList.toggle('active', i===n));
 }
-
-function setMargin(n) {
-  marginCm = n;
-  [0,1,2,3,5].forEach(i => document.getElementById(`margin-${i}`).classList.toggle('active', i === n));
+function setMargin(n){
+  marginCm=n;
+  [0,1,2,3,5].forEach(i=>document.getElementById('margin-'+i).classList.toggle('active', i===n));
 }
-
-document.addEventListener('input', e => { if (e.target.id === 'fabric-length') updateYardInfo(); });
+document.addEventListener('input', e=>{ if(e.target.id==='fabric-length') updateYardInfo(); });
 
 // ==================== Core Engine ====================
-function bestFit(piece, fabricW) {
-  // 식서고정: 가로 그대로, 회전가능: 더 많이 들어가는 방향
-  const opts = [{ w: piece.w, h: piece.h }];
-  if (piece.rotatable && piece.w !== piece.h) opts.push({ w: piece.h, h: piece.w });
-  let best = null;
-  for (const o of opts) {
-    const perRow = Math.floor(fabricW / o.w);
-    if (perRow > 0 && (!best || perRow > best.perRow)) best = { perRow, pieceW: o.w, pieceH: o.h };
+function calcPiecePlan(piece, fabricWidth, targetQty, guide, margin) {
+  let w = piece.w, h = piece.h, rotated = false;
+  if(piece.rotatable) {
+    const perRowNormal = Math.floor(fabricWidth / w);
+    const perRowRotated = Math.floor(fabricWidth / h);
+    if(perRowRotated > perRowNormal) {
+      w = piece.h; h = piece.w; rotated = true;
+    }
   }
-  return best || { perRow: 0, pieceW: piece.w, pieceH: piece.h };
-}
-
-function calcPlan(piece, fabricW, targetSets, guide, margin) {
-  const fit = bestFit(piece, fabricW);
-  const perRow = fit.perRow;
-  if (perRow === 0) return null;
-  const totalPieces = targetSets * piece.qty;
+  const perRow = Math.max(1, Math.floor(fabricWidth / w));
+  const totalPieces = targetQty * piece.qty;
   const totalRows = Math.ceil(totalPieces / perRow);
+  const sheetLen = guide * h + margin * 2;
   const fullSheets = Math.floor(totalRows / guide);
   const remRows = totalRows % guide;
-  const sheetLen = guide * fit.pieceH + margin * 2;
-  const remSheetLen = remRows > 0 ? remRows * fit.pieceH + margin * 2 : 0;
+  const remSheetLen = remRows > 0 ? remRows * h + margin * 2 : 0;
   const totalLen = fullSheets * sheetLen + remSheetLen;
   const totalSheets = fullSheets + (remRows > 0 ? 1 : 0);
-  return { perRow, pieceW: fit.pieceW, pieceH: fit.pieceH, totalPieces, totalRows, fullSheets, remRows, sheetLen, remSheetLen, totalLen, totalSheets };
+  return { perRow, totalPieces, totalRows, sheetLen, fullSheets, remRows, remSheetLen, totalLen, totalSheets, w, h, rotated, original: piece };
 }
 
-function calcModeA(piece, fabricW, fabricLen, guide, margin) {
-  let lo = 0, hi = 50000, best = 0, bestPlan = null;
-  while (lo <= hi) {
+function calcMaxSetsForPiece(piece, fabricWidth, fabricLen, guide, margin) {
+  let lo = 0, hi = 20000, best = 0;
+  while(lo <= hi) {
     const mid = Math.floor((lo + hi) / 2);
-    if (mid === 0) { lo = 1; continue; }
-    const plan = calcPlan(piece, fabricW, mid, guide, margin);
-    if (plan && plan.totalLen <= fabricLen + 0.001) { best = mid; bestPlan = plan; lo = mid + 1; }
-    else hi = mid - 1;
+    if(mid === 0) { lo = 1; continue; }
+    const plan = calcPiecePlan(piece, fabricWidth, mid, guide, margin);
+    if(plan.totalLen <= fabricLen + 0.001) { best = mid; lo = mid + 1; }
+    else { hi = mid - 1; }
   }
-  return { maxSets: best, plan: bestPlan };
+  return best;
 }
 
 // ==================== Calculate ====================
-function calculate() {
+function calculate(){
   const fabricW = parseFloat(document.getElementById('fabric-width').value);
-  if (!fabricW || fabricW <= 0) { alert('원단 폭을 입력해주세요'); return; }
+  if(!fabricW || fabricW<=0){ alert('원단 폭을 입력해주세요'); return; }
 
-  let fabricLen = null, targetQty = null;
-  if (calcMode === 'A') {
-    let v = parseFloat(document.getElementById('fabric-length').value);
-    if (!v || v <= 0) { alert('원단 길이를 입력해주세요'); return; }
-    fabricLen = lengthUnit === 'yard' ? v * 91.44 : v;
+  let fabricLen=null, targetQty=null;
+  if(calcMode==='A'){
+    let v=parseFloat(document.getElementById('fabric-length').value);
+    if(!v || v<=0){ alert('원단 길이를 입력해주세요'); return; }
+    fabricLen = lengthUnit==='yard' ? v*91.44 : v;
   } else {
     targetQty = parseInt(document.getElementById('target-qty').value);
-    if (!targetQty || targetQty <= 0) { alert('목표 수량을 입력해주세요'); return; }
+    if(!targetQty || targetQty<=0){ alert('목표 수량을 입력해주세요'); return; }
   }
 
   const pieces = currentProduct.pieces;
 
-  if (calcMode === 'A') {
-    // 각 피스별 최대 세트 수 → 병목(가장 적은 수) 기준
-    const perPiece = pieces.map(pc => calcModeA(pc, fabricW, fabricLen, guideLines, marginCm));
-    const finalSets = Math.min(...perPiece.map(r => r.maxSets));
-    // finalSets 기준으로 각 피스 재계산
-    const results = pieces.map((pc, i) => ({
-      piece: pc,
-      plan: calcPlan(pc, fabricW, finalSets, guideLines, marginCm)
+  if(calcMode==='A'){
+    let overallMax = 100000;
+    const pieceMax = pieces.map(pc => {
+      const max = calcMaxSetsForPiece(pc, fabricW, fabricLen, guideLines, marginCm);
+      return { piece: pc, maxSets: max };
+    });
+    pieceMax.forEach(pm => { if(pm.maxSets < overallMax) overallMax = pm.maxSets; });
+
+    const results = pieceMax.map(pm => ({
+      piece: pm.piece,
+      plan: calcPiecePlan(pm.piece, fabricW, overallMax, guideLines, marginCm)
     }));
-    renderResultA(finalSets, results, fabricW, fabricLen);
+    renderResultA(overallMax, results, fabricW, fabricLen);
   } else {
-    // 각 피스별 필요 길이 계산 → 합산
     const results = pieces.map(pc => ({
       piece: pc,
-      plan: calcPlan(pc, fabricW, targetQty, guideLines, marginCm)
+      plan: calcPiecePlan(pc, fabricW, targetQty, guideLines, marginCm)
     }));
-    const totalLen = results.reduce((s, r) => s + (r.plan ? r.plan.totalLen : 0), 0);
+    const totalLen = results.reduce((sum, r) => sum + r.plan.totalLen, 0);
     renderResultB(targetQty, results, fabricW, totalLen);
   }
   showScreen('screen-result');
 }
 
-// ==================== Render A ====================
-function renderResultA(maxSets, results, fabricW, fabricLen) {
+// ==================== Render Result A ====================
+function renderResultA(maxSets, results, fabricW, fabricLen){
   document.getElementById('result-subtitle').textContent = currentProduct.name;
-  const bottleneck = results.reduce((m, r) => (r.plan && r.plan.totalLen > (m.plan ? m.plan.totalLen : 0)) ? r : m, results[0]);
-  const usedLen = bottleneck.plan ? bottleneck.plan.totalLen : 0;
+  const bottleneck = results.reduce((m,r)=>r.plan.totalLen>m.plan.totalLen?r:m, results[0]);
+  const usedLen = bottleneck.plan.totalLen;
   const remain = Math.max(0, fabricLen - usedLen);
 
-  let html = `<div class="result-hero">
-    <div class="result-num">${maxSets}</div>
-    <div class="result-unit-text">세트 생산 가능</div>
-    <div class="result-label">원단 ${fabricW}cm × ${Math.round(fabricLen)}cm · 가이드 ${guideLines}줄</div>
-  </div>`;
+  let html = '';
+  html += '<div class="card result-hero">';
+  html += '<div class="result-num">'+maxSets+'</div>';
+  html += '<div class="result-unit-text">세트 생산 가능</div>';
+  html += '<div class="result-label">원단 '+fabricW+'cm x '+Math.round(fabricLen)+'cm</div>';
+  html += '</div>';
 
-  html += `<div class="stat-row">
-    <div class="stat-box"><div class="stat-val">${Math.round(usedLen)}cm</div><div class="stat-label">사용 길이</div></div>
-    <div class="stat-box"><div class="stat-val">${Math.round(remain)}cm</div><div class="stat-label">남은 길이</div></div>
-  </div>`;
+  html += '<div class="stat-row">';
+  html += '<div class="stat-box"><div class="stat-val">'+Math.round(usedLen)+'cm</div><div class="stat-label">사용 길이</div></div>';
+  html += '<div class="stat-box"><div class="stat-val">'+Math.round(remain)+'cm</div><div class="stat-label">남은 길이</div></div>';
+  html += '</div>';
 
-  if (results.length > 1) {
-    html += `<div class="highlight-box yellow">
-      <div class="highlight-box-title">⚠️ 병목 피스</div>
-      <div class="highlight-box-val">${esc(bottleneck.piece.name)}이 가장 많은 원단을 사용해요. 이 피스 기준으로 수량이 결정됩니다.</div>
-    </div>`;
+  if(results.length > 1) {
+    html += '<div class="highlight-box yellow">';
+    html += '<div class="highlight-box-title">⚠️ 병목 피스</div>';
+    html += '<div class="highlight-box-val">'+esc(bottleneck.piece.name)+'가 가장 많은 원단을 사용합니다.<br>이 피스 기준으로 전체 수량이 제한됩니다.</div>';
+    html += '</div>';
   }
 
-  results.forEach((r, idx) => { html += renderPlanCard(r.piece, r.plan, idx); });
+  results.forEach((r,idx)=>{
+    html += renderPlanCard(r.piece, r.plan, idx, true);
+  });
+
   document.getElementById('result-content').innerHTML = html;
 }
 
-// ==================== Render B ====================
-function renderResultB(targetQty, results, fabricW, totalLen) {
+// ==================== Render Result B ====================
+function renderResultB(targetQty, results, fabricW, totalLen){
   document.getElementById('result-subtitle').textContent = currentProduct.name;
-  const yards = (totalLen / 91.44).toFixed(2);
+  const yards = (totalLen/91.44).toFixed(2);
 
-  let html = `<div class="result-hero">
-    <div class="result-num">${Math.round(totalLen)}</div>
-    <div class="result-unit-text">cm 필요</div>
-    <div class="result-label">${targetQty}세트 기준 · 약 ${yards}야드 · 가이드 ${guideLines}줄</div>
-  </div>`;
+  let html = '';
+  html += '<div class="card result-hero">';
+  html += '<div class="result-num">'+Math.round(totalLen)+'</div>';
+  html += '<div class="result-unit-text">cm 필요</div>';
+  html += '<div class="result-label">'+targetQty+'세트 기준 · 약 '+yards+'야드</div>';
+  html += '</div>';
 
-  html += `<div class="stat-row">
-    <div class="stat-box"><div class="stat-val">${targetQty}</div><div class="stat-label">목표 세트</div></div>
-    <div class="stat-box"><div class="stat-val">${(totalLen/91.44).toFixed(1)}야드</div><div class="stat-label">필요 야드</div></div>
-  </div>`;
+  html += '<div class="stat-row">';
+  html += '<div class="stat-box"><div class="stat-val">'+targetQty+'</div><div class="stat-label">목표 수량</div></div>';
+  html += '<div class="stat-box"><div class="stat-val">'+Math.round(totalLen)+'cm</div><div class="stat-label">총 필요 길이</div></div>';
+  html += '</div>';
 
-  results.forEach((r, idx) => { html += renderPlanCard(r.piece, r.plan, idx); });
+  results.forEach((r,idx)=>{
+    html += renderPlanCard(r.piece, r.plan, idx, false);
+  });
+
   document.getElementById('result-content').innerHTML = html;
 }
 
 // ==================== Plan Card ====================
-function renderPlanCard(piece, plan, idx) {
-  if (!plan) return `<div class="plan-card"><div class="plan-body" style="color:var(--danger)">⚠ ${esc(piece.name)}: 원단 폭이 너무 좁아요</div></div>`;
+function renderPlanCard(piece, plan, idx, isModeA){
   const c = COLORS[idx % COLORS.length];
+  const rotText = plan.rotated ? ' (회전적용)' : '';
 
-  let html = `<div class="plan-card">
-    <div class="plan-header">
-      <div class="plan-dot" style="background:${c}"></div>
-      <div class="plan-name">${esc(piece.name)} ${plan.pieceW}×${plan.pieceH}cm</div>
-      <div class="plan-tag ${plan.remRows > 0 ? 'plan-tag-warn' : 'plan-tag-ok'}">${plan.remRows > 0 ? '자투리 있음' : '딱 맞음'}</div>
-    </div>
-    <div class="plan-body">
-      폭에 <strong>${plan.perRow}개</strong> 배치 · 총 <strong>${plan.totalRows}줄</strong> 필요<br>
-      연단 <strong>${Math.round(plan.sheetLen)}cm</strong> × <strong>${plan.fullSheets}장</strong>`;
+  let html = '<div class="plan-card">';
+  html += '<div class="plan-header">';
+  html += '<div class="plan-dot" style="background:'+c+'"></div>';
+  html += '<div class="plan-name">'+esc(piece.name)+' '+piece.w+'x'+piece.h+'cm'+rotText+'</div>';
+  html += '<div class="plan-tag '+(plan.remRows>0?'plan-tag-warn':'plan-tag-ok')+'">'+(plan.remRows>0?'자투리 있음':'딱 맞음')+'</div>';
+  html += '</div>';
 
-  if (plan.remRows > 0) {
-    html += ` + 자투리 <strong>${Math.round(plan.remSheetLen)}cm</strong> × <strong>1장</strong>`;
+  html += '<div class="plan-body">';
+  html += '원단 폭에 <strong>'+plan.perRow+'개</strong> 배치 → 총 <strong>'+plan.totalRows+'줄</strong> 필요<br>';
+  html += '연단 <strong>'+plan.sheetLen+'cm</strong> x <strong>'+plan.fullSheets+'장</strong>';
+  if(plan.remRows>0){
+    html += ' + 자투리 연단 <strong>'+plan.remSheetLen+'cm</strong> x <strong>1장</strong>';
   }
-  html += `<br>총 길이: <strong>${Math.round(plan.totalLen)}cm</strong>`;
-  html += `</div>`;
+  html += '<br>총 필요 길이: <strong>'+Math.round(plan.totalLen)+'cm</strong>';
+  html += '</div>';
 
-  // Sheet visualization
-  html += `<div class="sheet-wrap">`;
-  for (let s = 0; s < Math.min(plan.fullSheets, 2); s++) {
-    html += renderSheetViz(plan, c, false, `${s + 1}번째 연단`);
+  html += '<div class="sheet-viz">';
+  html += '<div class="sheet-viz-header">';
+  html += '<span class="sheet-viz-title">연단 배치도</span>';
+  html += '<span class="sheet-viz-size">'+plan.w*plan.perRow+'cm x '+plan.sheetLen+'cm</span>';
+  html += '</div>';
+
+  const showFull = Math.min(plan.fullSheets, 3);
+  for(let s=0; s<showFull; s++){
+    html += renderSheetViz(plan, c, false, s+1);
   }
-  if (plan.fullSheets > 2) {
-    html += `<div style="text-align:center;padding:8px;color:var(--text3);font-size:12px;font-weight:700;">··· ${plan.fullSheets - 2}장 동일 반복</div>`;
+  if(plan.fullSheets > 3){
+    html += '<div style="text-align:center;padding:8px;color:var(--text3);font-size:12px;font-weight:700;">... 외 '+(plan.fullSheets-3)+'장 동일</div>';
   }
-  if (plan.remRows > 0) {
-    html += renderSheetViz(plan, c, true, '자투리 연단');
+  if(plan.remRows>0){
+    html += renderSheetViz(plan, c, true, '자투리');
   }
-  html += `</div></div>`;
+
+  html += '</div></div>';
   return html;
 }
 
-function renderSheetViz(plan, color, isRem, label) {
+function renderSheetViz(plan, color, isRem, label){
   const rows = isRem ? plan.remRows : guideLines;
   const height = isRem ? plan.remSheetLen : plan.sheetLen;
   const margin = marginCm;
-  const pieceH = plan.pieceH;
+  const pieceH = plan.h;
+  const pieceW = plan.w;
   const perRow = plan.perRow;
-  const dispH = Math.min(180, Math.max(70, rows * 30 + margin * 8));
+  const displayH = Math.min(220, Math.max(70, height * 2.2));
 
-  let html = `<div style="margin-bottom:10px">
-    <div class="sheet-label">${label} — ${Math.round(height)}cm</div>
-    <div class="sheet-canvas" style="height:${dispH}px;">`;
+  let html = '<div style="margin-bottom:10px;">';
+  html += '<div style="font-size:11px;font-weight:700;color:var(--text3);margin-bottom:4px;">'+label+' ('+height+'cm)</div>';
+  html += '<div class="sheet-canvas" style="height:'+displayH+'px;">';
 
-  if (margin > 0) {
-    const mh = (margin / height) * 100;
-    html += `<div class="sheet-margin-stripe" style="top:0;height:${mh}%"></div>`;
+  if(margin > 0){
+    const pct = (margin / height) * 100;
+    html += '<div class="sheet-margin-top" style="top:0;height:'+pct+'%;"></div>';
   }
 
-  for (let r = 0; r < rows; r++) {
-    const topPct = ((margin + r * pieceH) / height) * 100;
+  const contentH = height - margin*2;
+  for(let r=0; r<rows; r++){
+    const top = ((margin + r*pieceH) / height) * 100;
     const hPct = (pieceH / height) * 100;
-    html += `<div class="sheet-piece-row" style="top:${topPct}%;height:${hPct}%;position:absolute;left:0;right:0;">`;
-    for (let c2 = 0; c2 < perRow; c2++) {
-      html += `<div class="sheet-piece-cell" style="background:${color};">${plan.pieceW}</div>`;
+    html += '<div class="sheet-row-viz" style="top:'+top+'%;height:'+hPct+'%;">';
+    for(let c=0; c<perRow; c++){
+      html += '<div class="sheet-piece-viz" style="background:'+color+';">'+pieceW+'</div>';
     }
-    html += `</div>`;
+    html += '</div>';
   }
 
-  if (margin > 0) {
-    const mh = (margin / height) * 100;
-    html += `<div class="sheet-margin-stripe" style="bottom:0;height:${mh}%"></div>`;
+  if(margin > 0){
+    const pct = (margin / height) * 100;
+    html += '<div class="sheet-margin-bottom" style="bottom:0;height:'+pct+'%;"></div>';
   }
 
-  html += `</div></div>`;
+  html += '</div></div>';
   return html;
 }
 
 // ==================== Init ====================
-loadLocalCache();
 renderProductList();
-syncNow();
+updateSyncBar();
 </script>
 </body>
 </html>
