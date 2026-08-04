@@ -223,7 +223,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo','No
     <div class="card">
       <div class="card-title">1. GitHub 토큰 입력</div>
       <div class="info-text" style="margin-bottom:12px">
-        GitHub 계정이 있으면 무료로 데이터를 클라우드에 저장하고<br>아이폰, PC 등 모든 기기에서 자동 동기화됩니다.
+        GitHub 계정이 있으면 물로 데이터를 클라우드에 저장하고<br>아이폰, PC 등 모든 기기에서 자동 동기화됩니다.
       </div>
       <div class="form-group">
         <label class="form-label">Personal Access Token</label>
@@ -461,7 +461,7 @@ function showTokenGuide() {
 ⚠️ 토큰은 한 번만 보이니 꼭 복사하세요!');
 }
 
-async function verifyToken(silent=false) {
+async function verifyToken(silent) {
   const token = document.getElementById('github-token').value.trim();
   const resultDiv = document.getElementById('sync-verify-result');
   if(!token) { resultDiv.innerHTML = '<div class="highlight-box yellow" style="margin-top:10px"><div class="highlight-box-val">토큰을 입력해주세요</div></div>'; return; }
@@ -477,7 +477,7 @@ async function verifyToken(silent=false) {
 
     const gistsRes = await fetch('https://api.github.com/gists', { headers: { 'Authorization': 'token ' + token } });
     const gists = await gistsRes.json();
-    const existing = gists.find(g => g.description === '홈패션 연단 계산기 데이터');
+    const existing = gists.find(function(g) { return g.description === '홈패션 연단 계산기 데이터'; });
 
     if(existing) {
       syncConfig.gistId = existing.id;
@@ -530,7 +530,7 @@ async function syncPush() {
       syncConfig.gistId = gist.id;
       saveSyncConfig();
       alert('✅ 업로드 완료!');
-      renderSyncActionCard(gist.owner?.login || '사용자', gist);
+      renderSyncActionCard(gist.owner && gist.owner.login ? gist.owner.login : '사용자', gist);
     } else { alert('업로드 실패: ' + (gist.message || '알 수 없는 오류')); }
   } catch(err) { alert('업로드 중 오류: ' + err.message); }
 }
@@ -542,7 +542,7 @@ async function syncPull() {
       headers: { 'Authorization': 'token ' + syncConfig.token }
     });
     const gist = await res.json();
-    const content = gist.files['fabric_data.json']?.content;
+    const content = gist.files && gist.files['fabric_data.json'] ? gist.files['fabric_data.json'].content : null;
     if(content) {
       const data = JSON.parse(content);
       if(data.products && Array.isArray(data.products)) {
@@ -575,7 +575,7 @@ function restoreFile(input) {
   const file = input.files[0];
   if(!file) return;
   const reader = new FileReader();
-  reader.onload = e => {
+  reader.onload = function(e) {
     try {
       const data = JSON.parse(e.target.result);
       if(Array.isArray(data)) { products = data; }
@@ -605,7 +605,7 @@ const COLORS = ['#2D5A3D','#B03020','#1A4A7A','#7A5C10'];
 
 // ==================== Navigation ====================
 function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
 }
@@ -616,117 +616,117 @@ function renderProductList() {
   const empty = document.getElementById('empty-state');
   if(!products.length){ empty.style.display='block'; list.innerHTML=''; return; }
   empty.style.display='none';
-  list.innerHTML = products.map((p,i)=>`
-    <div class="product-item">
-      <div class="product-item-name">${esc(p.name)}</div>
-      <div class="product-item-info">${p.pieces.map(pc=>{
-        const rot = pc.rotatable ? '회전가능' : '식서고정';
+  list.innerHTML = products.map(function(p,i) {
+    return '<div class="product-item">' +
+      '<div class="product-item-name">' + esc(p.name) + '</div>' +
+      '<div class="product-item-info">' + p.pieces.map(function(pc) {
+        var rot = pc.rotatable ? '회전가능' : '식서고정';
         return esc(pc.name) + ' ' + pc.w + 'x' + pc.h + 'cm x ' + pc.qty + '장/세트 (' + rot + ')';
-      }).join('<br>')}</div>
-      <div class="product-item-actions">
-        <button class="btn-sm btn-edit" onclick="goToRegister(${i})">수정</button>
-        <button class="btn-sm btn-del" onclick="deleteProduct(${i})">삭제</button>
-        <button class="btn-sm btn-calc" onclick="goToCalc(${i})">연단 계산 →</button>
-      </div>
-    </div>
-  `).join('');
+      }).join('<br>') + '</div>' +
+      '<div class="product-item-actions">' +
+        '<button class="btn-sm btn-edit" onclick="goToRegister(' + i + ')">수정</button>' +
+        '<button class="btn-sm btn-del" onclick="deleteProduct(' + i + ')">삭제</button>' +
+        '<button class="btn-sm btn-calc" onclick="goToCalc(' + i + ')">연단 계산 →</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
 }
-function esc(s){ return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function esc(s){ return s.replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 
 // ==================== Register ====================
-function goToRegister(idx=-1){
+function goToRegister(idx){
+  if(typeof idx === 'undefined') idx = -1;
   editingIndex=idx; pieceCount=0;
   document.getElementById('pieces-container').innerHTML='';
   document.getElementById('reg-title').textContent = idx>=0 ? '제품 수정' : '제품 등록';
   if(idx>=0){
     document.getElementById('prod-name').value = products[idx].name;
-    products[idx].pieces.forEach(pc=>addPiece(pc));
+    products[idx].pieces.forEach(function(pc){ addPiece(pc); });
   } else {
     document.getElementById('prod-name').value='';
     addPiece();
   }
   showScreen('screen-register');
 }
-function addPiece(data=null){
+function addPiece(data){
   if(pieceCount>=4) return;
-  const i=pieceCount++;
-  const labels=['A','B','C','D'];
-  const div=document.createElement('div');
+  var i=pieceCount++;
+  var labels=['A','B','C','D'];
+  var div=document.createElement('div');
   div.className='piece-card';
   div.id='piece-'+i;
-  const rotOn = data && data.rotatable ? 'on' : '';
-  const rotLabel = data && data.rotatable ? '회전가능' : '식서고정';
-  div.innerHTML=`
-    <div class="piece-card-header">
-      <span class="piece-badge">피스 ${labels[i]}</span>
-      ${i>0?'<button class="piece-del" onclick="removePiece('+i+')">×</button>':''}
-    </div>
-    <div class="form-group">
-      <label class="form-label">피스 이름</label>
-      <input type="text" class="form-input" id="p${i}-name" placeholder="예: 앞판" value="${data?esc(data.name):''}">
-    </div>
-    <div class="input-row">
-      <div class="form-group">
-        <label class="form-label">가로 (cm)</label>
-        <input type="number" class="form-input" id="p${i}-w" placeholder="0" inputmode="decimal" value="${data?data.w:''}">
-      </div>
-      <div class="form-group">
-        <label class="form-label">세로 (cm)</label>
-        <input type="number" class="form-input" id="p${i}-h" placeholder="0" inputmode="decimal" value="${data?data.h:''}">
-      </div>
-    </div>
-    <div class="input-row">
-      <div class="form-group">
-        <label class="form-label">1세트당 수량</label>
-        <input type="number" class="form-input" id="p${i}-qty" placeholder="1" inputmode="numeric" value="${data?data.qty:'1'}">
-      </div>
-      <div class="form-group" style="display:flex;flex-direction:column;align-items:flex-start;justify-content:center;">
-        <label class="form-label" style="margin-bottom:4px;">식서 방향</label>
-        <button type="button" class="toggle ${rotOn}" id="p${i}-rot" onclick="toggleRot(${i})">
-          <div class="toggle-knob"></div>
-        </button>
-        <span style="font-size:12px;color:var(--text3);margin-top:4px;font-weight:600;" id="p${i}-rot-label">${rotLabel}</span>
-      </div>
-    </div>
-  `;
+  var rotOn = data && data.rotatable ? 'on' : '';
+  var rotLabel = data && data.rotatable ? '회전가능' : '식서고정';
+  div.innerHTML=
+    '<div class="piece-card-header">' +
+      '<span class="piece-badge">피스 ' + labels[i] + '</span>' +
+      (i>0 ? '<button class="piece-del" onclick="removePiece(' + i + ')">×</button>' : '') +
+    '</div>' +
+    '<div class="form-group">' +
+      '<label class="form-label">피스 이름</label>' +
+      '<input type="text" class="form-input" id="p' + i + '-name" placeholder="예: 앞판" value="' + (data?esc(data.name):'') + '">' +
+    '</div>' +
+    '<div class="input-row">' +
+      '<div class="form-group">' +
+        '<label class="form-label">가로 (cm)</label>' +
+        '<input type="number" class="form-input" id="p' + i + '-w" placeholder="0" inputmode="decimal" value="' + (data?data.w:'') + '">' +
+      '</div>' +
+      '<div class="form-group">' +
+        '<label class="form-label">세로 (cm)</label>' +
+        '<input type="number" class="form-input" id="p' + i + '-h" placeholder="0" inputmode="decimal" value="' + (data?data.h:'') + '">' +
+      '</div>' +
+    '</div>' +
+    '<div class="input-row">' +
+      '<div class="form-group">' +
+        '<label class="form-label">1세트당 수량</label>' +
+        '<input type="number" class="form-input" id="p' + i + '-qty" placeholder="1" inputmode="numeric" value="' + (data?data.qty:'1') + '">' +
+      '</div>' +
+      '<div class="form-group" style="display:flex;flex-direction:column;align-items:flex-start;justify-content:center;">' +
+        '<label class="form-label" style="margin-bottom:4px;">식서 방향</label>' +
+        '<button type="button" class="toggle ' + rotOn + '" id="p' + i + '-rot" onclick="toggleRot(' + i + ')">' +
+          '<div class="toggle-knob"></div>' +
+        '</button>' +
+        '<span style="font-size:12px;color:var(--text3);margin-top:4px;font-weight:600;" id="p' + i + '-rot-label">' + rotLabel + '</span>' +
+      '</div>' +
+    '</div>';
   document.getElementById('pieces-container').appendChild(div);
   updateAddBtn();
 }
 function toggleRot(i){
-  const btn = document.getElementById('p'+i+'-rot');
-  const lbl = document.getElementById('p'+i+'-rot-label');
+  var btn = document.getElementById('p'+i+'-rot');
+  var lbl = document.getElementById('p'+i+'-rot-label');
   btn.classList.toggle('on');
   lbl.textContent = btn.classList.contains('on') ? '회전가능' : '식서고정';
 }
 function removePiece(i){
-  const el=document.getElementById('piece-'+i);
+  var el=document.getElementById('piece-'+i);
   if(el){ el.remove(); pieceCount--; updateAddBtn(); }
 }
 function updateAddBtn(){
   document.getElementById('add-piece-btn').style.display = pieceCount>=4?'none':'block';
 }
 function getPieceData(){
-  const labels=['A','B','C','D'];
-  return Array.from({length:4},(_,i)=>{
-    const el=document.getElementById('piece-'+i);
+  var labels=['A','B','C','D'];
+  return Array.from({length:4},function(_,i){
+    var el=document.getElementById('piece-'+i);
     if(!el) return null;
-    const w=parseFloat(document.getElementById('p'+i+'-w').value);
-    const h=parseFloat(document.getElementById('p'+i+'-h').value);
+    var w=parseFloat(document.getElementById('p'+i+'-w').value);
+    var h=parseFloat(document.getElementById('p'+i+'-h').value);
     if(!w||!h||w<=0||h<=0) return null;
     return {
       name: document.getElementById('p'+i+'-name').value.trim() || '피스 '+labels[i],
-      w, h,
+      w: w, h: h,
       qty: parseInt(document.getElementById('p'+i+'-qty').value)||1,
       rotatable: document.getElementById('p'+i+'-rot').classList.contains('on')
     };
-  }).filter(Boolean);
+  }).filter(function(x){ return !!x; });
 }
 function saveProduct(){
-  const name=document.getElementById('prod-name').value.trim();
+  var name=document.getElementById('prod-name').value.trim();
   if(!name){ alert('제품 이름을 입력해주세요'); return; }
-  const pieces=getPieceData();
+  var pieces=getPieceData();
   if(!pieces.length){ alert('피스 정보를 하나 이상 입력해주세요'); return; }
-  const prod={name, pieces};
+  var prod={name: name, pieces: pieces};
   if(editingIndex>=0) products[editingIndex]=prod;
   else products.push(prod);
   saveToStorage(products);
@@ -735,7 +735,7 @@ function saveProduct(){
   showScreen('screen-main');
 }
 function deleteProduct(i){
-  if(!confirm('"'+products[i].name+'"을 삭제할까요?')) return;
+  if(!confirm('"' + products[i].name + '"을 삭제할까요?')) return;
   products.splice(i,1);
   saveToStorage(products);
   autoSyncIfEnabled();
@@ -770,47 +770,47 @@ function setUnit(u){
   updateYardInfo();
 }
 function updateYardInfo(){
-  const v=parseFloat(document.getElementById('fabric-length').value);
+  var v=parseFloat(document.getElementById('fabric-length').value);
   document.getElementById('yard-info').textContent = (lengthUnit==='yard'&&v)?'= '+(v*91.44).toFixed(0)+'cm':'';
 }
 function setGuide(n){
   guideLines=n;
-  [1,2,3,4].forEach(i=>document.getElementById('guide-'+i).classList.toggle('active', i===n));
+  [1,2,3,4].forEach(function(i){ document.getElementById('guide-'+i).classList.toggle('active', i===n); });
 }
 function setMargin(n){
   marginCm=n;
-  [0,1,2,3,5].forEach(i=>document.getElementById('margin-'+i).classList.toggle('active', i===n));
+  [0,1,2,3,5].forEach(function(i){ document.getElementById('margin-'+i).classList.toggle('active', i===n); });
 }
-document.addEventListener('input', e=>{ if(e.target.id==='fabric-length') updateYardInfo(); });
+document.addEventListener('input', function(e){ if(e.target.id==='fabric-length') updateYardInfo(); });
 
 // ==================== Core Engine ====================
 function calcPiecePlan(piece, fabricWidth, targetQty, guide, margin) {
-  let w = piece.w, h = piece.h, rotated = false;
+  var w = piece.w, h = piece.h, rotated = false;
   if(piece.rotatable) {
-    const perRowNormal = Math.floor(fabricWidth / w);
-    const perRowRotated = Math.floor(fabricWidth / h);
+    var perRowNormal = Math.floor(fabricWidth / w);
+    var perRowRotated = Math.floor(fabricWidth / h);
     if(perRowRotated > perRowNormal) {
       w = piece.h; h = piece.w; rotated = true;
     }
   }
-  const perRow = Math.max(1, Math.floor(fabricWidth / w));
-  const totalPieces = targetQty * piece.qty;
-  const totalRows = Math.ceil(totalPieces / perRow);
-  const sheetLen = guide * h + margin * 2;
-  const fullSheets = Math.floor(totalRows / guide);
-  const remRows = totalRows % guide;
-  const remSheetLen = remRows > 0 ? remRows * h + margin * 2 : 0;
-  const totalLen = fullSheets * sheetLen + remSheetLen;
-  const totalSheets = fullSheets + (remRows > 0 ? 1 : 0);
-  return { perRow, totalPieces, totalRows, sheetLen, fullSheets, remRows, remSheetLen, totalLen, totalSheets, w, h, rotated, original: piece };
+  var perRow = Math.max(1, Math.floor(fabricWidth / w));
+  var totalPieces = targetQty * piece.qty;
+  var totalRows = Math.ceil(totalPieces / perRow);
+  var sheetLen = guide * h + margin * 2;
+  var fullSheets = Math.floor(totalRows / guide);
+  var remRows = totalRows % guide;
+  var remSheetLen = remRows > 0 ? remRows * h + margin * 2 : 0;
+  var totalLen = fullSheets * sheetLen + remSheetLen;
+  var totalSheets = fullSheets + (remRows > 0 ? 1 : 0);
+  return { perRow: perRow, totalPieces: totalPieces, totalRows: totalRows, sheetLen: sheetLen, fullSheets: fullSheets, remRows: remRows, remSheetLen: remSheetLen, totalLen: totalLen, totalSheets: totalSheets, w: w, h: h, rotated: rotated, original: piece };
 }
 
 function calcMaxSetsForPiece(piece, fabricWidth, fabricLen, guide, margin) {
-  let lo = 0, hi = 20000, best = 0;
+  var lo = 0, hi = 20000, best = 0;
   while(lo <= hi) {
-    const mid = Math.floor((lo + hi) / 2);
+    var mid = Math.floor((lo + hi) / 2);
     if(mid === 0) { lo = 1; continue; }
-    const plan = calcPiecePlan(piece, fabricWidth, mid, guide, margin);
+    var plan = calcPiecePlan(piece, fabricWidth, mid, guide, margin);
     if(plan.totalLen <= fabricLen + 0.001) { best = mid; lo = mid + 1; }
     else { hi = mid - 1; }
   }
@@ -819,12 +819,12 @@ function calcMaxSetsForPiece(piece, fabricWidth, fabricLen, guide, margin) {
 
 // ==================== Calculate ====================
 function calculate(){
-  const fabricW = parseFloat(document.getElementById('fabric-width').value);
+  var fabricW = parseFloat(document.getElementById('fabric-width').value);
   if(!fabricW || fabricW<=0){ alert('원단 폭을 입력해주세요'); return; }
 
-  let fabricLen=null, targetQty=null;
+  var fabricLen=null, targetQty=null;
   if(calcMode==='A'){
-    let v=parseFloat(document.getElementById('fabric-length').value);
+    var v=parseFloat(document.getElementById('fabric-length').value);
     if(!v || v<=0){ alert('원단 길이를 입력해주세요'); return; }
     fabricLen = lengthUnit==='yard' ? v*91.44 : v;
   } else {
@@ -832,27 +832,31 @@ function calculate(){
     if(!targetQty || targetQty<=0){ alert('목표 수량을 입력해주세요'); return; }
   }
 
-  const pieces = currentProduct.pieces;
+  var pieces = currentProduct.pieces;
 
   if(calcMode==='A'){
-    let overallMax = 100000;
-    const pieceMax = pieces.map(pc => {
-      const max = calcMaxSetsForPiece(pc, fabricW, fabricLen, guideLines, marginCm);
+    var overallMax = 100000;
+    var pieceMax = pieces.map(function(pc) {
+      var max = calcMaxSetsForPiece(pc, fabricW, fabricLen, guideLines, marginCm);
       return { piece: pc, maxSets: max };
     });
-    pieceMax.forEach(pm => { if(pm.maxSets < overallMax) overallMax = pm.maxSets; });
+    pieceMax.forEach(function(pm) { if(pm.maxSets < overallMax) overallMax = pm.maxSets; });
 
-    const results = pieceMax.map(pm => ({
-      piece: pm.piece,
-      plan: calcPiecePlan(pm.piece, fabricW, overallMax, guideLines, marginCm)
-    }));
+    var results = pieceMax.map(function(pm) {
+      return {
+        piece: pm.piece,
+        plan: calcPiecePlan(pm.piece, fabricW, overallMax, guideLines, marginCm)
+      };
+    });
     renderResultA(overallMax, results, fabricW, fabricLen);
   } else {
-    const results = pieces.map(pc => ({
-      piece: pc,
-      plan: calcPiecePlan(pc, fabricW, targetQty, guideLines, marginCm)
-    }));
-    const totalLen = results.reduce((sum, r) => sum + r.plan.totalLen, 0);
+    var results = pieces.map(function(pc) {
+      return {
+        piece: pc,
+        plan: calcPiecePlan(pc, fabricW, targetQty, guideLines, marginCm)
+      };
+    });
+    var totalLen = results.reduce(function(sum, r) { return sum + r.plan.totalLen; }, 0);
     renderResultB(targetQty, results, fabricW, totalLen);
   }
   showScreen('screen-result');
@@ -861,11 +865,11 @@ function calculate(){
 // ==================== Render Result A ====================
 function renderResultA(maxSets, results, fabricW, fabricLen){
   document.getElementById('result-subtitle').textContent = currentProduct.name;
-  const bottleneck = results.reduce((m,r)=>r.plan.totalLen>m.plan.totalLen?r:m, results[0]);
-  const usedLen = bottleneck.plan.totalLen;
-  const remain = Math.max(0, fabricLen - usedLen);
+  var bottleneck = results.reduce(function(m,r){ return r.plan.totalLen>m.plan.totalLen?r:m; }, results[0]);
+  var usedLen = bottleneck.plan.totalLen;
+  var remain = Math.max(0, fabricLen - usedLen);
 
-  let html = '';
+  var html = '';
   html += '<div class="card result-hero">';
   html += '<div class="result-num">'+maxSets+'</div>';
   html += '<div class="result-unit-text">세트 생산 가능</div>';
@@ -884,7 +888,7 @@ function renderResultA(maxSets, results, fabricW, fabricLen){
     html += '</div>';
   }
 
-  results.forEach((r,idx)=>{
+  results.forEach(function(r,idx){
     html += renderPlanCard(r.piece, r.plan, idx, true);
   });
 
@@ -894,9 +898,9 @@ function renderResultA(maxSets, results, fabricW, fabricLen){
 // ==================== Render Result B ====================
 function renderResultB(targetQty, results, fabricW, totalLen){
   document.getElementById('result-subtitle').textContent = currentProduct.name;
-  const yards = (totalLen/91.44).toFixed(2);
+  var yards = (totalLen/91.44).toFixed(2);
 
-  let html = '';
+  var html = '';
   html += '<div class="card result-hero">';
   html += '<div class="result-num">'+Math.round(totalLen)+'</div>';
   html += '<div class="result-unit-text">cm 필요</div>';
@@ -908,7 +912,7 @@ function renderResultB(targetQty, results, fabricW, totalLen){
   html += '<div class="stat-box"><div class="stat-val">'+Math.round(totalLen)+'cm</div><div class="stat-label">총 필요 길이</div></div>';
   html += '</div>';
 
-  results.forEach((r,idx)=>{
+  results.forEach(function(r,idx){
     html += renderPlanCard(r.piece, r.plan, idx, false);
   });
 
@@ -917,10 +921,10 @@ function renderResultB(targetQty, results, fabricW, totalLen){
 
 // ==================== Plan Card ====================
 function renderPlanCard(piece, plan, idx, isModeA){
-  const c = COLORS[idx % COLORS.length];
-  const rotText = plan.rotated ? ' (회전적용)' : '';
+  var c = COLORS[idx % COLORS.length];
+  var rotText = plan.rotated ? ' (회전적용)' : '';
 
-  let html = '<div class="plan-card">';
+  var html = '<div class="plan-card">';
   html += '<div class="plan-header">';
   html += '<div class="plan-dot" style="background:'+c+'"></div>';
   html += '<div class="plan-name">'+esc(piece.name)+' '+piece.w+'x'+piece.h+'cm'+rotText+'</div>';
@@ -942,8 +946,8 @@ function renderPlanCard(piece, plan, idx, isModeA){
   html += '<span class="sheet-viz-size">'+plan.w*plan.perRow+'cm x '+plan.sheetLen+'cm</span>';
   html += '</div>';
 
-  const showFull = Math.min(plan.fullSheets, 3);
-  for(let s=0; s<showFull; s++){
+  var showFull = Math.min(plan.fullSheets, 3);
+  for(var s=0; s<showFull; s++){
     html += renderSheetViz(plan, c, false, s+1);
   }
   if(plan.fullSheets > 3){
@@ -958,36 +962,36 @@ function renderPlanCard(piece, plan, idx, isModeA){
 }
 
 function renderSheetViz(plan, color, isRem, label){
-  const rows = isRem ? plan.remRows : guideLines;
-  const height = isRem ? plan.remSheetLen : plan.sheetLen;
-  const margin = marginCm;
-  const pieceH = plan.h;
-  const pieceW = plan.w;
-  const perRow = plan.perRow;
-  const displayH = Math.min(220, Math.max(70, height * 2.2));
+  var rows = isRem ? plan.remRows : guideLines;
+  var height = isRem ? plan.remSheetLen : plan.sheetLen;
+  var margin = marginCm;
+  var pieceH = plan.h;
+  var pieceW = plan.w;
+  var perRow = plan.perRow;
+  var displayH = Math.min(220, Math.max(70, height * 2.2));
 
-  let html = '<div style="margin-bottom:10px;">';
+  var html = '<div style="margin-bottom:10px;">';
   html += '<div style="font-size:11px;font-weight:700;color:var(--text3);margin-bottom:4px;">'+label+' ('+height+'cm)</div>';
   html += '<div class="sheet-canvas" style="height:'+displayH+'px;">';
 
   if(margin > 0){
-    const pct = (margin / height) * 100;
+    var pct = (margin / height) * 100;
     html += '<div class="sheet-margin-top" style="top:0;height:'+pct+'%;"></div>';
   }
 
-  const contentH = height - margin*2;
-  for(let r=0; r<rows; r++){
-    const top = ((margin + r*pieceH) / height) * 100;
-    const hPct = (pieceH / height) * 100;
+  var contentH = height - margin*2;
+  for(var r=0; r<rows; r++){
+    var top = ((margin + r*pieceH) / height) * 100;
+    var hPct = (pieceH / height) * 100;
     html += '<div class="sheet-row-viz" style="top:'+top+'%;height:'+hPct+'%;">';
-    for(let c=0; c<perRow; c++){
+    for(var c=0; c<perRow; c++){
       html += '<div class="sheet-piece-viz" style="background:'+color+';">'+pieceW+'</div>';
     }
     html += '</div>';
   }
 
   if(margin > 0){
-    const pct = (margin / height) * 100;
+    var pct = (margin / height) * 100;
     html += '<div class="sheet-margin-bottom" style="bottom:0;height:'+pct+'%;"></div>';
   }
 
