@@ -753,7 +753,7 @@ function setMargin(n) {
 document.addEventListener('input', function(e) { if(e.target.id==='fabric-length') updateYardInfo(); });
 
 // ==================== Core Engine ====================
-function calcPiecePlan(piece, fabricWidth, targetQty, guide, margin) {
+function getBestFit(piece, fabricWidth) {
   var w = piece.w, h = piece.h, rotated = false;
   if(piece.rotatable) {
     var perRowNormal = Math.floor(fabricWidth / w);
@@ -761,16 +761,22 @@ function calcPiecePlan(piece, fabricWidth, targetQty, guide, margin) {
     if(perRowRotated > perRowNormal) { w = piece.h; h = piece.w; rotated = true; }
   }
   var perRow = Math.max(1, Math.floor(fabricWidth / w));
+  return { w:w, h:h, perRow:perRow, rotated:rotated };
+}
+
+function calcPiecePlan(piece, fabricWidth, targetQty, guide, margin) {
+  var fit = getBestFit(piece, fabricWidth);
+  var perRow = fit.perRow;
   var totalPieces = targetQty * piece.qty;
   var totalRows = Math.ceil(totalPieces / perRow);
-  var sheetLen = guide * h + margin * 2;
+  var sheetLen = guide * fit.h + margin * 2;
   var fullSheets = Math.floor(totalRows / guide);
   var remRows = totalRows % guide;
-  var remSheetLen = remRows > 0 ? remRows * h + margin * 2 : 0;
+  var remSheetLen = remRows > 0 ? remRows * fit.h + margin * 2 : 0;
   var totalLen = fullSheets * sheetLen + remSheetLen;
   return { perRow:perRow, totalPieces:totalPieces, totalRows:totalRows, sheetLen:sheetLen,
            fullSheets:fullSheets, remRows:remRows, remSheetLen:remSheetLen, totalLen:totalLen,
-           w:w, h:h, rotated:rotated };
+           w:fit.w, h:fit.h, rotated:fit.rotated };
 }
 
 function calcMaxSets(piece, fabricWidth, fabricLen, guide, margin) {
@@ -782,6 +788,86 @@ function calcMaxSets(piece, fabricWidth, fabricLen, guide, margin) {
     if(plan.totalLen <= fabricLen+0.001){ best=mid; lo=mid+1; } else { hi=mid-1; }
   }
   return best;
+}
+
+// ==================== Mixed Layout Engine ====================
+// 피스가 2개 이상일 때 혼합 배치 계산
+// 각 줄을 주 피스로 채우고, 남는 폭에 다른 피스를 끼워넣는 방식
+function calcMixedLayout(pieces, fabricWidth, targetQty, margin) {
+  if(pieces.length < 2) return null;
+
+  var fits = pieces.map(function(pc) { return getBestFit(pc, fabricWidth); });
+  var needs = pieces.map(function(pc, i) { return targetQty * pc.qty; }); // 필요 수량
+  var remaining = needs.slice(); // 남은 수량 추적
+
+  var rows = []; // 각 줄의 배치 정보
+
+  // 주 피스(인덱스 0)를 기준으로 줄을 채우되
+  // 각 줄의 남는 공간에 다른 피스를 끼워넣기
+  var maxIter = 2000;
+  var iter = 0;
+
+  while(remaining.some(function(r){ return r > 0; }) && iter++ < maxIter) {
+    // 아직 남은 피스 중 첫 번째를 주 피스로
+    var mainIdx = -1;
+    for(var i=0; i<pieces.length; i++) {
+      if(remaining[i] > 0) { mainIdx = i; break; }
+    }
+    if(mainIdx < 0) break;
+
+    var mainFit = fits[mainIdx];
+    var mainCount = Math.min(mainFit.perRow, remaining[mainIdx]);
+    var usedWidth = mainCount * mainFit.w;
+    var leftover = fabricWidth - usedWidth;
+
+    var rowInfo = {
+      cells: [{ pieceIdx: mainIdx, count: mainCount, w: mainFit.w, h: mainFit.h, rotated: mainFit.rotated }],
+      rowH: mainFit.h
+    };
+    remaining[mainIdx] -= mainCount;
+
+    // 남는 폭에 다른 피스 끼워넣기
+    for(var j=0; j<pieces.length; j++) {
+      if(j === mainIdx) continue;
+      if(remaining[j] <= 0) continue;
+      if(leftover <= 0) break;
+      var jFit = fits[j];
+      // 높이가 비슷해야 같은 줄에 배치 가능 (주 피스 높이 ±50% 이내)
+      if(jFit.h > mainFit.h * 1.5 || jFit.h < mainFit.h * 0.5) continue;
+      var extraCount = Math.min(Math.floor(leftover / jFit.w), remaining[j]);
+      if(extraCount > 0) {
+        rowInfo.cells.push({ pieceIdx: j, count: extraCount, w: jFit.w, h: jFit.h, rotated: jFit.rotated });
+        remaining[j] -= extraCount;
+        leftover -= extraCount * jFit.w;
+      }
+    }
+
+    rows.push(rowInfo);
+  }
+
+  // 총 길이 계산 (margin은 전체 앞뒤 한 번씩)
+  var totalLen = margin * 2;
+  rows.forEach(function(row) { totalLen += row.rowH; });
+
+  // 실제로 자른 수량 확인
+  var cut = needs.map(function(){ return 0; });
+  rows.forEach(function(row) {
+    row.cells.forEach(function(cell) { cut[cell.pieceIdx] += cell.count; });
+  });
+
+  return { rows: rows, totalLen: totalLen, cut: cut, needs: needs, pieces: pieces };
+}
+
+function calcMixedMaxSets(pieces, fabricWidth, fabricLen, margin) {
+  var lo=0, hi=10000, best=0, bestLayout=null;
+  while(lo<=hi) {
+    var mid = Math.floor((lo+hi)/2);
+    if(mid===0){ lo=1; continue; }
+    var layout = calcMixedLayout(pieces, fabricWidth, mid, margin);
+    if(layout && layout.totalLen <= fabricLen+0.001) { best=mid; bestLayout=layout; lo=mid+1; }
+    else hi=mid-1;
+  }
+  return { maxSets: best, layout: bestLayout };
 }
 
 // ==================== Calculate ====================
@@ -802,40 +888,76 @@ function calculate() {
   var pieces = currentProduct.pieces;
 
   if(calcMode==='A'){
+    // 기존 방식
     var maxSets = pieces.reduce(function(min, pc) {
       return Math.min(min, calcMaxSets(pc, fabricW, fabricLen, guideLines, marginCm));
     }, 100000);
     var results = pieces.map(function(pc) {
       return { piece:pc, plan:calcPiecePlan(pc, fabricW, maxSets, guideLines, marginCm) };
     });
-    renderResultA(maxSets, results, fabricW, fabricLen);
+    // 혼합 방식
+    var mixedResult = pieces.length >= 2 ? calcMixedMaxSets(pieces, fabricW, fabricLen, marginCm) : null;
+    renderResultA(maxSets, results, fabricW, fabricLen, mixedResult);
   } else {
     var results = pieces.map(function(pc) {
       return { piece:pc, plan:calcPiecePlan(pc, fabricW, targetQty, guideLines, marginCm) };
     });
     var totalLen = results.reduce(function(sum,r){ return sum + r.plan.totalLen; }, 0);
-    renderResultB(targetQty, results, fabricW, totalLen);
+    // 혼합 방식
+    var mixedLayout = pieces.length >= 2 ? calcMixedLayout(pieces, fabricW, targetQty, marginCm) : null;
+    renderResultB(targetQty, results, fabricW, totalLen, mixedLayout);
   }
   showScreen('screen-result');
 }
 
 // ==================== Render ====================
-function renderResultA(maxSets, results, fabricW, fabricLen) {
+function renderResultA(maxSets, results, fabricW, fabricLen, mixedResult) {
   document.getElementById('result-subtitle').textContent = currentProduct.name;
   var bottleneck = results.reduce(function(m,r){ return r.plan.totalLen > m.plan.totalLen ? r : m; }, results[0]);
   var usedLen = bottleneck.plan.totalLen;
   var remain = Math.max(0, fabricLen - usedLen);
+  var mixedSets = mixedResult ? mixedResult.maxSets : 0;
+  var mixedLen = mixedResult && mixedResult.layout ? mixedResult.layout.totalLen : 0;
+  var isMixedBetter = mixedResult && mixedSets >= maxSets && mixedLen < usedLen;
 
-  var html = '<div class="card result-hero">';
-  html += '<div class="result-num">' + maxSets + '</div>';
-  html += '<div class="result-unit-text">세트 생산 가능</div>';
-  html += '<div class="result-label">원단 ' + fabricW + 'cm × ' + Math.round(fabricLen) + 'cm · 가이드 ' + guideLines + '줄</div>';
-  html += '</div>';
+  var html = '';
 
-  html += '<div class="stat-row">';
-  html += '<div class="stat-box"><div class="stat-val">' + Math.round(usedLen) + 'cm</div><div class="stat-label">사용 길이</div></div>';
-  html += '<div class="stat-box"><div class="stat-val">' + Math.round(remain) + 'cm</div><div class="stat-label">남은 길이</div></div>';
-  html += '</div>';
+  // Hero — 더 좋은 결과 강조
+  if(isMixedBetter) {
+    html += '<div class="card result-hero">';
+    html += '<div class="result-num">' + mixedSets + '</div>';
+    html += '<div class="result-unit-text">세트 생산 가능</div>';
+    html += '<div class="result-label">혼합배치 기준 · 원단 ' + fabricW + 'cm × ' + Math.round(fabricLen) + 'cm</div>';
+    html += '</div>';
+    html += '<div class="stat-row">';
+    html += '<div class="stat-box"><div class="stat-val">' + Math.round(mixedLen) + 'cm</div><div class="stat-label">혼합 사용 길이</div></div>';
+    html += '<div class="stat-box"><div class="stat-val">' + Math.round(fabricLen - mixedLen) + 'cm</div><div class="stat-label">절약!</div></div>';
+    html += '</div>';
+  } else {
+    html += '<div class="card result-hero">';
+    html += '<div class="result-num">' + maxSets + '</div>';
+    html += '<div class="result-unit-text">세트 생산 가능</div>';
+    html += '<div class="result-label">원단 ' + fabricW + 'cm × ' + Math.round(fabricLen) + 'cm · 가이드 ' + guideLines + '줄</div>';
+    html += '</div>';
+    html += '<div class="stat-row">';
+    html += '<div class="stat-box"><div class="stat-val">' + Math.round(usedLen) + 'cm</div><div class="stat-label">사용 길이</div></div>';
+    html += '<div class="stat-box"><div class="stat-val">' + Math.round(remain) + 'cm</div><div class="stat-label">남는 길이</div></div>';
+    html += '</div>';
+  }
+
+  // 혼합 배치 결과 (피스 2개 이상일 때)
+  if(mixedResult && mixedResult.layout) {
+    html += renderMixedCard(mixedResult.layout, fabricW, mixedSets, isMixedBetter);
+  }
+
+  // 구분선
+  if(mixedResult) {
+    html += '<div style="display:flex;align-items:center;gap:10px;margin:16px 0;">';
+    html += '<div style="flex:1;height:1px;background:var(--border)"></div>';
+    html += '<div style="font-size:12px;font-weight:700;color:var(--text3)">피스별 구간 분리 계산</div>';
+    html += '<div style="flex:1;height:1px;background:var(--border)"></div>';
+    html += '</div>';
+  }
 
   if(results.length > 1) {
     html += '<div class="highlight-box yellow">';
@@ -843,28 +965,154 @@ function renderResultA(maxSets, results, fabricW, fabricLen) {
     html += '<div class="highlight-box-val">' + esc(bottleneck.piece.name) + '이 가장 많은 원단을 사용해요.</div>';
     html += '</div>';
   }
+  results.forEach(function(r,idx){ html += renderPlanCard(r.piece, r.plan, idx); });
+  document.getElementById('result-content').innerHTML = html;
+}
+
+function renderResultB(targetQty, results, fabricW, totalLen, mixedLayout) {
+  document.getElementById('result-subtitle').textContent = currentProduct.name;
+  var yards = (totalLen/91.44).toFixed(2);
+  var mixedLen = mixedLayout ? mixedLayout.totalLen : null;
+  var isMixedBetter = mixedLen && mixedLen < totalLen;
+
+  var html = '';
+
+  if(isMixedBetter) {
+    html += '<div class="card result-hero">';
+    html += '<div class="result-num">' + Math.round(mixedLen) + '</div>';
+    html += '<div class="result-unit-text">cm 필요 (혼합배치)</div>';
+    html += '<div class="result-label">' + targetQty + '세트 · 약 ' + (mixedLen/91.44).toFixed(2) + '야드</div>';
+    html += '</div>';
+    html += '<div class="stat-row">';
+    html += '<div class="stat-box"><div class="stat-val">' + Math.round(totalLen - mixedLen) + 'cm</div><div class="stat-label">절약!</div></div>';
+    html += '<div class="stat-box"><div class="stat-val">' + (mixedLen/91.44).toFixed(1) + '야드</div><div class="stat-label">혼합 필요 야드</div></div>';
+    html += '</div>';
+  } else {
+    html += '<div class="card result-hero">';
+    html += '<div class="result-num">' + Math.round(totalLen) + '</div>';
+    html += '<div class="result-unit-text">cm 필요</div>';
+    html += '<div class="result-label">' + targetQty + '세트 기준 · 약 ' + yards + '야드 · 가이드 ' + guideLines + '줄</div>';
+    html += '</div>';
+    html += '<div class="stat-row">';
+    html += '<div class="stat-box"><div class="stat-val">' + targetQty + '</div><div class="stat-label">목표 수량</div></div>';
+    html += '<div class="stat-box"><div class="stat-val">' + (totalLen/91.44).toFixed(1) + '야드</div><div class="stat-label">필요 야드</div></div>';
+    html += '</div>';
+  }
+
+  // 혼합 배치 카드
+  if(mixedLayout) {
+    html += renderMixedCard(mixedLayout, fabricW, targetQty, isMixedBetter);
+  }
+
+  // 구분선
+  if(mixedLayout) {
+    html += '<div style="display:flex;align-items:center;gap:10px;margin:16px 0;">';
+    html += '<div style="flex:1;height:1px;background:var(--border)"></div>';
+    html += '<div style="font-size:12px;font-weight:700;color:var(--text3)">피스별 구간 분리 계산</div>';
+    html += '<div style="flex:1;height:1px;background:var(--border)"></div>';
+    html += '</div>';
+  }
 
   results.forEach(function(r,idx){ html += renderPlanCard(r.piece, r.plan, idx); });
   document.getElementById('result-content').innerHTML = html;
 }
 
-function renderResultB(targetQty, results, fabricW, totalLen) {
-  document.getElementById('result-subtitle').textContent = currentProduct.name;
-  var yards = (totalLen/91.44).toFixed(2);
-
-  var html = '<div class="card result-hero">';
-  html += '<div class="result-num">' + Math.round(totalLen) + '</div>';
-  html += '<div class="result-unit-text">cm 필요</div>';
-  html += '<div class="result-label">' + targetQty + '세트 기준 · 약 ' + yards + '야드 · 가이드 ' + guideLines + '줄</div>';
+// ==================== Mixed Card ====================
+function renderMixedCard(layout, fabricW, qty, isBetter) {
+  var html = '<div class="plan-card" style="border-color:' + (isBetter?'#B8D4C0':'var(--border)') + ';background:' + (isBetter?'var(--accent2)':'var(--surface2)') + ';">';
+  html += '<div class="plan-header">';
+  html += '<div style="font-size:16px;font-weight:800;flex:1;">🔀 혼합 배치' + (isBetter?' (추천!)':'') + '</div>';
+  html += '<div class="plan-tag plan-tag-ok">원단 절약</div>';
   html += '</div>';
 
-  html += '<div class="stat-row">';
-  html += '<div class="stat-box"><div class="stat-val">' + targetQty + '</div><div class="stat-label">목표 수량</div></div>';
-  html += '<div class="stat-box"><div class="stat-val">' + (totalLen/91.44).toFixed(1) + '야드</div><div class="stat-label">필요 야드</div></div>';
+  // 피스별 수량 요약
+  html += '<div class="plan-body" style="margin-bottom:12px;">';
+  layout.pieces.forEach(function(pc, i) {
+    var cut = layout.cut[i];
+    var need = layout.needs[i];
+    html += esc(pc.name) + ': <strong>' + cut + '장</strong> / ' + need + '장 필요';
+    if(cut < need) html += ' <span style="color:var(--danger);font-size:12px;">⚠ ' + (need-cut) + '장 부족</span>';
+    if(i < layout.pieces.length-1) html += '<br>';
+  });
+  html += '<br>총 필요 길이: <strong>' + Math.round(layout.totalLen) + 'cm</strong>';
   html += '</div>';
 
-  results.forEach(function(r,idx){ html += renderPlanCard(r.piece, r.plan, idx); });
-  document.getElementById('result-content').innerHTML = html;
+  // 배치 그림
+  html += '<div class="sheet-viz">';
+  html += '<div class="sheet-viz-header"><span class="sheet-viz-title">혼합 배치도</span><span class="sheet-viz-size">폭 ' + fabricW + 'cm</span></div>';
+  html += renderMixedViz(layout, fabricW);
+  html += '</div>';
+
+  html += '</div>';
+  return html;
+}
+
+function renderMixedViz(layout, fabricW) {
+  var rows = layout.rows;
+  var margin = marginCm;
+  var totalH = layout.totalLen;
+  var dispH = Math.min(400, Math.max(100, rows.length * 28 + margin * 6));
+
+  var html = '<div style="margin-bottom:4px">';
+  html += '<div class="sheet-canvas" style="height:' + dispH + 'px;">';
+
+  // 상단 여유
+  if(margin > 0) {
+    var mPct = (margin / totalH) * 100;
+    html += '<div class="sheet-margin-top" style="top:0;height:' + mPct + '%;"></div>';
+  }
+
+  // 각 줄 그리기
+  var curY = margin;
+  rows.forEach(function(row, ri) {
+    var topPct = (curY / totalH) * 100;
+    var hPct = (row.rowH / totalH) * 100;
+    html += '<div style="position:absolute;left:0;right:0;top:' + topPct + '%;height:' + hPct + '%;display:flex;">';
+
+    // 셀들
+    row.cells.forEach(function(cell) {
+      var cellWidthPct = (cell.w * cell.count / fabricW) * 100;
+      var color = COLORS[cell.pieceIdx % COLORS.length];
+      var pc = layout.pieces[cell.pieceIdx];
+      html += '<div style="width:' + cellWidthPct + '%;background:' + color + ';display:flex;align-items:center;justify-content:center;' +
+              'font-size:9px;font-weight:700;color:rgba(255,255,255,0.95);border-right:1px solid rgba(255,255,255,0.3);overflow:hidden;">';
+      html += esc(pc.name) + '×' + cell.count;
+      html += '</div>';
+    });
+
+    // 남는 공간
+    var usedW = row.cells.reduce(function(s,c){ return s + c.w * c.count; }, 0);
+    var leftoverPct = ((fabricW - usedW) / fabricW) * 100;
+    if(leftoverPct > 0.5) {
+      html += '<div style="flex:1;background:repeating-linear-gradient(45deg,#f0f0f0,#f0f0f0 3px,#fff 3px,#fff 6px);' +
+              'display:flex;align-items:center;justify-content:center;font-size:9px;color:#aaa;">';
+      html += Math.round(fabricW - usedW) + 'cm';
+      html += '</div>';
+    }
+
+    html += '</div>';
+    curY += row.rowH;
+  });
+
+  // 하단 여유
+  if(margin > 0) {
+    var mPct2 = (margin / totalH) * 100;
+    html += '<div class="sheet-margin-bottom" style="bottom:0;height:' + mPct2 + '%;"></div>';
+  }
+
+  html += '</div></div>';
+
+  // 범례
+  html += '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;">';
+  layout.pieces.forEach(function(pc, i) {
+    html += '<div style="display:flex;align-items:center;gap:4px;">';
+    html += '<div style="width:12px;height:12px;border-radius:3px;background:' + COLORS[i%COLORS.length] + '"></div>';
+    html += '<span style="font-size:12px;font-weight:700;">' + esc(pc.name) + ' ' + pc.w + '×' + pc.h + 'cm</span>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  return html;
 }
 
 function renderPlanCard(piece, plan, idx) {
@@ -898,7 +1146,6 @@ function renderPlanCard(piece, plan, idx) {
     html += '<div style="text-align:center;padding:8px;color:var(--text3);font-size:12px;font-weight:700;">··· ' + (plan.fullSheets-2) + '장 동일 반복</div>';
   }
   if(plan.remRows > 0) html += renderSheetViz(plan, c, true, '자투리 연단');
-
   html += '</div></div>';
   return html;
 }
