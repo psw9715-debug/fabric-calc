@@ -9,117 +9,128 @@
 <title>홈패션 연단 계산기</title>
 <style>
 :root {
-  --bg: #F5F3EE; --surface: #FFFFFF; --surface2: #F0EEEC;
-  --border: #E0DCD6; --text: #1A1814; --text2: #6B6660; --text3: #A8A4A0;
-  --accent: #2D5A3D; --accent2: #E4EDE6; --accent3: #4A7C5F;
-  --danger: #B03020; --danger2: #FDECEA;
-  --warn: #7A5C10; --warn2: #FDF3DC;
-  --info: #1A4A7A; --info2: #E0ECFA;
-  --radius: 16px; --radius-sm: 12px;
-  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  --bg:#F5F3EE;--surface:#FFFFFF;--surface2:#F0EEEC;
+  --border:#E0DCD6;--text:#1A1814;--text2:#6B6660;--text3:#A8A4A0;
+  --accent:#2D5A3D;--accent2:#E4EDE6;--accent3:#4A7C5F;
+  --danger:#B03020;--danger2:#FDECEA;
+  --warn:#7A5C10;--warn2:#FDF3DC;
+  --info:#1A4A7A;--info2:#E0ECFA;
+  --radius:16px;--radius-sm:12px;
+  --shadow:0 2px 12px rgba(0,0,0,0.08);
 }
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html { -webkit-text-size-adjust: 100%; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo','Noto Sans KR',sans-serif; background: var(--bg); color: var(--text); min-height: 100dvh; font-size: 16px; line-height: 1.5; overscroll-behavior-y: none; }
-.screen { display: none; min-height: 100dvh; flex-direction: column; }
-.screen.active { display: flex; }
-.header { background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 52px 16px 12px; position: sticky; top: 0; z-index: 100; }
-.header-row { display: flex; align-items: center; gap: 10px; }
-.back-btn { width: 40px; height: 40px; border: none; background: var(--surface2); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; flex-shrink: 0; touch-action: manipulation; }
-.header h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.6px; }
-.header p { font-size: 13px; color: var(--text2); margin-top: 2px; font-weight: 500; }
-.content { flex: 1; overflow-y: auto; padding: 12px 16px 24px; -webkit-overflow-scrolling: touch; }
-.content::-webkit-scrollbar { display: none; }
-.card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow); }
-.card-title { font-size: 12px; font-weight: 700; color: var(--text2); letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 14px; }
-.product-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 10px; box-shadow: var(--shadow); }
-.product-item-name { font-size: 18px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.4px; }
-.product-item-info { font-size: 13px; color: var(--text2); line-height: 1.7; font-weight: 500; }
-.product-item-actions { display: flex; gap: 8px; margin-top: 14px; }
-.btn-sm { padding: 10px 14px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 700; border: none; cursor: pointer; touch-action: manipulation; min-height: 44px; }
-.btn-edit { background: var(--surface2); color: var(--text); }
-.btn-del { background: var(--danger2); color: var(--danger); }
-.btn-calc { background: var(--accent); color: white; flex: 1; }
-.btn-primary { width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: var(--radius); font-size: 17px; font-weight: 800; cursor: pointer; letter-spacing: -0.3px; transition: opacity 0.15s; min-height: 56px; touch-action: manipulation; }
-.btn-primary:active { opacity: 0.85; transform: scale(0.98); }
-.btn-secondary { width: 100%; padding: 14px; background: var(--surface2); color: var(--text); border: none; border-radius: var(--radius); font-size: 16px; font-weight: 700; cursor: pointer; min-height: 52px; touch-action: manipulation; }
-.btn-ghost { width: 100%; padding: 12px; background: transparent; color: var(--text2); border: 1.5px solid var(--border); border-radius: var(--radius); font-size: 14px; font-weight: 700; cursor: pointer; min-height: 48px; touch-action: manipulation; }
-.btn-row { display: flex; gap: 10px; }
-.btn-row .btn-primary, .btn-row .btn-secondary { flex: 1; }
-.form-group { margin-bottom: 16px; }
-.form-label { font-size: 14px; font-weight: 700; color: var(--text2); margin-bottom: 8px; display: block; }
-.form-input { width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 18px; background: var(--surface); color: var(--text); outline: none; -webkit-appearance: none; transition: border-color 0.15s; font-weight: 600; min-height: 52px; }
-.form-input:focus { border-color: var(--accent); }
-.input-row { display: flex; gap: 10px; }
-.input-row .form-group { flex: 1; }
-.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border); }
-.toggle-row:last-child { border-bottom: none; }
-.toggle-label { font-size: 15px; font-weight: 700; }
-.toggle-sub { font-size: 12px; color: var(--text3); margin-top: 2px; font-weight: 500; }
-.toggle { width: 50px; height: 30px; background: var(--border); border-radius: 15px; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; border: none; touch-action: manipulation; }
-.toggle.on { background: var(--accent); }
-.toggle-knob { width: 26px; height: 26px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: left 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.2); pointer-events: none; }
-.toggle.on .toggle-knob { left: 22px; }
-.piece-card { background: var(--surface2); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 12px; border: 1px solid var(--border); }
-.piece-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.piece-badge { font-size: 13px; font-weight: 800; background: var(--accent); color: white; padding: 5px 14px; border-radius: 20px; letter-spacing: 0.3px; }
-.piece-del { width: 32px; height: 32px; background: var(--danger2); color: var(--danger); border: none; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; touch-action: manipulation; }
-.tab-group { display: flex; background: var(--surface2); border-radius: var(--radius-sm); padding: 4px; margin-bottom: 14px; gap: 4px; }
-.tab-btn { flex: 1; padding: 12px 4px; text-align: center; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; color: var(--text2); transition: all 0.2s; border: none; background: transparent; touch-action: manipulation; min-height: 44px; }
-.tab-btn.active { background: var(--surface); color: var(--accent); box-shadow: var(--shadow); }
-.guide-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 8px; }
-.margin-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-.guide-btn { padding: 14px 4px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 16px; font-weight: 800; background: var(--surface); color: var(--text2); cursor: pointer; text-align: center; transition: all 0.15s; touch-action: manipulation; min-height: 56px; }
-.guide-btn.active { border-color: var(--accent); background: var(--accent2); color: var(--accent); }
-.result-hero { text-align: center; padding: 28px 16px 22px; background: var(--accent2); border: 2px solid #B8D4C0; }
-.result-num { font-size: 56px; font-weight: 900; color: var(--accent); letter-spacing: -3px; line-height: 1; }
-.result-unit-text { font-size: 22px; font-weight: 800; color: var(--accent3); margin-top: 8px; }
-.result-label { font-size: 14px; color: var(--text2); margin-top: 10px; font-weight: 600; }
-.stat-row { display: flex; gap: 10px; margin-bottom: 12px; }
-.stat-box { flex: 1; background: var(--surface2); border-radius: var(--radius-sm); padding: 16px 10px; text-align: center; border: 1px solid var(--border); }
-.stat-val { font-size: 24px; font-weight: 900; }
-.stat-label { font-size: 12px; color: var(--text2); margin-top: 4px; font-weight: 700; }
-.plan-card { background: var(--surface2); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 12px; border: 1px solid var(--border); }
-.plan-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-.plan-dot { width: 14px; height: 14px; border-radius: 4px; flex-shrink: 0; }
-.plan-name { font-size: 16px; font-weight: 800; }
-.plan-tag { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 12px; margin-left: auto; }
-.plan-tag-ok { background: var(--accent2); color: var(--accent); }
-.plan-tag-warn { background: var(--warn2); color: var(--warn); }
-.plan-body { font-size: 14px; line-height: 1.8; color: var(--text2); font-weight: 600; }
-.plan-body strong { color: var(--text); font-weight: 800; }
-.sheet-viz { background: var(--surface); border-radius: var(--radius-sm); border: 1px solid var(--border); padding: 12px; margin-top: 12px; overflow: hidden; }
-.sheet-viz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.sheet-viz-title { font-size: 13px; font-weight: 800; color: var(--text2); }
-.sheet-viz-size { font-size: 12px; color: var(--text3); font-weight: 700; }
-.sheet-canvas { position: relative; background: #fff; border: 1.5px solid var(--text3); border-radius: 6px; overflow: hidden; margin: 0 auto; width: 100%; max-width: 400px; }
-.sheet-row-viz { position: absolute; left: 0; right: 0; display: flex; border-bottom: 1px dashed var(--border); }
-.sheet-row-viz:last-child { border-bottom: none; }
-.sheet-piece-viz { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.95); text-shadow: 0 1px 2px rgba(0,0,0,0.3); border-right: 1px dashed rgba(255,255,255,0.4); }
-.sheet-piece-viz:last-child { border-right: none; }
-.sheet-margin-top, .sheet-margin-bottom { position: absolute; left: 0; right: 0; background: repeating-linear-gradient(45deg, var(--warn2), var(--warn2) 4px, #FDF3DC 4px, #FDF3DC 8px); opacity: 0.5; }
-.highlight-box { border-radius: var(--radius-sm); padding: 16px; margin-bottom: 12px; }
-.highlight-box.green { background: var(--accent2); border: 1.5px solid #B8D4C0; }
-.highlight-box.yellow { background: var(--warn2); border: 1.5px solid #E0C870; }
-.highlight-box-title { font-size: 12px; font-weight: 800; color: var(--text2); margin-bottom: 8px; letter-spacing: 0.5px; }
-.highlight-box-val { font-size: 15px; font-weight: 700; line-height: 1.7; }
-.sync-bar { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--accent2); border: 1.5px solid #B8D4C0; border-radius: var(--radius-sm); margin-bottom: 12px; font-size: 13px; font-weight: 700; color: var(--accent); cursor: pointer; }
-.sync-bar.off { background: var(--surface2); border-color: var(--border); color: var(--text3); }
-.sync-bar.warn { background: var(--warn2); border-color: #E0C870; color: var(--warn); }
-.empty { text-align: center; padding: 80px 20px; color: var(--text2); }
-.empty-icon { font-size: 56px; margin-bottom: 20px; }
-.empty-text { font-size: 19px; font-weight: 800; margin-bottom: 10px; color: var(--text); }
-.empty-sub { font-size: 15px; line-height: 1.7; font-weight: 500; }
-.bottom-bar { padding: 14px 16px; padding-bottom: max(14px, env(safe-area-inset-bottom)); background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--border); position: sticky; bottom: 0; }
-.info-text { font-size: 13px; color: var(--text3); line-height: 1.7; font-weight: 600; }
-.btn-link { background: none; border: none; color: var(--accent); font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: underline; padding: 4px; touch-action: manipulation; }
-@media print {
-  .no-print { display: none !important; }
-  .screen { display: flex !important; }
-  #screen-result { display: flex !important; min-height: auto; }
-  .header { position: static; padding-top: 16px; }
-  .content { overflow: visible; }
-  .bottom-bar { display: none !important; }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{-webkit-text-size-adjust:100%;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;font-size:16px;line-height:1.5;overscroll-behavior-y:none;}
+.screen{display:none;min-height:100dvh;flex-direction:column;}
+.screen.active{display:flex;}
+.header{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:52px 16px 12px;position:sticky;top:0;z-index:100;}
+.header-row{display:flex;align-items:center;gap:10px;}
+.back-btn{width:40px;height:40px;border:none;background:var(--surface2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;flex-shrink:0;touch-action:manipulation;}
+.header h1{font-size:20px;font-weight:800;letter-spacing:-0.6px;}
+.header p{font-size:13px;color:var(--text2);margin-top:2px;font-weight:500;}
+.content{flex:1;overflow-y:auto;padding:12px 16px 24px;-webkit-overflow-scrolling:touch;}
+.content::-webkit-scrollbar{display:none;}
+.card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:16px;margin-bottom:12px;box-shadow:var(--shadow);}
+.card-title{font-size:12px;font-weight:700;color:var(--text2);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:14px;}
+.product-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px;box-shadow:var(--shadow);}
+.product-item-name{font-size:18px;font-weight:800;margin-bottom:6px;}
+.product-item-info{font-size:13px;color:var(--text2);line-height:1.7;font-weight:500;}
+.product-item-actions{display:flex;gap:8px;margin-top:14px;}
+.btn-sm{padding:10px 14px;border-radius:var(--radius-sm);font-size:14px;font-weight:700;border:none;cursor:pointer;touch-action:manipulation;min-height:44px;}
+.btn-edit{background:var(--surface2);color:var(--text);}
+.btn-del{background:var(--danger2);color:var(--danger);}
+.btn-calc{background:var(--accent);color:white;flex:1;}
+.btn-primary{width:100%;padding:16px;background:var(--accent);color:white;border:none;border-radius:var(--radius);font-size:17px;font-weight:800;cursor:pointer;transition:opacity 0.15s;min-height:56px;touch-action:manipulation;}
+.btn-primary:active{opacity:0.85;transform:scale(0.98);}
+.btn-secondary{width:100%;padding:14px;background:var(--surface2);color:var(--text);border:none;border-radius:var(--radius);font-size:16px;font-weight:700;cursor:pointer;min-height:52px;touch-action:manipulation;}
+.btn-ghost{width:100%;padding:12px;background:transparent;color:var(--text2);border:1.5px solid var(--border);border-radius:var(--radius);font-size:14px;font-weight:700;cursor:pointer;min-height:48px;touch-action:manipulation;}
+.btn-row{display:flex;gap:10px;}
+.btn-row .btn-primary,.btn-row .btn-secondary{flex:1;}
+.form-group{margin-bottom:16px;}
+.form-label{font-size:14px;font-weight:700;color:var(--text2);margin-bottom:8px;display:block;}
+.form-input{width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:18px;background:var(--surface);color:var(--text);outline:none;-webkit-appearance:none;transition:border-color 0.15s;font-weight:600;min-height:52px;}
+.form-input:focus{border-color:var(--accent);}
+.input-row{display:flex;gap:10px;}
+.input-row .form-group{flex:1;}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-label{font-size:15px;font-weight:700;}
+.toggle-sub{font-size:12px;color:var(--text3);margin-top:2px;}
+.toggle{width:50px;height:30px;background:var(--border);border-radius:15px;position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0;border:none;touch-action:manipulation;}
+.toggle.on{background:var(--accent);}
+.toggle-knob{width:26px;height:26px;background:white;border-radius:50%;position:absolute;top:2px;left:2px;transition:left 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.2);pointer-events:none;}
+.toggle.on .toggle-knob{left:22px;}
+.piece-card{background:var(--surface2);border-radius:var(--radius-sm);padding:16px;margin-bottom:12px;border:1px solid var(--border);}
+.piece-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.piece-badge{font-size:13px;font-weight:800;background:var(--accent);color:white;padding:5px 14px;border-radius:20px;}
+.piece-del{width:32px;height:32px;background:var(--danger2);color:var(--danger);border:none;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;}
+.tab-group{display:flex;background:var(--surface2);border-radius:var(--radius-sm);padding:4px;margin-bottom:14px;gap:4px;}
+.tab-btn{flex:1;padding:10px 4px;text-align:center;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;color:var(--text2);transition:all 0.2s;border:none;background:transparent;touch-action:manipulation;min-height:44px;}
+.tab-btn.active{background:var(--surface);color:var(--accent);box-shadow:var(--shadow);}
+.guide-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px;}
+.margin-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+.guide-btn{padding:12px 4px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:15px;font-weight:800;background:var(--surface);color:var(--text2);cursor:pointer;text-align:center;transition:all 0.15s;touch-action:manipulation;min-height:50px;}
+.guide-btn.active{border-color:var(--accent);background:var(--accent2);color:var(--accent);}
+.result-hero{text-align:center;padding:24px 16px 20px;background:var(--accent2);border:2px solid #B8D4C0;border-radius:var(--radius);margin-bottom:12px;}
+.result-hero.warn{background:var(--warn2);border-color:#E0C870;}
+.result-hero.info{background:var(--info2);border-color:#A0C4E8;}
+.result-num{font-size:52px;font-weight:900;color:var(--accent);letter-spacing:-3px;line-height:1;}
+.result-hero.warn .result-num{color:var(--warn);}
+.result-hero.info .result-num{color:var(--info);}
+.result-unit-text{font-size:20px;font-weight:800;color:var(--accent3);margin-top:6px;}
+.result-label{font-size:13px;color:var(--text2);margin-top:8px;font-weight:600;}
+.stat-row{display:flex;gap:8px;margin-bottom:12px;}
+.stat-box{flex:1;background:var(--surface2);border-radius:var(--radius-sm);padding:14px 8px;text-align:center;border:1px solid var(--border);}
+.stat-val{font-size:20px;font-weight:900;}
+.stat-label{font-size:11px;color:var(--text2);margin-top:3px;font-weight:700;}
+.plan-card{background:var(--surface2);border-radius:var(--radius-sm);padding:16px;margin-bottom:12px;border:1px solid var(--border);}
+.plan-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.plan-dot{width:14px;height:14px;border-radius:4px;flex-shrink:0;}
+.plan-name{font-size:15px;font-weight:800;flex:1;}
+.plan-tag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:12px;}
+.plan-tag-ok{background:var(--accent2);color:var(--accent);}
+.plan-tag-warn{background:var(--warn2);color:var(--warn);}
+.plan-body{font-size:14px;line-height:1.9;color:var(--text2);font-weight:600;}
+.plan-body strong{color:var(--text);font-weight:800;}
+.canvas-wrap{margin-top:12px;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border);}
+.canvas-label{font-size:11px;font-weight:700;color:var(--text3);padding:8px 10px 4px;}
+canvas{display:block;width:100%;}
+.legend{display:flex;flex-wrap:wrap;gap:8px;padding:8px 10px;}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700;}
+.legend-dot{width:14px;height:14px;border-radius:3px;flex-shrink:0;}
+.highlight-box{border-radius:var(--radius-sm);padding:14px;margin-bottom:12px;}
+.highlight-box.green{background:var(--accent2);border:1.5px solid #B8D4C0;}
+.highlight-box.yellow{background:var(--warn2);border:1.5px solid #E0C870;}
+.highlight-box.blue{background:var(--info2);border:1.5px solid #A0C4E8;}
+.highlight-box-title{font-size:12px;font-weight:800;color:var(--text2);margin-bottom:6px;}
+.highlight-box-val{font-size:14px;font-weight:700;line-height:1.7;}
+.sync-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--accent2);border:1.5px solid #B8D4C0;border-radius:var(--radius-sm);margin-bottom:12px;font-size:13px;font-weight:700;color:var(--accent);cursor:pointer;}
+.sync-bar.off{background:var(--surface2);border-color:var(--border);color:var(--text3);}
+.empty{text-align:center;padding:80px 20px;}
+.empty-icon{font-size:56px;margin-bottom:20px;}
+.empty-text{font-size:19px;font-weight:800;margin-bottom:10px;}
+.empty-sub{font-size:15px;color:var(--text2);line-height:1.7;}
+.bottom-bar{padding:14px 16px;padding-bottom:max(14px,env(safe-area-inset-bottom));background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-top:1px solid var(--border);}
+.info-text{font-size:13px;color:var(--text3);line-height:1.7;font-weight:500;}
+.btn-link{background:none;border:none;color:var(--accent);font-size:14px;font-weight:700;cursor:pointer;text-decoration:underline;padding:4px;touch-action:manipulation;}
+.divider{display:flex;align-items:center;gap:10px;margin:16px 0;}
+.divider-line{flex:1;height:1px;background:var(--border);}
+.divider-text{font-size:12px;font-weight:700;color:var(--text3);}
+/* 모드C 피스별 수량 */
+.piece-qty-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.piece-qty-row:last-child{border-bottom:none;}
+.piece-qty-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
+.piece-qty-name{font-size:14px;font-weight:700;flex:1;}
+.piece-qty-input{width:90px;padding:10px 12px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:16px;font-weight:700;text-align:center;background:var(--surface);color:var(--text);outline:none;-webkit-appearance:none;}
+.piece-qty-input:focus{border-color:var(--accent);}
+.piece-qty-max{font-size:12px;color:var(--text3);font-weight:600;white-space:nowrap;}
+@media print{
+  .no-print{display:none!important;}
+  .screen{display:flex!important;}
+  #screen-result{display:flex!important;min-height:auto;}
+  .header{position:static;padding-top:16px;}
+  .content{overflow:visible;}
+  .bottom-bar{display:none!important;}
 }
 </style>
 </head>
@@ -129,16 +140,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo','No
 <div id="screen-main" class="screen active">
   <div class="header no-print">
     <div class="header-row">
-      <div style="flex:1">
-        <h1>🏠 홈패션 연단 계산기</h1>
-        <p>제품을 선택하거나 새로 등록하세요</p>
-      </div>
+      <div style="flex:1"><h1>🏠 홈패션 연단 계산기</h1><p>제품을 선택하거나 새로 등록하세요</p></div>
     </div>
   </div>
   <div class="content">
     <div id="sync-status" class="sync-bar off" onclick="goToSync()">
-      <span id="sync-icon">☁️</span>
-      <span id="sync-text">동기화 설정하기 (여러 기기 공유)</span>
+      <span id="sync-icon">☁️</span><span id="sync-text">동기화 설정하기</span>
     </div>
     <div class="empty" id="empty-state">
       <div class="empty-icon">📦</div>
@@ -158,49 +165,33 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo','No
   <div class="header no-print">
     <div class="header-row">
       <button class="back-btn" onclick="showScreen('screen-main')">←</button>
-      <div>
-        <h1>☁️ 동기화 설정</h1>
-        <p>GitHub Gist로 여러 기기 동기화</p>
-      </div>
+      <div><h1>☁️ 동기화 설정</h1><p>GitHub Gist로 여러 기기 동기화</p></div>
     </div>
   </div>
   <div class="content">
     <div class="card">
       <div class="card-title">GitHub 토큰 입력</div>
-      <div class="info-text" style="margin-bottom:14px">
-        GitHub 토큰을 입력하면 모든 기기에서 같은 제품 데이터를 쓸 수 있어요.<br>토큰은 이 기기에만 저장되고 외부에 노출되지 않아요.
-      </div>
+      <div class="info-text" style="margin-bottom:14px">토큰은 이 기기에만 저장되고 외부에 노출되지 않아요</div>
       <div class="form-group">
         <label class="form-label">Personal Access Token</label>
         <input type="password" id="github-token" class="form-input" placeholder="ghp_xxxxxxxxxxxxxxxx" autocomplete="off">
-        <div style="margin-top:8px">
-          <button class="btn-link" onclick="showTokenGuide()">토큰 발급 방법 보기</button>
-        </div>
+        <div style="margin-top:8px"><button class="btn-link" onclick="showTokenGuide()">토큰 발급 방법 보기</button></div>
       </div>
       <button class="btn-primary" onclick="verifyToken()" style="margin-bottom:10px">토큰 확인 & 연결</button>
       <div id="sync-verify-result"></div>
     </div>
-
     <div class="card" id="sync-action-card" style="display:none">
       <div class="card-title">동기화 관리</div>
-      <div class="form-group">
-        <div id="sync-gist-info" class="info-text" style="color:var(--text);font-weight:700;margin-bottom:14px"></div>
-        <div class="btn-row" style="margin-bottom:12px">
-          <button class="btn-secondary" onclick="syncPull()">📥 받아오기</button>
-          <button class="btn-primary" onclick="syncPush()">📤 지금 업로드</button>
-        </div>
+      <div id="sync-gist-info" class="info-text" style="color:var(--text);font-weight:700;margin-bottom:14px"></div>
+      <div class="btn-row" style="margin-bottom:12px">
+        <button class="btn-secondary" onclick="syncPull()">📥 받아오기</button>
+        <button class="btn-primary" onclick="syncPush()">📤 지금 업로드</button>
       </div>
       <div class="toggle-row" style="border-bottom:none">
-        <div>
-          <div class="toggle-label">자동 동기화</div>
-          <div class="toggle-sub">제품 저장 시 자동 업로드</div>
-        </div>
-        <button class="toggle" id="auto-sync-toggle" onclick="toggleAutoSync()">
-          <div class="toggle-knob"></div>
-        </button>
+        <div><div class="toggle-label">자동 동기화</div><div class="toggle-sub">제품 저장 시 자동 업로드</div></div>
+        <button class="toggle" id="auto-sync-toggle" onclick="toggleAutoSync()"><div class="toggle-knob"></div></button>
       </div>
     </div>
-
     <div class="card">
       <div class="card-title">파일 백업 / 복원</div>
       <div class="info-text" style="margin-bottom:12px">토큰 없이도 파일로 기기 간 데이터를 옮길 수 있어요</div>
@@ -219,10 +210,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo','No
   <div class="header no-print">
     <div class="header-row">
       <button class="back-btn" onclick="showScreen('screen-main')">←</button>
-      <div>
-        <h1 id="reg-title">제품 등록</h1>
-        <p>피스 정보를 입력하고 저장하세요</p>
-      </div>
+      <div><h1 id="reg-title">제품 등록</h1><p>피스 정보를 입력하고 저장하세요</p></div>
     </div>
   </div>
   <div class="content">
@@ -250,26 +238,24 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo','No
   <div class="header no-print">
     <div class="header-row">
       <button class="back-btn" onclick="showScreen('screen-main')">←</button>
-      <div>
-        <h1 id="calc-prod-name">연단 계산</h1>
-        <p>원단 정보를 입력하세요</p>
-      </div>
+      <div><h1 id="calc-prod-name">연단 계산</h1><p>원단 정보를 입력하세요</p></div>
     </div>
   </div>
   <div class="content">
     <div class="card">
       <div class="card-title">계산 모드</div>
       <div class="tab-group">
-        <button class="tab-btn active" id="modeA-tab" onclick="setMode('A')">원단 길이 → 수량</button>
-        <button class="tab-btn" id="modeB-tab" onclick="setMode('B')">목표 수량 → 길이</button>
+        <button class="tab-btn active" id="modeA-tab" onclick="setMode('A')">원단→수량</button>
+        <button class="tab-btn" id="modeB-tab" onclick="setMode('B')">수량→길이</button>
+        <button class="tab-btn" id="modeC-tab" onclick="setMode('C')">원단+목표</button>
       </div>
-      <div class="info-text" id="mode-desc">원단 길이를 입력하면 최대 생산 수량을 계산합니다</div>
+      <div class="info-text" id="mode-desc"></div>
     </div>
     <div class="card">
       <div class="card-title">원단 정보</div>
       <div class="form-group">
         <label class="form-label">원단 폭 (cm)</label>
-        <input type="number" id="fabric-width" class="form-input" placeholder="예: 157" inputmode="decimal">
+        <input type="number" id="fabric-width" class="form-input" placeholder="예: 150" inputmode="decimal">
       </div>
       <div id="fabric-length-group">
         <div class="form-group">
@@ -278,16 +264,22 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo','No
             <button class="tab-btn active" id="unit-cm" onclick="setUnit('cm')">cm</button>
             <button class="tab-btn" id="unit-yard" onclick="setUnit('yard')">야드</button>
           </div>
-          <input type="number" id="fabric-length" class="form-input" placeholder="예: 900" inputmode="decimal">
+          <input type="number" id="fabric-length" class="form-input" placeholder="예: 270" inputmode="decimal">
           <div class="info-text" style="margin-top:6px" id="yard-info"></div>
         </div>
       </div>
       <div id="fabric-qty-group" style="display:none">
         <div class="form-group">
           <label class="form-label">목표 수량 (세트)</label>
-          <input type="number" id="target-qty" class="form-input" placeholder="예: 100" inputmode="numeric">
+          <input type="number" id="target-qty" class="form-input" placeholder="예: 20" inputmode="numeric">
         </div>
       </div>
+    </div>
+    <!-- 모드C: 피스별 목표 수량 -->
+    <div class="card" id="modeC-qty-card" style="display:none">
+      <div class="card-title">피스별 목표 수량</div>
+      <div class="info-text" style="margin-bottom:12px">"최대한"은 남는 원단에 욱여넣기</div>
+      <div id="modeC-qty-list"></div>
     </div>
     <div class="card">
       <div class="card-title">재단 설정</div>
@@ -310,7 +302,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo','No
           <button class="guide-btn" id="margin-3" onclick="setMargin(3)">3</button>
           <button class="guide-btn" id="margin-5" onclick="setMargin(5)">5</button>
         </div>
-        <div class="info-text" style="margin-top:6px">연단 위아래 재단 여유분</div>
       </div>
     </div>
     <div style="height:20px"></div>
@@ -325,10 +316,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo','No
   <div class="header no-print">
     <div class="header-row">
       <button class="back-btn" onclick="showScreen('screen-calc')">←</button>
-      <div>
-        <h1>계산 결과</h1>
-        <p id="result-subtitle"></p>
-      </div>
+      <div><h1>계산 결과</h1><p id="result-subtitle"></p></div>
     </div>
   </div>
   <div class="content" id="result-content"></div>
@@ -341,854 +329,664 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo','No
 </div>
 
 <script>
-// ==================== Storage ====================
-const STORAGE_KEY = 'fabric_home_v3';
-const SYNC_KEY = 'fabric_sync_v1';
+// ==================== Storage & Sync ====================
+var STORAGE_KEY='fabric_home_v4', SYNC_KEY='fabric_sync_v1';
+function saveToStorage(d){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(d));return true;}catch(e){return false;}}
+function loadFromStorage(){try{var d=localStorage.getItem(STORAGE_KEY);if(d)return JSON.parse(d);}catch(e){}return[];}
 
-function saveToStorage(data) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); return true; }
-  catch(e) { return false; }
+var syncConfig={token:'',gistId:'',autoSync:false};
+try{var sc=localStorage.getItem(SYNC_KEY);if(sc)syncConfig=JSON.parse(sc);}catch(e){}
+function saveSyncConfig(){localStorage.setItem(SYNC_KEY,JSON.stringify(syncConfig));updateSyncBar();}
+function updateSyncBar(){
+  var bar=document.getElementById('sync-status'),icon=document.getElementById('sync-icon'),text=document.getElementById('sync-text');
+  if(syncConfig.token&&syncConfig.gistId){bar.className='sync-bar';icon.textContent='✅';text.textContent=syncConfig.autoSync?'자동 동기화 중':'수동 동기화 설정됨';}
+  else{bar.className='sync-bar off';icon.textContent='☁️';text.textContent='동기화 설정하기';}
 }
-function loadFromStorage() {
-  try { var d = localStorage.getItem(STORAGE_KEY); if(d) return JSON.parse(d); } catch(e){}
-  return [];
-}
-
-// ==================== Sync Config ====================
-var syncConfig = { token: '', gistId: '', autoSync: false };
-try {
-  var sc = localStorage.getItem(SYNC_KEY);
-  if(sc) syncConfig = JSON.parse(sc);
-} catch(e){}
-
-function saveSyncConfig() {
-  localStorage.setItem(SYNC_KEY, JSON.stringify(syncConfig));
-  updateSyncBar();
-}
-
-function updateSyncBar() {
-  var bar = document.getElementById('sync-status');
-  var icon = document.getElementById('sync-icon');
-  var text = document.getElementById('sync-text');
-  if(syncConfig.token && syncConfig.gistId) {
-    bar.className = 'sync-bar';
-    icon.textContent = '✅';
-    text.textContent = syncConfig.autoSync ? '자동 동기화 중' : '수동 동기화 설정됨 (탭해서 관리)';
-  } else {
-    bar.className = 'sync-bar off';
-    icon.textContent = '☁️';
-    text.textContent = '동기화 설정하기 (여러 기기 공유)';
-  }
-}
-
-function goToSync() {
-  showScreen('screen-sync');
-  document.getElementById('github-token').value = syncConfig.token || '';
-  if(syncConfig.token) {
-    document.getElementById('sync-action-card').style.display = 'block';
-    document.getElementById('sync-gist-info').textContent = syncConfig.gistId
-      ? '✅ Gist 연결됨: ' + syncConfig.gistId.slice(0,8) + '...'
-      : '⏳ 아직 Gist 없음 — 업로드하면 생성됩니다';
-    document.getElementById('auto-sync-toggle').classList.toggle('on', syncConfig.autoSync);
-  }
-}
-
-function showTokenGuide() {
-  alert('토큰 발급 방법:\n\n1. github.com 로그인\n2. 우측 상단 프로필 → Settings\n3. 하단 Developer settings\n4. Personal access tokens → Tokens (classic)\n5. Generate new token (classic)\n6. Note: 연단계산기\n7. Expiration: No expiration\n8. ✅ gist 만 체크\n9. Generate token → 복사\n\n⚠️ 토큰은 한 번만 보이니 바로 붙여넣기 하세요!');
-}
-
-async function verifyToken() {
-  var token = document.getElementById('github-token').value.trim();
-  var resultDiv = document.getElementById('sync-verify-result');
-  if(!token) {
-    resultDiv.innerHTML = '<div class="highlight-box yellow" style="margin-top:10px"><div class="highlight-box-val">토큰을 입력해주세요</div></div>';
-    return;
-  }
-  resultDiv.innerHTML = '<div class="info-text" style="margin-top:10px;color:var(--text2)">확인 중...</div>';
-  try {
-    var res = await fetch('https://api.github.com/user', {
-      headers: { 'Authorization': 'token ' + token }
-    });
-    if(!res.ok) throw new Error('토큰 오류');
-    var user = await res.json();
-    syncConfig.token = token;
-
-    // 기존 Gist 찾기
-    var gistsRes = await fetch('https://api.github.com/gists', {
-      headers: { 'Authorization': 'token ' + token }
-    });
-    var gists = await gistsRes.json();
-    var existing = Array.isArray(gists) ? gists.find(function(g) {
-      return g.description === '홈패션 연단 계산기 데이터';
-    }) : null;
-
-    if(existing) {
-      syncConfig.gistId = existing.id;
-      resultDiv.innerHTML = '<div class="highlight-box green" style="margin-top:10px"><div class="highlight-box-val">✅ ' + user.login + '님 연결됨<br>기존 데이터를 찾았어요. 받아오기를 눌러 불러오세요.</div></div>';
-    } else {
-      resultDiv.innerHTML = '<div class="highlight-box green" style="margin-top:10px"><div class="highlight-box-val">✅ ' + user.login + '님 연결됨<br>업로드 버튼을 누르면 저장이 시작돼요.</div></div>';
-    }
+function goToSync(){showScreen('screen-sync');document.getElementById('github-token').value=syncConfig.token||'';if(syncConfig.token){document.getElementById('sync-action-card').style.display='block';document.getElementById('sync-gist-info').textContent=syncConfig.gistId?'✅ Gist 연결됨: '+syncConfig.gistId.slice(0,8)+'...':'⏳ 아직 Gist 없음';document.getElementById('auto-sync-toggle').classList.toggle('on',syncConfig.autoSync);}}
+function showTokenGuide(){alert('토큰 발급 방법:\n\n1. github.com 로그인\n2. 프로필 → Settings → Developer settings\n3. Personal access tokens → Tokens (classic)\n4. Generate new token\n5. Note: 연단계산기\n6. Expiration: No expiration\n7. ✅ gist 만 체크\n8. Generate → 복사\n\n⚠️ 토큰은 한 번만 보여요!');}
+async function verifyToken(){
+  var token=document.getElementById('github-token').value.trim(),resultDiv=document.getElementById('sync-verify-result');
+  if(!token){resultDiv.innerHTML='<div class="highlight-box yellow" style="margin-top:10px"><div class="highlight-box-val">토큰을 입력해주세요</div></div>';return;}
+  resultDiv.innerHTML='<div class="info-text" style="margin-top:10px">확인 중...</div>';
+  try{
+    var res=await fetch('https://api.github.com/user',{headers:{'Authorization':'token '+token}});
+    if(!res.ok)throw new Error();
+    var user=await res.json();
+    syncConfig.token=token;
+    var gistsRes=await fetch('https://api.github.com/gists',{headers:{'Authorization':'token '+token}});
+    var gists=await gistsRes.json();
+    var existing=Array.isArray(gists)?gists.find(function(g){return g.description==='홈패션 연단 계산기 데이터';}):null;
+    if(existing)syncConfig.gistId=existing.id;
     saveSyncConfig();
-    document.getElementById('sync-action-card').style.display = 'block';
-    document.getElementById('sync-gist-info').textContent = existing
-      ? '✅ Gist 연결됨: ' + existing.id.slice(0,8) + '...'
-      : '⏳ 아직 Gist 없음 — 업로드하면 생성됩니다';
-    document.getElementById('auto-sync-toggle').classList.toggle('on', syncConfig.autoSync);
-  } catch(err) {
-    resultDiv.innerHTML = '<div class="highlight-box yellow" style="margin-top:10px"><div class="highlight-box-val">❌ 토큰이 유효하지 않아요. 다시 확인해주세요.</div></div>';
-  }
+    resultDiv.innerHTML='<div class="highlight-box green" style="margin-top:10px"><div class="highlight-box-val">✅ '+user.login+'님 연결됨'+(existing?'<br>기존 데이터 발견. 받아오기를 눌러주세요.':'<br>업로드 버튼으로 저장 시작')+'</div></div>';
+    document.getElementById('sync-action-card').style.display='block';
+    document.getElementById('sync-gist-info').textContent=existing?'✅ Gist 연결됨: '+existing.id.slice(0,8)+'...':'⏳ 아직 Gist 없음';
+    document.getElementById('auto-sync-toggle').classList.toggle('on',syncConfig.autoSync);
+  }catch(e){resultDiv.innerHTML='<div class="highlight-box yellow" style="margin-top:10px"><div class="highlight-box-val">❌ 토큰이 유효하지 않아요</div></div>';}
 }
-
-function toggleAutoSync() {
-  document.getElementById('auto-sync-toggle').classList.toggle('on');
-  syncConfig.autoSync = document.getElementById('auto-sync-toggle').classList.contains('on');
-  saveSyncConfig();
+function toggleAutoSync(){document.getElementById('auto-sync-toggle').classList.toggle('on');syncConfig.autoSync=document.getElementById('auto-sync-toggle').classList.contains('on');saveSyncConfig();}
+async function syncPush(){
+  if(!syncConfig.token){alert('토큰을 먼저 설정해주세요');return;}
+  var body={description:'홈패션 연단 계산기 데이터',public:false,files:{'fabric_data.json':{content:JSON.stringify({products:products,updatedAt:new Date().toISOString()},null,2)}}};
+  try{
+    var url='https://api.github.com/gists',method='POST';
+    if(syncConfig.gistId){url+='/'+syncConfig.gistId;method='PATCH';}
+    var res=await fetch(url,{method:method,headers:{'Authorization':'token '+syncConfig.token,'Content-Type':'application/json'},body:JSON.stringify(body)});
+    var gist=await res.json();
+    if(gist.id){syncConfig.gistId=gist.id;saveSyncConfig();alert('✅ 업로드 완료!');}
+    else alert('업로드 실패: '+(gist.message||'오류'));
+  }catch(e){alert('오류: '+e.message);}
 }
-
-async function syncPush() {
-  if(!syncConfig.token) { alert('토큰을 먼저 설정해주세요'); return; }
-  var data = { products: products, updatedAt: new Date().toISOString() };
-  var body = {
-    description: '홈패션 연단 계산기 데이터',
-    public: false,
-    files: { 'fabric_data.json': { content: JSON.stringify(data, null, 2) } }
+async function syncPull(){
+  if(!syncConfig.token||!syncConfig.gistId){alert('토큰과 Gist를 먼저 설정해주세요');return;}
+  try{
+    var res=await fetch('https://api.github.com/gists/'+syncConfig.gistId,{headers:{'Authorization':'token '+syncConfig.token}});
+    var gist=await res.json();
+    var fc=gist.files&&gist.files['fabric_data.json']?gist.files['fabric_data.json'].content:null;
+    if(fc){var d=JSON.parse(fc);if(d.products){products=d.products;saveToStorage(products);renderProductList();alert('✅ '+products.length+'개 제품 불러왔어요!');showScreen('screen-main');}}
+    else alert('Gist에 데이터가 없어요');
+  }catch(e){alert('오류: '+e.message);}
+}
+async function autoSyncIfEnabled(){if(syncConfig.autoSync&&syncConfig.token&&syncConfig.gistId)await syncPush();}
+function backupFile(){
+  var blob=new Blob([JSON.stringify(products,null,2)],{type:'application/json'});
+  var url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='fabric_'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+function restoreFile(input){
+  var file=input.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{var d=JSON.parse(e.target.result);products=Array.isArray(d)?d:(d.products||[]);saveToStorage(products);renderProductList();alert('✅ '+products.length+'개 제품 복원됨');showScreen('screen-main');}
+    catch(e){alert('파일을 읽을 수 없어요');}
   };
-  try {
-    var url = 'https://api.github.com/gists';
-    var method = 'POST';
-    if(syncConfig.gistId) { url += '/' + syncConfig.gistId; method = 'PATCH'; }
-    var res = await fetch(url, {
-      method: method,
-      headers: { 'Authorization': 'token ' + syncConfig.token, 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    var gist = await res.json();
-    if(gist.id) {
-      syncConfig.gistId = gist.id;
-      saveSyncConfig();
-      document.getElementById('sync-gist-info').textContent = '✅ Gist 연결됨: ' + gist.id.slice(0,8) + '...';
-      alert('✅ 업로드 완료!');
-    } else {
-      alert('업로드 실패: ' + (gist.message || '알 수 없는 오류'));
-    }
-  } catch(err) { alert('업로드 중 오류: ' + err.message); }
-}
-
-async function syncPull() {
-  if(!syncConfig.token || !syncConfig.gistId) { alert('토큰과 Gist가 설정되지 않았어요'); return; }
-  try {
-    var res = await fetch('https://api.github.com/gists/' + syncConfig.gistId, {
-      headers: { 'Authorization': 'token ' + syncConfig.token }
-    });
-    var gist = await res.json();
-    var fileContent = gist.files && gist.files['fabric_data.json'] ? gist.files['fabric_data.json'].content : null;
-    if(fileContent) {
-      var data = JSON.parse(fileContent);
-      if(data.products && Array.isArray(data.products)) {
-        products = data.products;
-        saveToStorage(products);
-        renderProductList();
-        alert('✅ ' + products.length + '개 제품을 불러왔어요!');
-        showScreen('screen-main');
-      } else { alert('저장된 제품 데이터가 없어요'); }
-    } else { alert('Gist에서 파일을 찾을 수 없어요'); }
-  } catch(err) { alert('불러오기 오류: ' + err.message); }
-}
-
-async function autoSyncIfEnabled() {
-  if(syncConfig.autoSync && syncConfig.token && syncConfig.gistId) {
-    await syncPush();
-  }
-}
-
-function backupFile() {
-  var blob = new Blob([JSON.stringify(products, null, 2)], {type: 'application/json'});
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a');
-  a.href = url;
-  a.download = 'fabric_products_' + new Date().toISOString().slice(0,10) + '.json';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
-function restoreFile(input) {
-  var file = input.files[0];
-  if(!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      var data = JSON.parse(e.target.result);
-      if(Array.isArray(data)) products = data;
-      else if(data.products && Array.isArray(data.products)) products = data.products;
-      else { alert('올바른 백업 파일이 아니에요'); return; }
-      saveToStorage(products);
-      renderProductList();
-      alert('✅ 복원 완료! ' + products.length + '개 제품 불러왔어요');
-      showScreen('screen-main');
-    } catch(err) { alert('파일을 읽을 수 없어요'); }
-  };
-  reader.readAsText(file);
-  input.value = '';
+  reader.readAsText(file);input.value='';
 }
 
 // ==================== State ====================
-var products = loadFromStorage();
-var currentProduct = null;
-var editingIndex = -1;
-var calcMode = 'A';
-var lengthUnit = 'cm';
-var guideLines = 1;
-var marginCm = 1;
-var pieceCount = 0;
-var pieceIdCounter = 0; // 고유 ID 카운터 — 삭제해도 꼬이지 않음
-
-var COLORS = ['#2D5A3D','#B03020','#1A4A7A','#7A5C10'];
+var products=loadFromStorage(),currentProduct=null,editingIndex=-1;
+var calcMode='A',lengthUnit='cm',guideLines=1,marginCm=1;
+var pieceCount=0,pieceIdCounter=0;
+var COLORS=['#2D5A3D','#B03020','#1A4A7A','#7A5C10'];
 
 // ==================== Navigation ====================
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0,0);
-}
-
-function esc(s) {
-  return String(s).replace(/[&<>"]/g, function(c) {
-    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];
-  });
-}
+function showScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 
 // ==================== Product List ====================
-function renderProductList() {
-  var list = document.getElementById('product-list');
-  var empty = document.getElementById('empty-state');
-  if(!products.length) { empty.style.display='block'; list.innerHTML=''; return; }
+function renderProductList(){
+  var list=document.getElementById('product-list'),empty=document.getElementById('empty-state');
+  if(!products.length){empty.style.display='block';list.innerHTML='';return;}
   empty.style.display='none';
-  list.innerHTML = products.map(function(p,i) {
-    return '<div class="product-item">' +
-      '<div class="product-item-name">' + esc(p.name) + '</div>' +
-      '<div class="product-item-info">' + p.pieces.map(function(pc) {
-        var tag = pc.rotatable
-          ? '<span style="font-size:11px;background:var(--accent2);color:var(--accent);padding:2px 6px;border-radius:8px;font-weight:700;margin-left:4px;">회전가능</span>'
-          : '<span style="font-size:11px;background:var(--warn2);color:var(--warn);padding:2px 6px;border-radius:8px;font-weight:700;margin-left:4px;">식서고정</span>';
-        return esc(pc.name) + ' ' + pc.w + '×' + pc.h + 'cm × ' + pc.qty + '장' + tag;
-      }).join('<br>') + '</div>' +
-      '<div class="product-item-actions">' +
-        '<button class="btn-sm btn-edit" onclick="goToRegister(' + i + ')">수정</button>' +
-        '<button class="btn-sm btn-del" onclick="deleteProduct(' + i + ')">삭제</button>' +
-        '<button class="btn-sm btn-calc" onclick="goToCalc(' + i + ')">연단 계산 →</button>' +
-      '</div>' +
-    '</div>';
+  list.innerHTML=products.map(function(p,i){
+    return '<div class="product-item">'+
+      '<div class="product-item-name">'+esc(p.name)+'</div>'+
+      '<div class="product-item-info">'+p.pieces.map(function(pc){
+        var tag=pc.rotatable?'<span style="font-size:11px;background:var(--accent2);color:var(--accent);padding:2px 6px;border-radius:8px;font-weight:700;margin-left:4px;">회전가능</span>':'<span style="font-size:11px;background:var(--warn2);color:var(--warn);padding:2px 6px;border-radius:8px;font-weight:700;margin-left:4px;">식서고정</span>';
+        return esc(pc.name)+' '+pc.w+'×'+pc.h+'cm × '+pc.qty+'장'+tag;
+      }).join('<br>')+'</div>'+
+      '<div class="product-item-actions">'+
+        '<button class="btn-sm btn-edit" onclick="goToRegister('+i+')">수정</button>'+
+        '<button class="btn-sm btn-del" onclick="deleteProduct('+i+')">삭제</button>'+
+        '<button class="btn-sm btn-calc" onclick="goToCalc('+i+')">계산 →</button>'+
+      '</div></div>';
   }).join('');
 }
 
 // ==================== Register ====================
-function goToRegister(idx) {
-  if(typeof idx === 'undefined') idx = -1;
-  editingIndex = idx;
-  pieceCount = 0;
-  pieceIdCounter = 0;
-  document.getElementById('pieces-container').innerHTML = '';
-  document.getElementById('reg-title').textContent = idx >= 0 ? '제품 수정' : '제품 등록';
-  if(idx >= 0) {
-    document.getElementById('prod-name').value = products[idx].name;
-    products[idx].pieces.forEach(function(pc) { addPiece(pc); });
-  } else {
-    document.getElementById('prod-name').value = '';
-    addPiece();
-  }
+function goToRegister(idx){
+  if(typeof idx==='undefined')idx=-1;
+  editingIndex=idx;pieceCount=0;pieceIdCounter=0;
+  document.getElementById('pieces-container').innerHTML='';
+  document.getElementById('reg-title').textContent=idx>=0?'제품 수정':'제품 등록';
+  if(idx>=0){document.getElementById('prod-name').value=products[idx].name;products[idx].pieces.forEach(function(pc){addPiece(pc);});}
+  else{document.getElementById('prod-name').value='';addPiece();}
   showScreen('screen-register');
 }
-
-function addPiece(data) {
-  if(pieceCount >= 4) return;
-  var uid = pieceIdCounter++; // 고유 ID — 삭제해도 중복 없음
-  pieceCount++;
-  var labels = ['A','B','C','D'];
-  var label = labels[Math.min(uid, 3)];
-  var isRotatable = data && data.rotatable ? true : false;
-
-  var div = document.createElement('div');
-  div.className = 'piece-card';
-  div.id = 'piece-uid-' + uid;
-
-  div.innerHTML =
-    '<div class="piece-card-header">' +
-      '<span class="piece-badge">피스 ' + label + '</span>' +
-      (uid > 0 ? '<button class="piece-del" onclick="removePiece(\'piece-uid-' + uid + '\')">×</button>' : '') +
-    '</div>' +
-    '<div class="form-group">' +
-      '<label class="form-label">피스 이름</label>' +
-      '<input type="text" class="form-input" id="p' + uid + '-name" placeholder="예: 앞판" value="' + (data ? esc(data.name) : '') + '">' +
-    '</div>' +
-    '<div class="input-row">' +
-      '<div class="form-group">' +
-        '<label class="form-label">가로 (cm)</label>' +
-        '<input type="number" class="form-input" id="p' + uid + '-w" placeholder="0" inputmode="decimal" value="' + (data ? data.w : '') + '">' +
-      '</div>' +
-      '<div class="form-group">' +
-        '<label class="form-label">세로 (cm)</label>' +
-        '<input type="number" class="form-input" id="p' + uid + '-h" placeholder="0" inputmode="decimal" value="' + (data ? data.h : '') + '">' +
-      '</div>' +
-    '</div>' +
-    '<div class="input-row">' +
-      '<div class="form-group">' +
-        '<label class="form-label">1세트당 수량</label>' +
-        '<input type="number" class="form-input" id="p' + uid + '-qty" placeholder="1" inputmode="numeric" value="' + (data ? data.qty : '1') + '">' +
-      '</div>' +
-      '<div class="form-group" style="display:flex;flex-direction:column;justify-content:flex-end;">' +
-        '<label class="form-label">식서 방향</label>' +
-        '<button type="button" class="toggle ' + (isRotatable ? 'on' : '') + '" id="p' + uid + '-rot" onclick="this.classList.toggle(\'on\');updateRotLabel(' + uid + ')">' +
-          '<div class="toggle-knob"></div>' +
-        '</button>' +
-        '<span style="font-size:12px;color:var(--text3);margin-top:4px;font-weight:700;" id="p' + uid + '-rot-label">' + (isRotatable ? '회전가능' : '식서고정') + '</span>' +
-      '</div>' +
+function addPiece(data){
+  if(pieceCount>=4)return;
+  var uid=pieceIdCounter++;pieceCount++;
+  var labels=['A','B','C','D'],label=labels[Math.min(uid,3)];
+  var isRot=data&&data.rotatable?true:false;
+  var div=document.createElement('div');
+  div.className='piece-card';div.id='piece-uid-'+uid;
+  div.innerHTML=
+    '<div class="piece-card-header">'+
+      '<span class="piece-badge">피스 '+label+'</span>'+
+      (uid>0?'<button class="piece-del" onclick="removePiece(\'piece-uid-'+uid+'\')">×</button>':'')+
+    '</div>'+
+    '<div class="form-group"><label class="form-label">피스 이름</label>'+
+    '<input type="text" class="form-input" id="p'+uid+'-name" placeholder="예: 앞판" value="'+(data?esc(data.name):'')+'"></div>'+
+    '<div class="input-row">'+
+      '<div class="form-group"><label class="form-label">가로 (cm)</label><input type="number" class="form-input" id="p'+uid+'-w" placeholder="0" inputmode="decimal" value="'+(data?data.w:'')+'"></div>'+
+      '<div class="form-group"><label class="form-label">세로 (cm)</label><input type="number" class="form-input" id="p'+uid+'-h" placeholder="0" inputmode="decimal" value="'+(data?data.h:'')+'"></div>'+
+    '</div>'+
+    '<div class="input-row">'+
+      '<div class="form-group"><label class="form-label">1세트당 수량</label><input type="number" class="form-input" id="p'+uid+'-qty" placeholder="1" inputmode="numeric" value="'+(data?data.qty:'1')+'"></div>'+
+      '<div class="form-group" style="display:flex;flex-direction:column;justify-content:flex-end;">'+
+        '<label class="form-label">식서방향</label>'+
+        '<button type="button" class="toggle '+(isRot?'on':'')+'" id="p'+uid+'-rot" onclick="this.classList.toggle(\'on\');updateRotLabel('+uid+')"><div class="toggle-knob"></div></button>'+
+        '<span style="font-size:12px;color:var(--text3);margin-top:4px;font-weight:700;" id="p'+uid+'-rot-label">'+(isRot?'회전가능':'식서고정')+'</span>'+
+      '</div>'+
     '</div>';
-
   document.getElementById('pieces-container').appendChild(div);
   updateAddBtn();
 }
-
-function updateRotLabel(uid) {
-  var btn = document.getElementById('p' + uid + '-rot');
-  var lbl = document.getElementById('p' + uid + '-rot-label');
-  if(btn && lbl) lbl.textContent = btn.classList.contains('on') ? '회전가능' : '식서고정';
-}
-
-function removePiece(cardId) {
-  var el = document.getElementById(cardId);
-  if(el) { el.remove(); pieceCount--; updateAddBtn(); }
-}
-
-function updateAddBtn() {
-  document.getElementById('add-piece-btn').style.display = pieceCount >= 4 ? 'none' : 'block';
-}
-
-function getPieceData() {
-  var cards = document.querySelectorAll('.piece-card');
-  var results = [];
-  cards.forEach(function(card) {
-    var uid = card.id.replace('piece-uid-', '');
-    var w = parseFloat(document.getElementById('p' + uid + '-w').value);
-    var h = parseFloat(document.getElementById('p' + uid + '-h').value);
-    if(!w || !h || w <= 0 || h <= 0) return;
-    results.push({
-      name: document.getElementById('p' + uid + '-name').value.trim() || '피스',
-      w: w, h: h,
-      qty: parseInt(document.getElementById('p' + uid + '-qty').value) || 1,
-      rotatable: document.getElementById('p' + uid + '-rot').classList.contains('on')
-    });
+function updateRotLabel(uid){var b=document.getElementById('p'+uid+'-rot'),l=document.getElementById('p'+uid+'-rot-label');if(b&&l)l.textContent=b.classList.contains('on')?'회전가능':'식서고정';}
+function removePiece(id){var el=document.getElementById(id);if(el){el.remove();pieceCount--;updateAddBtn();}}
+function updateAddBtn(){document.getElementById('add-piece-btn').style.display=pieceCount>=4?'none':'block';}
+function getPieceData(){
+  var cards=document.querySelectorAll('.piece-card'),results=[];
+  cards.forEach(function(card){
+    var uid=card.id.replace('piece-uid-','');
+    var w=parseFloat(document.getElementById('p'+uid+'-w').value),h=parseFloat(document.getElementById('p'+uid+'-h').value);
+    if(!w||!h||w<=0||h<=0)return;
+    results.push({name:document.getElementById('p'+uid+'-name').value.trim()||'피스',w:w,h:h,qty:parseInt(document.getElementById('p'+uid+'-qty').value)||1,rotatable:document.getElementById('p'+uid+'-rot').classList.contains('on')});
   });
   return results;
 }
-
-function saveProduct() {
-  var name = document.getElementById('prod-name').value.trim();
-  if(!name) { alert('제품 이름을 입력해주세요'); return; }
-  var pieces = getPieceData();
-  if(!pieces.length) { alert('피스 정보를 하나 이상 입력해주세요'); return; }
-  var prod = { name: name, pieces: pieces };
-  if(editingIndex >= 0) products[editingIndex] = prod;
-  else products.push(prod);
-  saveToStorage(products);
-  autoSyncIfEnabled();
-  renderProductList();
-  showScreen('screen-main');
+function saveProduct(){
+  var name=document.getElementById('prod-name').value.trim();
+  if(!name){alert('제품 이름을 입력해주세요');return;}
+  var pieces=getPieceData();if(!pieces.length){alert('피스 정보를 입력해주세요');return;}
+  var prod={name:name,pieces:pieces};
+  if(editingIndex>=0)products[editingIndex]=prod;else products.push(prod);
+  saveToStorage(products);autoSyncIfEnabled();renderProductList();showScreen('screen-main');
 }
-
-function deleteProduct(i) {
-  if(!confirm('"' + products[i].name + '"을 삭제할까요?')) return;
-  products.splice(i, 1);
-  saveToStorage(products);
-  autoSyncIfEnabled();
-  renderProductList();
+function deleteProduct(i){
+  if(!confirm('"'+products[i].name+'"을 삭제할까요?'))return;
+  products.splice(i,1);saveToStorage(products);autoSyncIfEnabled();renderProductList();
 }
 
 // ==================== Calc Setup ====================
-function goToCalc(i) {
-  currentProduct = products[i];
-  document.getElementById('calc-prod-name').textContent = currentProduct.name;
-  document.getElementById('fabric-width').value = '';
-  document.getElementById('fabric-length').value = '';
-  document.getElementById('target-qty').value = '';
-  setMode('A'); setUnit('cm'); setGuide(1); setMargin(1);
+function goToCalc(i){
+  currentProduct=products[i];
+  document.getElementById('calc-prod-name').textContent=currentProduct.name;
+  document.getElementById('fabric-width').value='';
+  document.getElementById('fabric-length').value='';
+  document.getElementById('target-qty').value='';
+  setMode('A');setUnit('cm');setGuide(1);setMargin(1);
   showScreen('screen-calc');
 }
-
-function setMode(m) {
-  calcMode = m;
-  document.getElementById('modeA-tab').classList.toggle('active', m==='A');
-  document.getElementById('modeB-tab').classList.toggle('active', m==='B');
-  document.getElementById('fabric-length-group').style.display = m==='A' ? 'block' : 'none';
-  document.getElementById('fabric-qty-group').style.display = m==='B' ? 'block' : 'none';
-  document.getElementById('mode-desc').textContent = m==='A'
-    ? '원단 길이를 입력하면 최대 생산 수량을 계산합니다'
-    : '목표 수량을 입력하면 필요한 원단 길이를 계산합니다';
+function setMode(m){
+  calcMode=m;
+  ['A','B','C'].forEach(function(x){document.getElementById('mode'+x+'-tab').classList.toggle('active',x===m);});
+  document.getElementById('fabric-length-group').style.display=(m==='A'||m==='C')?'block':'none';
+  document.getElementById('fabric-qty-group').style.display=m==='B'?'block':'none';
+  document.getElementById('modeC-qty-card').style.display=m==='C'?'block':'none';
+  var descs={A:'원단 길이 입력 → 최대 생산 수량 계산',B:'목표 수량 입력 → 필요 원단 길이 계산',C:'원단 길이 + 피스별 목표 수량 → 가능 여부 및 최적 배치'};
+  document.getElementById('mode-desc').textContent=descs[m];
+  if(m==='C'&&currentProduct)renderModeCQtyInputs();
 }
-
-function setUnit(u) {
-  lengthUnit = u;
-  document.getElementById('unit-cm').classList.toggle('active', u==='cm');
-  document.getElementById('unit-yard').classList.toggle('active', u==='yard');
-  document.getElementById('fabric-length').placeholder = u==='cm' ? '예: 900' : '예: 10';
+function renderModeCQtyInputs(){
+  var list=document.getElementById('modeC-qty-list');
+  if(!currentProduct){list.innerHTML='';return;}
+  list.innerHTML=currentProduct.pieces.map(function(pc,i){
+    var c=COLORS[i%COLORS.length];
+    return '<div class="piece-qty-row">'+
+      '<div class="piece-qty-dot" style="background:'+c+'"></div>'+
+      '<div class="piece-qty-name">'+esc(pc.name)+'<br><span style="font-size:12px;color:var(--text3);font-weight:600;">'+pc.w+'×'+pc.h+'cm</span></div>'+
+      '<input type="number" class="piece-qty-input" id="modeC-qty-'+i+'" placeholder="0" inputmode="numeric" min="0">'+
+      '<span class="piece-qty-max">장<br><button style="font-size:11px;background:var(--accent2);color:var(--accent);border:none;border-radius:8px;padding:3px 8px;font-weight:700;cursor:pointer;touch-action:manipulation;" onclick="document.getElementById(\'modeC-qty-'+i+'\').value=\'\'">최대한</button></span>'+
+    '</div>';
+  }).join('');
+}
+function setUnit(u){
+  lengthUnit=u;
+  document.getElementById('unit-cm').classList.toggle('active',u==='cm');
+  document.getElementById('unit-yard').classList.toggle('active',u==='yard');
+  document.getElementById('fabric-length').placeholder=u==='cm'?'예: 270':'예: 3';
   updateYardInfo();
 }
-
-function updateYardInfo() {
-  var v = parseFloat(document.getElementById('fabric-length').value);
-  document.getElementById('yard-info').textContent = (lengthUnit==='yard' && v) ? '= ' + (v*91.44).toFixed(0) + 'cm' : '';
-}
-
-function setGuide(n) {
-  guideLines = n;
-  [1,2,3,4].forEach(function(i) { document.getElementById('guide-'+i).classList.toggle('active', i===n); });
-}
-
-function setMargin(n) {
-  marginCm = n;
-  [0,1,2,3,5].forEach(function(i) { document.getElementById('margin-'+i).classList.toggle('active', i===n); });
-}
-
-document.addEventListener('input', function(e) { if(e.target.id==='fabric-length') updateYardInfo(); });
+function updateYardInfo(){var v=parseFloat(document.getElementById('fabric-length').value);document.getElementById('yard-info').textContent=(lengthUnit==='yard'&&v)?'= '+(v*91.44).toFixed(0)+'cm':'';}
+function setGuide(n){guideLines=n;[1,2,3,4].forEach(function(i){document.getElementById('guide-'+i).classList.toggle('active',i===n);});}
+function setMargin(n){marginCm=n;[0,1,2,3,5].forEach(function(i){document.getElementById('margin-'+i).classList.toggle('active',i===n);});}
+document.addEventListener('input',function(e){if(e.target.id==='fabric-length')updateYardInfo();});
 
 // ==================== Core Engine ====================
-function getBestFit(piece, fabricWidth) {
-  var w = piece.w, h = piece.h, rotated = false;
-  if(piece.rotatable) {
-    var perRowNormal = Math.floor(fabricWidth / w);
-    var perRowRotated = Math.floor(fabricWidth / h);
-    if(perRowRotated > perRowNormal) { w = piece.h; h = piece.w; rotated = true; }
-  }
-  var perRow = Math.max(1, Math.floor(fabricWidth / w));
-  return { w:w, h:h, perRow:perRow, rotated:rotated };
+function getBestFit(piece,fabricWidth){
+  var w=piece.w,h=piece.h,rotated=false;
+  if(piece.rotatable){var pN=Math.floor(fabricWidth/w),pR=Math.floor(fabricWidth/h);if(pR>pN){w=piece.h;h=piece.w;rotated=true;}}
+  return{w:w,h:h,perRow:Math.max(1,Math.floor(fabricWidth/w)),rotated:rotated};
 }
-
-function calcPiecePlan(piece, fabricWidth, targetQty, guide, margin) {
-  var fit = getBestFit(piece, fabricWidth);
-  var perRow = fit.perRow;
-  var totalPieces = targetQty * piece.qty;
-  var totalRows = Math.ceil(totalPieces / perRow);
-  var sheetLen = guide * fit.h + margin * 2;
-  var fullSheets = Math.floor(totalRows / guide);
-  var remRows = totalRows % guide;
-  var remSheetLen = remRows > 0 ? remRows * fit.h + margin * 2 : 0;
-  var totalLen = fullSheets * sheetLen + remSheetLen;
-  return { perRow:perRow, totalPieces:totalPieces, totalRows:totalRows, sheetLen:sheetLen,
-           fullSheets:fullSheets, remRows:remRows, remSheetLen:remSheetLen, totalLen:totalLen,
-           w:fit.w, h:fit.h, rotated:fit.rotated };
+function calcPiecePlan(piece,fabricWidth,targetQty,guide,margin){
+  var fit=getBestFit(piece,fabricWidth);
+  var totalPieces=targetQty*piece.qty,totalRows=Math.ceil(totalPieces/fit.perRow);
+  var sheetLen=guide*fit.h+margin*2,fullSheets=Math.floor(totalRows/guide),remRows=totalRows%guide;
+  var remSheetLen=remRows>0?remRows*fit.h+margin*2:0,totalLen=fullSheets*sheetLen+remSheetLen;
+  return{perRow:fit.perRow,totalPieces:totalPieces,totalRows:totalRows,sheetLen:sheetLen,fullSheets:fullSheets,remRows:remRows,remSheetLen:remSheetLen,totalLen:totalLen,w:fit.w,h:fit.h,rotated:fit.rotated};
 }
-
-function calcMaxSets(piece, fabricWidth, fabricLen, guide, margin) {
-  var lo=0, hi=50000, best=0;
-  while(lo<=hi) {
-    var mid = Math.floor((lo+hi)/2);
-    if(mid===0){ lo=1; continue; }
-    var plan = calcPiecePlan(piece, fabricWidth, mid, guide, margin);
-    if(plan.totalLen <= fabricLen+0.001){ best=mid; lo=mid+1; } else { hi=mid-1; }
-  }
+function calcMaxSets(piece,fabricWidth,fabricLen,guide,margin){
+  var lo=0,hi=50000,best=0;
+  while(lo<=hi){var mid=Math.floor((lo+hi)/2);if(mid===0){lo=1;continue;}var plan=calcPiecePlan(piece,fabricWidth,mid,guide,margin);if(plan.totalLen<=fabricLen+0.001){best=mid;lo=mid+1;}else hi=mid-1;}
   return best;
 }
 
-// ==================== Mixed Layout Engine ====================
-// 피스가 2개 이상일 때 혼합 배치 계산
-// 각 줄을 주 피스로 채우고, 남는 폭에 다른 피스를 끼워넣는 방식
-function calcMixedLayout(pieces, fabricWidth, targetQty, margin) {
-  if(pieces.length < 2) return null;
+// ==================== Mixed Layout ====================
+function calcMixedLayout(pieces,fabricWidth,targetQties,margin){
+  // targetQties: 각 피스별 목표 수량 배열 (null이면 최대한)
+  var fits=pieces.map(function(pc){return getBestFit(pc,fabricWidth);});
+  var needs=targetQties?targetQties.slice():pieces.map(function(pc){return 999999;});
+  var remaining=needs.map(function(n,i){return n===null?999999:n;});
+  var rows=[],maxIter=5000,iter=0;
+  var hasRequired=remaining.some(function(r,i){return needs[i]!==null&&r>0;});
+  if(!hasRequired&&!targetQties)return null;
 
-  var fits = pieces.map(function(pc) { return getBestFit(pc, fabricWidth); });
-  var needs = pieces.map(function(pc, i) { return targetQty * pc.qty; }); // 필요 수량
-  var remaining = needs.slice(); // 남은 수량 추적
-
-  var rows = []; // 각 줄의 배치 정보
-
-  // 주 피스(인덱스 0)를 기준으로 줄을 채우되
-  // 각 줄의 남는 공간에 다른 피스를 끼워넣기
-  var maxIter = 2000;
-  var iter = 0;
-
-  while(remaining.some(function(r){ return r > 0; }) && iter++ < maxIter) {
-    // 아직 남은 피스 중 첫 번째를 주 피스로
-    var mainIdx = -1;
-    for(var i=0; i<pieces.length; i++) {
-      if(remaining[i] > 0) { mainIdx = i; break; }
-    }
-    if(mainIdx < 0) break;
-
-    var mainFit = fits[mainIdx];
-    var mainCount = Math.min(mainFit.perRow, remaining[mainIdx]);
-    var usedWidth = mainCount * mainFit.w;
-    var leftover = fabricWidth - usedWidth;
-
-    var rowInfo = {
-      cells: [{ pieceIdx: mainIdx, count: mainCount, w: mainFit.w, h: mainFit.h, rotated: mainFit.rotated }],
-      rowH: mainFit.h
-    };
-    remaining[mainIdx] -= mainCount;
-
-    // 남는 폭에 다른 피스 끼워넣기
-    for(var j=0; j<pieces.length; j++) {
-      if(j === mainIdx) continue;
-      if(remaining[j] <= 0) continue;
-      if(leftover <= 0) break;
-      var jFit = fits[j];
-      // 높이가 비슷해야 같은 줄에 배치 가능 (주 피스 높이 ±50% 이내)
-      if(jFit.h > mainFit.h * 1.5 || jFit.h < mainFit.h * 0.5) continue;
-      var extraCount = Math.min(Math.floor(leftover / jFit.w), remaining[j]);
-      if(extraCount > 0) {
-        rowInfo.cells.push({ pieceIdx: j, count: extraCount, w: jFit.w, h: jFit.h, rotated: jFit.rotated });
-        remaining[j] -= extraCount;
-        leftover -= extraCount * jFit.w;
+  while(remaining.some(function(r){return r>0;})&&iter++<maxIter){
+    var mainIdx=-1;
+    // 우선순위: 필수 피스(needs!=null) 먼저, 그 중 remaining 많은 것
+    var maxRem=-1;
+    for(var i=0;i<pieces.length;i++){
+      if(remaining[i]>0&&(needs[i]===null?false:true)){
+        if(remaining[i]>maxRem){maxRem=remaining[i];mainIdx=i;}
       }
     }
+    // 필수 다 채웠으면 최대한 피스
+    if(mainIdx<0){
+      for(var i=0;i<pieces.length;i++){if(remaining[i]>0){mainIdx=i;break;}}
+    }
+    if(mainIdx<0)break;
 
-    rows.push(rowInfo);
+    var mainFit=fits[mainIdx];
+    var mainCount=Math.min(mainFit.perRow,remaining[mainIdx]);
+    var usedW=mainCount*mainFit.w,leftover=fabricWidth-usedW;
+    var rowH=mainFit.h;
+    var cells=[{pieceIdx:mainIdx,count:mainCount,w:mainFit.w,h:mainFit.h}];
+    remaining[mainIdx]-=mainCount;
+
+    // 남는 폭에 다른 피스 욱여넣기
+    for(var j=0;j<pieces.length;j++){
+      if(j===mainIdx||remaining[j]<=0||leftover<=0)continue;
+      var jFit=fits[j];
+      if(jFit.h>rowH*1.6||jFit.h<rowH*0.4)continue;
+      var extra=Math.min(Math.floor(leftover/jFit.w),remaining[j]);
+      if(extra>0){cells.push({pieceIdx:j,count:extra,w:jFit.w,h:jFit.h});remaining[j]-=extra;leftover-=extra*jFit.w;}
+    }
+    rows.push({cells:cells,rowH:rowH,leftover:leftover});
   }
 
-  // 총 길이 계산 (margin은 전체 앞뒤 한 번씩)
-  var totalLen = margin * 2;
-  rows.forEach(function(row) { totalLen += row.rowH; });
-
-  // 실제로 자른 수량 확인
-  var cut = needs.map(function(){ return 0; });
-  rows.forEach(function(row) {
-    row.cells.forEach(function(cell) { cut[cell.pieceIdx] += cell.count; });
-  });
-
-  return { rows: rows, totalLen: totalLen, cut: cut, needs: needs, pieces: pieces };
+  var totalLen=margin*2+rows.reduce(function(s,r){return s+r.rowH;},0);
+  var cut=pieces.map(function(){return 0;});
+  rows.forEach(function(row){row.cells.forEach(function(cell){cut[cell.pieceIdx]+=cell.count;});});
+  return{rows:rows,totalLen:totalLen,cut:cut,needs:needs,pieces:pieces,fits:fits};
 }
 
-function calcMixedMaxSets(pieces, fabricWidth, fabricLen, margin) {
-  var lo=0, hi=10000, best=0, bestLayout=null;
-  while(lo<=hi) {
-    var mid = Math.floor((lo+hi)/2);
-    if(mid===0){ lo=1; continue; }
-    var layout = calcMixedLayout(pieces, fabricWidth, mid, margin);
-    if(layout && layout.totalLen <= fabricLen+0.001) { best=mid; bestLayout=layout; lo=mid+1; }
-    else hi=mid-1;
+function calcMixedMaxSets(pieces,fabricWidth,fabricLen,margin){
+  var lo=0,hi=5000,best=0,bestLayout=null;
+  while(lo<=hi){
+    var mid=Math.floor((lo+hi)/2);if(mid===0){lo=1;continue;}
+    var needs=pieces.map(function(){return mid;});
+    var layout=calcMixedLayout(pieces,fabricWidth,needs,margin);
+    if(layout&&layout.totalLen<=fabricLen+0.001){best=mid;bestLayout=layout;lo=mid+1;}else hi=mid-1;
   }
-  return { maxSets: best, layout: bestLayout };
+  return{maxSets:best,layout:bestLayout};
 }
 
 // ==================== Calculate ====================
-function calculate() {
-  var fabricW = parseFloat(document.getElementById('fabric-width').value);
-  if(!fabricW || fabricW<=0){ alert('원단 폭을 입력해주세요'); return; }
-
-  var fabricLen=null, targetQty=null;
-  if(calcMode==='A'){
-    var v = parseFloat(document.getElementById('fabric-length').value);
-    if(!v || v<=0){ alert('원단 길이를 입력해주세요'); return; }
-    fabricLen = lengthUnit==='yard' ? v*91.44 : v;
-  } else {
-    targetQty = parseInt(document.getElementById('target-qty').value);
-    if(!targetQty || targetQty<=0){ alert('목표 수량을 입력해주세요'); return; }
-  }
-
-  var pieces = currentProduct.pieces;
+function calculate(){
+  var fabricW=parseFloat(document.getElementById('fabric-width').value);
+  if(!fabricW||fabricW<=0){alert('원단 폭을 입력해주세요');return;}
+  var pieces=currentProduct.pieces;
 
   if(calcMode==='A'){
-    // 기존 방식
-    var maxSets = pieces.reduce(function(min, pc) {
-      return Math.min(min, calcMaxSets(pc, fabricW, fabricLen, guideLines, marginCm));
-    }, 100000);
-    var results = pieces.map(function(pc) {
-      return { piece:pc, plan:calcPiecePlan(pc, fabricW, maxSets, guideLines, marginCm) };
+    var v=parseFloat(document.getElementById('fabric-length').value);
+    if(!v||v<=0){alert('원단 길이를 입력해주세요');return;}
+    var fabricLen=lengthUnit==='yard'?v*91.44:v;
+    var maxSets=pieces.reduce(function(min,pc){return Math.min(min,calcMaxSets(pc,fabricW,fabricLen,guideLines,marginCm));},100000);
+    var results=pieces.map(function(pc){return{piece:pc,plan:calcPiecePlan(pc,fabricW,maxSets,guideLines,marginCm)};});
+    var mixed=pieces.length>=2?calcMixedMaxSets(pieces,fabricW,fabricLen,marginCm):null;
+    renderResultA(maxSets,results,fabricW,fabricLen,mixed);
+
+  }else if(calcMode==='B'){
+    var targetQty=parseInt(document.getElementById('target-qty').value);
+    if(!targetQty||targetQty<=0){alert('목표 수량을 입력해주세요');return;}
+    var results=pieces.map(function(pc){return{piece:pc,plan:calcPiecePlan(pc,fabricW,targetQty,guideLines,marginCm)};});
+    var totalLen=results.reduce(function(s,r){return s+r.plan.totalLen;},0);
+    var mixed=pieces.length>=2?calcMixedLayout(pieces,fabricW,pieces.map(function(){return targetQty;}),marginCm):null;
+    renderResultB(targetQty,results,fabricW,totalLen,mixed);
+
+  }else{ // C
+    var v=parseFloat(document.getElementById('fabric-length').value);
+    if(!v||v<=0){alert('원단 길이를 입력해주세요');return;}
+    var fabricLen=lengthUnit==='yard'?v*91.44:v;
+    var targetQties=pieces.map(function(pc,i){
+      var val=document.getElementById('modeC-qty-'+i).value.trim();
+      return val===''?null:parseInt(val)||0;
     });
-    // 혼합 방식
-    var mixedResult = pieces.length >= 2 ? calcMixedMaxSets(pieces, fabricW, fabricLen, marginCm) : null;
-    renderResultA(maxSets, results, fabricW, fabricLen, mixedResult);
-  } else {
-    var results = pieces.map(function(pc) {
-      return { piece:pc, plan:calcPiecePlan(pc, fabricW, targetQty, guideLines, marginCm) };
-    });
-    var totalLen = results.reduce(function(sum,r){ return sum + r.plan.totalLen; }, 0);
-    // 혼합 방식
-    var mixedLayout = pieces.length >= 2 ? calcMixedLayout(pieces, fabricW, targetQty, marginCm) : null;
-    renderResultB(targetQty, results, fabricW, totalLen, mixedLayout);
+    if(targetQties.every(function(q){return q===null;})){alert('피스별 목표 수량을 하나 이상 입력해주세요');return;}
+    renderResultC(pieces,fabricW,fabricLen,targetQties);
+    return;
   }
   showScreen('screen-result');
 }
 
-// ==================== Render ====================
-function renderResultA(maxSets, results, fabricW, fabricLen, mixedResult) {
-  document.getElementById('result-subtitle').textContent = currentProduct.name;
-  var bottleneck = results.reduce(function(m,r){ return r.plan.totalLen > m.plan.totalLen ? r : m; }, results[0]);
-  var usedLen = bottleneck.plan.totalLen;
-  var remain = Math.max(0, fabricLen - usedLen);
-  var mixedSets = mixedResult ? mixedResult.maxSets : 0;
-  var mixedLen = mixedResult && mixedResult.layout ? mixedResult.layout.totalLen : 0;
-  var isMixedBetter = mixedResult && mixedSets >= maxSets && mixedLen < usedLen;
+// ==================== Canvas Drawing ====================
+function drawFabricCanvas(canvasId,fabricW,rows,margin,pieces){
+  var canvas=document.getElementById(canvasId);
+  if(!canvas)return;
+  var DPR=window.devicePixelRatio||2;
+  var displayW=canvas.parentElement.clientWidth-2; // border
+  var scale=displayW/fabricW; // 픽셀/cm
 
-  var html = '';
+  // 전체 높이 계산
+  var totalCmH=margin*2+rows.reduce(function(s,r){return s+r.rowH;},0);
+  var displayH=Math.round(totalCmH*scale);
 
-  // Hero — 더 좋은 결과 강조
-  if(isMixedBetter) {
-    html += '<div class="card result-hero">';
-    html += '<div class="result-num">' + mixedSets + '</div>';
-    html += '<div class="result-unit-text">세트 생산 가능</div>';
-    html += '<div class="result-label">혼합배치 기준 · 원단 ' + fabricW + 'cm × ' + Math.round(fabricLen) + 'cm</div>';
-    html += '</div>';
-    html += '<div class="stat-row">';
-    html += '<div class="stat-box"><div class="stat-val">' + Math.round(mixedLen) + 'cm</div><div class="stat-label">혼합 사용 길이</div></div>';
-    html += '<div class="stat-box"><div class="stat-val">' + Math.round(fabricLen - mixedLen) + 'cm</div><div class="stat-label">절약!</div></div>';
-    html += '</div>';
-  } else {
-    html += '<div class="card result-hero">';
-    html += '<div class="result-num">' + maxSets + '</div>';
-    html += '<div class="result-unit-text">세트 생산 가능</div>';
-    html += '<div class="result-label">원단 ' + fabricW + 'cm × ' + Math.round(fabricLen) + 'cm · 가이드 ' + guideLines + '줄</div>';
-    html += '</div>';
-    html += '<div class="stat-row">';
-    html += '<div class="stat-box"><div class="stat-val">' + Math.round(usedLen) + 'cm</div><div class="stat-label">사용 길이</div></div>';
-    html += '<div class="stat-box"><div class="stat-val">' + Math.round(remain) + 'cm</div><div class="stat-label">남는 길이</div></div>';
-    html += '</div>';
-  }
+  canvas.width=displayW*DPR;
+  canvas.height=displayH*DPR;
+  canvas.style.width=displayW+'px';
+  canvas.style.height=displayH+'px';
 
-  // 혼합 배치 결과 (피스 2개 이상일 때)
-  if(mixedResult && mixedResult.layout) {
-    html += renderMixedCard(mixedResult.layout, fabricW, mixedSets, isMixedBetter);
-  }
+  var ctx=canvas.getContext('2d');
+  ctx.scale(DPR,DPR);
 
-  // 구분선
-  if(mixedResult) {
-    html += '<div style="display:flex;align-items:center;gap:10px;margin:16px 0;">';
-    html += '<div style="flex:1;height:1px;background:var(--border)"></div>';
-    html += '<div style="font-size:12px;font-weight:700;color:var(--text3)">피스별 구간 분리 계산</div>';
-    html += '<div style="flex:1;height:1px;background:var(--border)"></div>';
-    html += '</div>';
-  }
-
-  if(results.length > 1) {
-    html += '<div class="highlight-box yellow">';
-    html += '<div class="highlight-box-title">⚠️ 병목 피스</div>';
-    html += '<div class="highlight-box-val">' + esc(bottleneck.piece.name) + '이 가장 많은 원단을 사용해요.</div>';
-    html += '</div>';
-  }
-  results.forEach(function(r,idx){ html += renderPlanCard(r.piece, r.plan, idx); });
-  document.getElementById('result-content').innerHTML = html;
-}
-
-function renderResultB(targetQty, results, fabricW, totalLen, mixedLayout) {
-  document.getElementById('result-subtitle').textContent = currentProduct.name;
-  var yards = (totalLen/91.44).toFixed(2);
-  var mixedLen = mixedLayout ? mixedLayout.totalLen : null;
-  var isMixedBetter = mixedLen && mixedLen < totalLen;
-
-  var html = '';
-
-  if(isMixedBetter) {
-    html += '<div class="card result-hero">';
-    html += '<div class="result-num">' + Math.round(mixedLen) + '</div>';
-    html += '<div class="result-unit-text">cm 필요 (혼합배치)</div>';
-    html += '<div class="result-label">' + targetQty + '세트 · 약 ' + (mixedLen/91.44).toFixed(2) + '야드</div>';
-    html += '</div>';
-    html += '<div class="stat-row">';
-    html += '<div class="stat-box"><div class="stat-val">' + Math.round(totalLen - mixedLen) + 'cm</div><div class="stat-label">절약!</div></div>';
-    html += '<div class="stat-box"><div class="stat-val">' + (mixedLen/91.44).toFixed(1) + '야드</div><div class="stat-label">혼합 필요 야드</div></div>';
-    html += '</div>';
-  } else {
-    html += '<div class="card result-hero">';
-    html += '<div class="result-num">' + Math.round(totalLen) + '</div>';
-    html += '<div class="result-unit-text">cm 필요</div>';
-    html += '<div class="result-label">' + targetQty + '세트 기준 · 약 ' + yards + '야드 · 가이드 ' + guideLines + '줄</div>';
-    html += '</div>';
-    html += '<div class="stat-row">';
-    html += '<div class="stat-box"><div class="stat-val">' + targetQty + '</div><div class="stat-label">목표 수량</div></div>';
-    html += '<div class="stat-box"><div class="stat-val">' + (totalLen/91.44).toFixed(1) + '야드</div><div class="stat-label">필요 야드</div></div>';
-    html += '</div>';
-  }
-
-  // 혼합 배치 카드
-  if(mixedLayout) {
-    html += renderMixedCard(mixedLayout, fabricW, targetQty, isMixedBetter);
-  }
-
-  // 구분선
-  if(mixedLayout) {
-    html += '<div style="display:flex;align-items:center;gap:10px;margin:16px 0;">';
-    html += '<div style="flex:1;height:1px;background:var(--border)"></div>';
-    html += '<div style="font-size:12px;font-weight:700;color:var(--text3)">피스별 구간 분리 계산</div>';
-    html += '<div style="flex:1;height:1px;background:var(--border)"></div>';
-    html += '</div>';
-  }
-
-  results.forEach(function(r,idx){ html += renderPlanCard(r.piece, r.plan, idx); });
-  document.getElementById('result-content').innerHTML = html;
-}
-
-// ==================== Mixed Card ====================
-function renderMixedCard(layout, fabricW, qty, isBetter) {
-  var html = '<div class="plan-card" style="border-color:' + (isBetter?'#B8D4C0':'var(--border)') + ';background:' + (isBetter?'var(--accent2)':'var(--surface2)') + ';">';
-  html += '<div class="plan-header">';
-  html += '<div style="font-size:16px;font-weight:800;flex:1;">🔀 혼합 배치' + (isBetter?' (추천!)':'') + '</div>';
-  html += '<div class="plan-tag plan-tag-ok">원단 절약</div>';
-  html += '</div>';
-
-  // 피스별 수량 요약
-  html += '<div class="plan-body" style="margin-bottom:12px;">';
-  layout.pieces.forEach(function(pc, i) {
-    var cut = layout.cut[i];
-    var need = layout.needs[i];
-    html += esc(pc.name) + ': <strong>' + cut + '장</strong> / ' + need + '장 필요';
-    if(cut < need) html += ' <span style="color:var(--danger);font-size:12px;">⚠ ' + (need-cut) + '장 부족</span>';
-    if(i < layout.pieces.length-1) html += '<br>';
-  });
-  html += '<br>총 필요 길이: <strong>' + Math.round(layout.totalLen) + 'cm</strong>';
-  html += '</div>';
-
-  // 배치 그림
-  html += '<div class="sheet-viz">';
-  html += '<div class="sheet-viz-header"><span class="sheet-viz-title">혼합 배치도</span><span class="sheet-viz-size">폭 ' + fabricW + 'cm</span></div>';
-  html += renderMixedViz(layout, fabricW);
-  html += '</div>';
-
-  html += '</div>';
-  return html;
-}
-
-function renderMixedViz(layout, fabricW) {
-  var rows = layout.rows;
-  var margin = marginCm;
-  var totalH = layout.totalLen;
-  var dispH = Math.min(400, Math.max(100, rows.length * 28 + margin * 6));
-
-  var html = '<div style="margin-bottom:4px">';
-  html += '<div class="sheet-canvas" style="height:' + dispH + 'px;">';
+  // 배경
+  ctx.fillStyle='#FAFAFA';
+  ctx.fillRect(0,0,displayW,displayH);
 
   // 상단 여유
-  if(margin > 0) {
-    var mPct = (margin / totalH) * 100;
-    html += '<div class="sheet-margin-top" style="top:0;height:' + mPct + '%;"></div>';
+  if(margin>0){
+    drawStripe(ctx,0,0,displayW,margin*scale,'#FDF3DC');
+    ctx.strokeStyle='#E0C870';ctx.lineWidth=0.5;
+    ctx.strokeRect(0,0,displayW,margin*scale);
   }
 
-  // 각 줄 그리기
-  var curY = margin;
-  rows.forEach(function(row, ri) {
-    var topPct = (curY / totalH) * 100;
-    var hPct = (row.rowH / totalH) * 100;
-    html += '<div style="position:absolute;left:0;right:0;top:' + topPct + '%;height:' + hPct + '%;display:flex;">';
+  // 줄별 그리기
+  var curY=margin*scale;
+  rows.forEach(function(row,ri){
+    var rowH=row.rowH*scale;
+    var curX=0;
 
-    // 셀들
-    row.cells.forEach(function(cell) {
-      var cellWidthPct = (cell.w * cell.count / fabricW) * 100;
-      var color = COLORS[cell.pieceIdx % COLORS.length];
-      var pc = layout.pieces[cell.pieceIdx];
-      html += '<div style="width:' + cellWidthPct + '%;background:' + color + ';display:flex;align-items:center;justify-content:center;' +
-              'font-size:9px;font-weight:700;color:rgba(255,255,255,0.95);border-right:1px solid rgba(255,255,255,0.3);overflow:hidden;">';
-      html += esc(pc.name) + '×' + cell.count;
-      html += '</div>';
+    // 피스 그리기
+    row.cells.forEach(function(cell){
+      var color=COLORS[cell.pieceIdx%COLORS.length];
+      var cellW=cell.w*scale,cellH=Math.min(cell.h*scale,rowH);
+
+      for(var c=0;c<cell.count;c++){
+        // 피스 배경
+        ctx.fillStyle=color;
+        ctx.fillRect(curX+0.5,curY+0.5,cellW-1,cellH-1);
+        // 피스 테두리 (흰색 구분선)
+        ctx.strokeStyle='rgba(255,255,255,0.8)';
+        ctx.lineWidth=1.5;
+        ctx.strokeRect(curX+0.5,curY+0.5,cellW-1,cellH-1);
+        curX+=cellW;
+      }
     });
 
-    // 남는 공간
-    var usedW = row.cells.reduce(function(s,c){ return s + c.w * c.count; }, 0);
-    var leftoverPct = ((fabricW - usedW) / fabricW) * 100;
-    if(leftoverPct > 0.5) {
-      html += '<div style="flex:1;background:repeating-linear-gradient(45deg,#f0f0f0,#f0f0f0 3px,#fff 3px,#fff 6px);' +
-              'display:flex;align-items:center;justify-content:center;font-size:9px;color:#aaa;">';
-      html += Math.round(fabricW - usedW) + 'cm';
-      html += '</div>';
+    // 자투리
+    if(row.leftover&&row.leftover>0.5){
+      var leftW=row.leftover*scale;
+      drawStripe(ctx,curX,curY,leftW,rowH,'#F0EEEC');
+      ctx.strokeStyle='#C0BCBC';ctx.lineWidth=0.5;
+      ctx.strokeRect(curX,curY,leftW,rowH);
+      // 자투리 치수
+      if(leftW>30){
+        ctx.fillStyle='#A8A4A0';ctx.font='bold '+(Math.max(9,Math.min(11,leftW/4)))+'px sans-serif';ctx.textAlign='center';
+        ctx.fillText(Math.round(row.leftover)+'cm',curX+leftW/2,curY+rowH/2+4);
+      }
     }
 
-    html += '</div>';
-    curY += row.rowH;
+    // 줄 구분선
+    ctx.strokeStyle='rgba(255,255,255,0.6)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(0,curY);ctx.lineTo(displayW,curY);ctx.stroke();
+
+    curY+=rowH;
   });
 
   // 하단 여유
-  if(margin > 0) {
-    var mPct2 = (margin / totalH) * 100;
-    html += '<div class="sheet-margin-bottom" style="bottom:0;height:' + mPct2 + '%;"></div>';
+  if(margin>0){
+    drawStripe(ctx,0,curY,displayW,margin*scale,'#FDF3DC');
+    ctx.strokeStyle='#E0C870';ctx.lineWidth=0.5;
+    ctx.strokeRect(0,curY,displayW,margin*scale);
   }
 
-  html += '</div></div>';
-
-  // 범례
-  html += '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;">';
-  layout.pieces.forEach(function(pc, i) {
-    html += '<div style="display:flex;align-items:center;gap:4px;">';
-    html += '<div style="width:12px;height:12px;border-radius:3px;background:' + COLORS[i%COLORS.length] + '"></div>';
-    html += '<span style="font-size:12px;font-weight:700;">' + esc(pc.name) + ' ' + pc.w + '×' + pc.h + 'cm</span>';
-    html += '</div>';
-  });
-  html += '</div>';
-
-  return html;
+  // 외곽 테두리
+  ctx.strokeStyle='#C0BCBC';ctx.lineWidth=1;
+  ctx.strokeRect(0.5,0.5,displayW-1,displayH-1);
 }
 
-function renderPlanCard(piece, plan, idx) {
-  var c = COLORS[idx % COLORS.length];
-  var rotText = plan.rotated ? ' <span style="font-size:11px;background:var(--accent2);color:var(--accent);padding:2px 6px;border-radius:8px;font-weight:700;">회전적용</span>' : '';
-
-  var html = '<div class="plan-card">';
-  html += '<div class="plan-header">';
-  html += '<div class="plan-dot" style="background:' + c + '"></div>';
-  html += '<div class="plan-name">' + esc(piece.name) + ' ' + piece.w + '×' + piece.h + 'cm' + rotText + '</div>';
-  html += '<div class="plan-tag ' + (plan.remRows>0?'plan-tag-warn':'plan-tag-ok') + '">' + (plan.remRows>0?'자투리 있음':'딱 맞음') + '</div>';
-  html += '</div>';
-
-  html += '<div class="plan-body">';
-  html += '폭에 <strong>' + plan.perRow + '개</strong> 배치 → 총 <strong>' + plan.totalRows + '줄</strong> 필요<br>';
-  html += '연단 <strong>' + plan.sheetLen + 'cm</strong> × <strong>' + plan.fullSheets + '장</strong>';
-  if(plan.remRows > 0) html += ' + 자투리 <strong>' + plan.remSheetLen + 'cm</strong> × <strong>1장</strong>';
-  html += '<br>총 길이: <strong>' + Math.round(plan.totalLen) + 'cm</strong>';
-  html += '</div>';
-
-  html += '<div class="sheet-viz">';
-  html += '<div class="sheet-viz-header">';
-  html += '<span class="sheet-viz-title">연단 배치도</span>';
-  html += '<span class="sheet-viz-size">' + plan.w*plan.perRow + 'cm × ' + plan.sheetLen + 'cm</span>';
-  html += '</div>';
-
-  for(var s=0; s<Math.min(plan.fullSheets,2); s++) {
-    html += renderSheetViz(plan, c, false, (s+1)+'번째 연단');
+function drawStripe(ctx,x,y,w,h,bg){
+  ctx.fillStyle=bg;ctx.fillRect(x,y,w,h);
+  ctx.strokeStyle='rgba(180,160,0,0.3)';ctx.lineWidth=0.5;
+  var step=8;
+  ctx.save();ctx.beginPath();ctx.rect(x,y,w,h);ctx.clip();
+  for(var i=-h;i<w+h;i+=step){
+    ctx.beginPath();ctx.moveTo(x+i,y);ctx.lineTo(x+i+h,y+h);ctx.stroke();
   }
-  if(plan.fullSheets > 2) {
-    html += '<div style="text-align:center;padding:8px;color:var(--text3);font-size:12px;font-weight:700;">··· ' + (plan.fullSheets-2) + '장 동일 반복</div>';
-  }
-  if(plan.remRows > 0) html += renderSheetViz(plan, c, true, '자투리 연단');
-  html += '</div></div>';
-  return html;
+  ctx.restore();
 }
 
-function renderSheetViz(plan, color, isRem, label) {
-  var rows = isRem ? plan.remRows : guideLines;
-  var height = isRem ? plan.remSheetLen : plan.sheetLen;
-  var margin = marginCm;
-  var pieceH = plan.h;
-  var perRow = plan.perRow;
-  var dispH = Math.min(200, Math.max(70, rows * 32 + margin * 8));
-
-  var html = '<div style="margin-bottom:10px">';
-  html += '<div style="font-size:11px;font-weight:700;color:var(--text3);margin-bottom:4px;">' + label + ' (' + height + 'cm)</div>';
-  html += '<div class="sheet-canvas" style="height:' + dispH + 'px;">';
-
-  if(margin > 0) {
-    var pct = (margin/height)*100;
-    html += '<div class="sheet-margin-top" style="top:0;height:' + pct + '%;"></div>';
+// 단일 피스 배치도용 rows 생성
+function makeSinglePieceRows(plan,guide){
+  var rows=[];
+  // fullSheets
+  for(var s=0;s<Math.min(plan.fullSheets,3);s++){
+    var cells=[{pieceIdx:0,count:plan.perRow,w:plan.w,h:plan.h}];
+    var leftover=0; // 단일피스는 자투리 없음 (이미 perRow로 최대)
+    rows.push({cells:cells,rowH:plan.h*guide,leftover:leftover,label:(s+1)+'번째 연단'});
   }
+  if(plan.fullSheets>3){
+    rows.push({cells:[],rowH:0,leftover:0,label:'skip',skipCount:plan.fullSheets-3});
+  }
+  // 자투리 연단
+  if(plan.remRows>0){
+    rows.push({cells:[{pieceIdx:0,count:plan.perRow,w:plan.w,h:plan.h}],rowH:plan.h*plan.remRows,leftover:0,label:'자투리 연단'});
+  }
+  return rows;
+}
 
-  for(var r=0; r<rows; r++) {
-    var top = ((margin + r*pieceH)/height)*100;
-    var hPct = (pieceH/height)*100;
-    html += '<div class="sheet-row-viz" style="top:' + top + '%;height:' + hPct + '%;">';
-    for(var col=0; col<perRow; col++) {
-      html += '<div class="sheet-piece-viz" style="background:' + color + ';">' + plan.w + '</div>';
+// ==================== Render ====================
+function renderResultA(maxSets,results,fabricW,fabricLen,mixed){
+  document.getElementById('result-subtitle').textContent=currentProduct.name;
+  var bottleneck=results.reduce(function(m,r){return r.plan.totalLen>m.plan.totalLen?r:m;},results[0]);
+  var usedLen=bottleneck.plan.totalLen,remain=Math.max(0,fabricLen-usedLen);
+  var mixedSets=mixed?mixed.maxSets:0,mixedLen=mixed&&mixed.layout?mixed.layout.totalLen:0;
+  var isBetter=mixed&&mixedSets>=maxSets&&mixedLen<usedLen;
+
+  var html='';
+  html+='<div class="result-hero">';
+  html+='<div class="result-num">'+(isBetter?mixedSets:maxSets)+'</div>';
+  html+='<div class="result-unit-text">세트 생산 가능</div>';
+  html+='<div class="result-label">'+fabricW+'cm × '+Math.round(fabricLen)+'cm · 가이드 '+guideLines+'줄</div>';
+  html+='</div>';
+  html+='<div class="stat-row">';
+  html+='<div class="stat-box"><div class="stat-val">'+Math.round(isBetter?mixedLen:usedLen)+'cm</div><div class="stat-label">사용 길이</div></div>';
+  html+='<div class="stat-box"><div class="stat-val">'+Math.round(fabricLen-(isBetter?mixedLen:usedLen))+'cm</div><div class="stat-label">남는 길이</div></div>';
+  html+='</div>';
+
+  if(mixed&&mixed.layout){html+=renderMixedCard(mixed.layout,fabricW,isBetter,'혼합 배치'+(isBetter?' (추천!)':''));}
+
+  if(results.length>1){
+    html+='<div class="divider"><div class="divider-line"></div><div class="divider-text">피스별 구간 분리 계산</div><div class="divider-line"></div></div>';
+    if(results.length>1){
+      html+='<div class="highlight-box yellow"><div class="highlight-box-title">⚠️ 병목 피스</div>';
+      html+='<div class="highlight-box-val">'+esc(bottleneck.piece.name)+'이 가장 많은 원단을 사용해요</div></div>';
     }
-    html += '</div>';
+  }
+  results.forEach(function(r,idx){html+=renderPlanCard(r.piece,r.plan,idx,fabricW);});
+  document.getElementById('result-content').innerHTML=html;
+
+  // Canvas 그리기
+  if(mixed&&mixed.layout)drawMixedCanvas('canvas-mixed',fabricW,mixed.layout);
+  results.forEach(function(r,idx){
+    var cid='canvas-plan-'+idx;
+    var rows=buildSingleRows(r.plan,guideLines);
+    setTimeout(function(){drawFabricCanvas(cid,fabricW,rows,marginCm,[r.piece]);},50);
+  });
+  showScreen('screen-result');
+}
+
+function renderResultB(targetQty,results,fabricW,totalLen,mixed){
+  document.getElementById('result-subtitle').textContent=currentProduct.name;
+  var mixedLen=mixed?mixed.totalLen:null,isBetter=mixedLen&&mixedLen<totalLen;
+
+  var html='';
+  html+='<div class="result-hero">';
+  html+='<div class="result-num">'+Math.round(isBetter?mixedLen:totalLen)+'</div>';
+  html+='<div class="result-unit-text">cm 필요'+(isBetter?' (혼합배치)':'')+'</div>';
+  html+='<div class="result-label">'+targetQty+'세트 · 약 '+((isBetter?mixedLen:totalLen)/91.44).toFixed(2)+'야드</div>';
+  html+='</div>';
+  html+='<div class="stat-row">';
+  html+='<div class="stat-box"><div class="stat-val">'+targetQty+'</div><div class="stat-label">목표 수량</div></div>';
+  html+='<div class="stat-box"><div class="stat-val">'+((isBetter?mixedLen:totalLen)/91.44).toFixed(1)+'야드</div><div class="stat-label">필요 야드</div></div>';
+  html+='</div>';
+
+  if(mixed)html+=renderMixedCard(mixed,fabricW,isBetter,'혼합 배치'+(isBetter?' (추천!)':''));
+  if(results.length>1){html+='<div class="divider"><div class="divider-line"></div><div class="divider-text">피스별 구간 분리 계산</div><div class="divider-line"></div></div>';}
+  results.forEach(function(r,idx){html+=renderPlanCard(r.piece,r.plan,idx,fabricW);});
+  document.getElementById('result-content').innerHTML=html;
+
+  if(mixed)drawMixedCanvas('canvas-mixed',fabricW,mixed);
+  results.forEach(function(r,idx){
+    var rows=buildSingleRows(r.plan,guideLines);
+    setTimeout(function(){drawFabricCanvas('canvas-plan-'+idx,fabricW,rows,marginCm,[r.piece]);},50);
+  });
+  showScreen('screen-result');
+}
+
+function renderResultC(pieces,fabricW,fabricLen,targetQties){
+  document.getElementById('result-subtitle').textContent=currentProduct.name;
+  // 혼합 배치로 계산
+  var layout=calcMixedLayout(pieces,fabricW,targetQties,marginCm);
+  if(!layout){alert('계산할 수 없어요');return;}
+
+  var allOk=pieces.every(function(pc,i){return targetQties[i]===null||layout.cut[i]>=targetQties[i];});
+  var fitsInFabric=layout.totalLen<=fabricLen+0.001;
+
+  var html='';
+  if(allOk&&fitsInFabric){
+    html+='<div class="result-hero">';
+    html+='<div class="result-num">✅</div>';
+    html+='<div class="result-unit-text">모두 가능해요!</div>';
+    html+='<div class="result-label">'+Math.round(layout.totalLen)+'cm 사용 · '+Math.round(fabricLen-layout.totalLen)+'cm 남음</div>';
+    html+='</div>';
+  }else if(!fitsInFabric){
+    html+='<div class="result-hero warn">';
+    html+='<div class="result-num">⚠️</div>';
+    html+='<div class="result-unit-text">원단이 부족해요</div>';
+    html+='<div class="result-label">필요 '+Math.round(layout.totalLen)+'cm · 보유 '+Math.round(fabricLen)+'cm · '+Math.round(layout.totalLen-fabricLen)+'cm 부족</div>';
+    html+='</div>';
+  }else{
+    html+='<div class="result-hero info">';
+    html+='<div class="result-num">📊</div>';
+    html+='<div class="result-unit-text">최적 배치 결과</div>';
+    html+='<div class="result-label">'+Math.round(layout.totalLen)+'cm 필요</div>';
+    html+='</div>';
   }
 
-  if(margin > 0) {
-    var pct2 = (margin/height)*100;
-    html += '<div class="sheet-margin-bottom" style="bottom:0;height:' + pct2 + '%;"></div>';
-  }
+  // 피스별 달성 현황
+  html+='<div class="card">';
+  html+='<div class="card-title">피스별 달성 현황</div>';
+  pieces.forEach(function(pc,i){
+    var cut=layout.cut[i],need=targetQties[i],ok=need===null||(cut>=need);
+    var c=COLORS[i%COLORS.length];
+    html+='<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">';
+    html+='<div style="width:12px;height:12px;border-radius:3px;background:'+c+';flex-shrink:0;"></div>';
+    html+='<div style="flex:1;font-size:14px;font-weight:700;">'+esc(pc.name)+'<br><span style="font-size:12px;color:var(--text3);font-weight:600;">'+pc.w+'×'+pc.h+'cm</span></div>';
+    html+='<div style="text-align:right;font-size:14px;font-weight:800;color:'+(ok?'var(--accent)':'var(--danger)')+';">';
+    if(need===null)html+='최대 '+cut+'장';
+    else html+=(ok?'✅ ':'⚠️ ')+cut+' / '+need+'장';
+    html+='</div></div>';
+  });
+  html+='</div>';
 
-  html += '</div></div>';
+  html+=renderMixedCard(layout,fabricW,allOk&&fitsInFabric,'혼합 배치 계획');
+  document.getElementById('result-content').innerHTML=html;
+  drawMixedCanvas('canvas-mixed',fabricW,layout);
+  showScreen('screen-result');
+}
+
+// ==================== Plan Card ====================
+function renderPlanCard(piece,plan,idx,fabricW){
+  var c=COLORS[idx%COLORS.length];
+  var rotText=plan.rotated?' <span style="font-size:11px;background:var(--accent2);color:var(--accent);padding:2px 6px;border-radius:8px;font-weight:700;">회전적용</span>':'';
+  var cid='canvas-plan-'+idx;
+
+  var html='<div class="plan-card">';
+  html+='<div class="plan-header">';
+  html+='<div class="plan-dot" style="background:'+c+'"></div>';
+  html+='<div class="plan-name">'+esc(piece.name)+' '+piece.w+'×'+piece.h+'cm'+rotText+'</div>';
+  html+='<div class="plan-tag '+(plan.remRows>0?'plan-tag-warn':'plan-tag-ok')+'">'+(plan.remRows>0?'자투리 있음':'딱 맞음')+'</div>';
+  html+='</div>';
+  html+='<div class="plan-body">';
+  html+='폭에 <strong>'+plan.perRow+'개</strong> 배치 · 총 <strong>'+plan.totalRows+'줄</strong><br>';
+  html+='연단 <strong>'+plan.sheetLen+'cm</strong> × <strong>'+plan.fullSheets+'장</strong>';
+  if(plan.remRows>0)html+=' + 자투리 <strong>'+plan.remSheetLen+'cm</strong> × <strong>1장</strong>';
+  html+='<br>총 길이: <strong>'+Math.round(plan.totalLen)+'cm</strong>';
+  html+='</div>';
+  html+='<div class="canvas-wrap"><div class="canvas-label">배치도 — '+fabricW+'cm 폭 기준</div>';
+  html+='<canvas id="'+cid+'"></canvas>';
+  // 범례
+  html+='<div class="legend"><div class="legend-item"><div class="legend-dot" style="background:'+c+'"></div>'+esc(piece.name)+' '+plan.w+'×'+plan.h+'cm</div>';
+  if(plan.remRows>0)html+='<div class="legend-item"><div class="legend-dot" style="background:repeating-linear-gradient(45deg,#FDF3DC,#FDF3DC 3px,#F0EEEC 3px,#F0EEEC 6px)"></div>자투리</div>';
+  html+='</div></div>';
+  html+='</div>';
   return html;
+}
+
+function buildSingleRows(plan,guide){
+  var rows=[];
+  var fullRows=plan.fullSheets*guide;
+  // 전체 줄을 guide 단위로 묶어서 표현
+  for(var s=0;s<Math.min(plan.fullSheets,2);s++){
+    var cells=[];
+    for(var r=0;r<guide;r++){
+      cells.push({pieceIdx:0,count:plan.perRow,w:plan.w,h:plan.h});
+    }
+    var leftoverW=0; // 단일피스 자투리폭은 없음 (perRow로 이미 최적)
+    rows.push({cells:[{pieceIdx:0,count:plan.perRow,w:plan.w,h:plan.h}],rowH:plan.h,leftover:0});
+  }
+  if(plan.fullSheets>2){
+    // 중간 생략 표시용 더미 행
+    for(var s=2;s<plan.fullSheets;s++){
+      rows.push({cells:[{pieceIdx:0,count:plan.perRow,w:plan.w,h:plan.h}],rowH:plan.h,leftover:0});
+    }
+  }
+  if(plan.remRows>0){
+    rows.push({cells:[{pieceIdx:0,count:plan.perRow,w:plan.w,h:plan.h}],rowH:plan.h,leftover:0,isRem:true,remCount:plan.remRows});
+  }
+  return rows;
+}
+
+// ==================== Mixed Card ====================
+function renderMixedCard(layout,fabricW,isBetter,title){
+  var html='<div class="plan-card" style="border-color:'+(isBetter?'#B8D4C0':'var(--border)')+';background:'+(isBetter?'var(--accent2)':'var(--surface2)')+';">';
+  html+='<div class="plan-header"><div style="font-size:15px;font-weight:800;flex:1;">🔀 '+title+'</div></div>';
+  html+='<div class="plan-body" style="margin-bottom:10px;">';
+  layout.pieces.forEach(function(pc,i){
+    var cut=layout.cut[i],need=layout.needs[i];
+    html+=esc(pc.name)+': <strong>'+cut+'장</strong>'+(need&&need<999999?' / '+need+'장 목표':'')+'<br>';
+  });
+  html+='총 길이: <strong>'+Math.round(layout.totalLen)+'cm</strong>';
+  html+='</div>';
+  html+='<div class="canvas-wrap"><div class="canvas-label">혼합 배치도 — '+fabricW+'cm 폭 기준</div>';
+  html+='<canvas id="canvas-mixed"></canvas>';
+  // 범례
+  html+='<div class="legend">';
+  layout.pieces.forEach(function(pc,i){
+    html+='<div class="legend-item"><div class="legend-dot" style="background:'+COLORS[i%COLORS.length]+'"></div>'+esc(pc.name)+' '+pc.w+'×'+pc.h+'cm</div>';
+  });
+  html+='<div class="legend-item"><div class="legend-dot" style="background:repeating-linear-gradient(45deg,#F0EEEC,#F0EEEC 3px,#E0DCD6 3px,#E0DCD6 6px)"></div>자투리</div>';
+  html+='</div></div></div>';
+  return html;
+}
+
+function drawMixedCanvas(cid,fabricW,layout){
+  setTimeout(function(){
+    // layout.rows를 drawFabricCanvas용 rows로 변환
+    var rows=layout.rows.map(function(row){
+      return{cells:row.cells,rowH:row.rowH,leftover:row.leftover||0};
+    });
+    drawFabricCanvas(cid,fabricW,rows,marginCm,layout.pieces);
+  },50);
 }
 
 // ==================== Init ====================
 renderProductList();
 updateSyncBar();
+setMode('A');
 </script>
 </body>
 </html>
