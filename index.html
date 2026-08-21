@@ -524,13 +524,24 @@ function renderModeCQtyInputs(){
   if(!currentProduct){list.innerHTML='';return;}
   list.innerHTML=currentProduct.pieces.map(function(pc,i){
     var c=COLORS[i%COLORS.length];
-    return '<div class="piece-qty-row">'+
+    return '<div class="piece-qty-row" id="modeC-row-'+i+'">' +
       '<div class="piece-qty-dot" style="background:'+c+'"></div>'+
       '<div class="piece-qty-name">'+esc(pc.name)+'<br><span style="font-size:12px;color:var(--text3);font-weight:600;">'+pc.w+'×'+pc.h+'cm</span></div>'+
-      '<input type="number" class="piece-qty-input" id="modeC-qty-'+i+'" placeholder="0" inputmode="numeric" min="0">'+
-      '<span class="piece-qty-max">장<br><button style="font-size:11px;background:var(--accent2);color:var(--accent);border:none;border-radius:8px;padding:3px 8px;font-weight:700;cursor:pointer;touch-action:manipulation;" onclick="document.getElementById(\'modeC-qty-'+i+'\').value=\'\'">최대한</button></span>'+
+      '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">'+
+        '<input type="number" class="piece-qty-input" id="modeC-qty-'+i+'" placeholder="수량" inputmode="numeric" min="0">'+
+        '<label style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--accent);cursor:pointer;">'+
+          '<input type="checkbox" id="modeC-max-'+i+'" onchange="toggleModeCMax('+i+')" style="width:16px;height:16px;accent-color:var(--accent);">'+
+          '최대한 욱여넣기'+
+        '</label>'+
+      '</div>'+
     '</div>';
   }).join('');
+}
+function toggleModeCMax(i){
+  var chk=document.getElementById('modeC-max-'+i);
+  var inp=document.getElementById('modeC-qty-'+i);
+  if(chk.checked){inp.value='';inp.disabled=true;inp.placeholder='최대한';}
+  else{inp.disabled=false;inp.placeholder='수량';}
 }
 function setUnit(u){
   lengthUnit=u;
@@ -563,53 +574,114 @@ function calcMaxSets(piece,fabricWidth,fabricLen,guide,margin){
   return best;
 }
 
-// ==================== Mixed Layout ====================
-function calcMixedLayout(pieces,fabricWidth,targetQties,margin){
-  // targetQties: 각 피스별 목표 수량 배열 (null이면 최대한)
+// ==================== Mixed Layout Engine ====================
+// targetQties: 피스별 목표수량 배열. null = 최대한(남는 공간에 욱여넣기)
+// fabricLen: 원단 총 길이 (null이면 무제한)
+// 핵심 로직:
+//   1) 필수 피스를 줄 단위로 배치하면서, 그 줄의 남는 폭에 최대한 피스 즉시 끼워넣기
+//   2) 필수 피스 다 배치 후 남은 원단 길이에 최대한 피스 전용 줄 추가
+function calcMixedLayout(pieces,fabricWidth,targetQties,margin,fabricLen){
   var fits=pieces.map(function(pc){return getBestFit(pc,fabricWidth);});
-  var needs=targetQties?targetQties.slice():pieces.map(function(pc){return 999999;});
-  var remaining=needs.map(function(n,i){return n===null?999999:n;});
-  var rows=[],maxIter=5000,iter=0;
-  var hasRequired=remaining.some(function(r,i){return needs[i]!==null&&r>0;});
-  if(!hasRequired&&!targetQties)return null;
+  var needs=targetQties?targetQties.slice():pieces.map(function(){return null;});
+  var remaining=needs.map(function(n){return n===null?0:n;}); // 필수 피스 남은 수량
+  var rows=[];
+  var usedLen=margin*2;
+  var maxIter=20000,iter=0;
 
+  // ── 1단계: 필수 피스 줄별 배치 (각 줄 남는 폭에 최대한 피스 즉시 끼워넣기) ──
   while(remaining.some(function(r){return r>0;})&&iter++<maxIter){
-    var mainIdx=-1;
-    // 우선순위: 필수 피스(needs!=null) 먼저, 그 중 remaining 많은 것
-    var maxRem=-1;
-    for(var i=0;i<pieces.length;i++){
-      if(remaining[i]>0&&(needs[i]===null?false:true)){
-        if(remaining[i]>maxRem){maxRem=remaining[i];mainIdx=i;}
-      }
+    // 원단 길이 초과 체크
+    if(fabricLen!=null){
+      var minH=9999;
+      for(var i=0;i<pieces.length;i++){if(remaining[i]>0&&fits[i].h<minH)minH=fits[i].h;}
+      if(usedLen+minH>fabricLen+0.001)break;
     }
-    // 필수 다 채웠으면 최대한 피스
-    if(mainIdx<0){
-      for(var i=0;i<pieces.length;i++){if(remaining[i]>0){mainIdx=i;break;}}
+
+    // 남은 수량 가장 많은 필수 피스를 주 피스로 선택
+    var mainIdx=-1,maxRem=-1;
+    for(var i=0;i<pieces.length;i++){
+      if(remaining[i]>0&&remaining[i]>maxRem){maxRem=remaining[i];mainIdx=i;}
     }
     if(mainIdx<0)break;
 
-    var mainFit=fits[mainIdx];
-    var mainCount=Math.min(mainFit.perRow,remaining[mainIdx]);
-    var usedW=mainCount*mainFit.w,leftover=fabricWidth-usedW;
-    var rowH=mainFit.h;
-    var cells=[{pieceIdx:mainIdx,count:mainCount,w:mainFit.w,h:mainFit.h}];
-    remaining[mainIdx]-=mainCount;
+    var mFit=fits[mainIdx];
+    var mCount=Math.min(mFit.perRow,remaining[mainIdx]);
+    var rowH=mFit.h;
+    var leftoverW=fabricWidth-mCount*mFit.w;
+    var cells=[{pieceIdx:mainIdx,count:mCount,w:mFit.w,h:mFit.h}];
+    remaining[mainIdx]-=mCount;
 
-    // 남는 폭에 다른 피스 욱여넣기
+    // 남는 폭에 다른 필수 피스 욱여넣기
+    // 높이 조건: 작은 피스는 큰 피스 줄에 들어갈 수 있음 (높이가 rowH 이하면 OK)
     for(var j=0;j<pieces.length;j++){
-      if(j===mainIdx||remaining[j]<=0||leftover<=0)continue;
+      if(j===mainIdx||leftoverW<=0)continue;
       var jFit=fits[j];
-      if(jFit.h>rowH*1.6||jFit.h<rowH*0.4)continue;
-      var extra=Math.min(Math.floor(leftover/jFit.w),remaining[j]);
-      if(extra>0){cells.push({pieceIdx:j,count:extra,w:jFit.w,h:jFit.h});remaining[j]-=extra;leftover-=extra*jFit.w;}
+      if(jFit.h>rowH*1.5)continue; // 너무 높은 피스만 제외 (낮은 피스는 허용)
+      if(remaining[j]>0){
+        var ex=Math.min(Math.floor(leftoverW/jFit.w),remaining[j]);
+        if(ex>0){cells.push({pieceIdx:j,count:ex,w:jFit.w,h:jFit.h});remaining[j]-=ex;leftoverW-=ex*jFit.w;}
+      }
     }
-    rows.push({cells:cells,rowH:rowH,leftover:leftover});
+
+    // 남는 폭에 최대한 피스 욱여넣기
+    for(var j=0;j<pieces.length;j++){
+      if(leftoverW<=0)continue;
+      if(needs[j]!==null)continue; // 최대한 피스만
+      var jFit=fits[j];
+      if(jFit.h>rowH*1.5)continue; // 너무 높은 피스만 제외
+      var ex=Math.floor(leftoverW/jFit.w);
+      if(ex>0){
+        var found=false;
+        for(var k=0;k<cells.length;k++){if(cells[k].pieceIdx===j){cells[k].count+=ex;found=true;break;}}
+        if(!found)cells.push({pieceIdx:j,count:ex,w:jFit.w,h:jFit.h});
+        leftoverW-=ex*jFit.w;
+      }
+    }
+
+    rows.push({cells:cells,rowH:rowH,leftoverW:leftoverW});
+    usedLen+=rowH;
   }
 
-  var totalLen=margin*2+rows.reduce(function(s,r){return s+r.rowH;},0);
+  // ── 2단계: 필수 피스 완료 후 남은 원단에 최대한 피스 전용 줄 추가 ──
+  var hasMax=needs.some(function(n){return n===null;});
+  if(hasMax&&fabricLen!=null){
+    var maxIdxList=[];
+    for(var i=0;i<pieces.length;i++){if(needs[i]===null)maxIdxList.push(i);}
+    var iter2=0,maxIter2=10000;
+    while(iter2++<maxIter2){
+      // 가장 높이가 작은 최대한 피스 선택 (원단 효율)
+      var bestIdx=-1,bestH=9999;
+      for(var k=0;k<maxIdxList.length;k++){
+        var idx=maxIdxList[k];
+        if(fits[idx].h<bestH&&usedLen+fits[idx].h<=fabricLen+0.001){bestH=fits[idx].h;bestIdx=idx;}
+      }
+      if(bestIdx<0)break;
+
+      var mFit2=fits[bestIdx];
+      var rowH2=mFit2.h;
+      var leftoverW2=fabricWidth;
+      var cells2=[];
+
+      // 모든 최대한 피스를 이 줄에 배치 (높이 비슷한 것)
+      for(var k=0;k<maxIdxList.length;k++){
+        var idx=maxIdxList[k];
+        if(leftoverW2<=0)break;
+        var jFit=fits[idx];
+        if(jFit.h>rowH2*1.5)continue;
+        var ex=Math.floor(leftoverW2/jFit.w);
+        if(ex>0){cells2.push({pieceIdx:idx,count:ex,w:jFit.w,h:jFit.h});leftoverW2-=ex*jFit.w;}
+      }
+
+      if(cells2.length===0)break;
+      rows.push({cells:cells2,rowH:rowH2,leftoverW:leftoverW2});
+      usedLen+=rowH2;
+    }
+  }
+
+  var totalLen=rows.reduce(function(s,r){return s+r.rowH;},0)+margin*2;
   var cut=pieces.map(function(){return 0;});
   rows.forEach(function(row){row.cells.forEach(function(cell){cut[cell.pieceIdx]+=cell.count;});});
-  return{rows:rows,totalLen:totalLen,cut:cut,needs:needs,pieces:pieces,fits:fits};
+  return{rows:rows,totalLen:totalLen,cut:cut,needs:needs,pieces:pieces,fits:fits,usedLen:usedLen,margin:margin};
 }
 
 function calcMixedMaxSets(pieces,fabricWidth,fabricLen,margin){
@@ -617,10 +689,101 @@ function calcMixedMaxSets(pieces,fabricWidth,fabricLen,margin){
   while(lo<=hi){
     var mid=Math.floor((lo+hi)/2);if(mid===0){lo=1;continue;}
     var needs=pieces.map(function(){return mid;});
-    var layout=calcMixedLayout(pieces,fabricWidth,needs,margin);
+    var layout=calcMixedLayout(pieces,fabricWidth,needs,margin,fabricLen);
     if(layout&&layout.totalLen<=fabricLen+0.001){best=mid;bestLayout=layout;lo=mid+1;}else hi=mid-1;
   }
   return{maxSets:best,layout:bestLayout};
+}
+
+// ==================== 브리핑 ====================
+function buildBriefing(pieces,fabricW,fabricLen,targetQties,layout){
+  var fits=layout.fits;
+  var step=1;
+  var lines=[];
+  lines.push('원단 '+fabricW+'cm × '+Math.round(fabricLen)+'cm');
+  lines.push('커팅 가이드 '+guideLines+'줄 · 여유 '+marginCm+'cm');
+  lines.push('─────────────────────────');
+  var usedSoFar=marginCm*2;
+
+  pieces.forEach(function(pc,i){
+    var need=targetQties[i];
+    if(need===null||need===0)return;
+    var fit=fits[i];
+    var totalRows=Math.ceil(need/fit.perRow);
+    var fullLen=Math.floor(totalRows/guideLines)*(guideLines*fit.h+marginCm*2);
+    var remRows=totalRows%guideLines;
+    var remLen=remRows>0?remRows*fit.h+marginCm*2:0;
+    var pieceTotalLen=fullLen+remLen;
+    var lastRowPieces=need%fit.perRow===0?fit.perRow:need%fit.perRow;
+    var isPartial=(need%fit.perRow!==0);
+
+    lines.push('');
+    lines.push(step+'️⃣  '+pc.name+' ('+pc.w+'×'+pc.h+'cm'+(fit.rotated?' ↩회전':'')+')');
+    step++;
+    lines.push('   폭 '+fabricW+'cm ÷ '+fit.w+'cm = '+fit.perRow+'개/줄');
+    lines.push('   필요 '+need+'장 ÷ '+fit.perRow+'개/줄 = '+totalRows+'줄');
+    lines.push('');
+    // 줄 구성 상세
+    var fullRowCount=totalRows-(isPartial?1:0);
+    if(fullRowCount>0){
+      lines.push('   ┌ 완전줄 '+fullRowCount+'줄 × '+fit.perRow+'개 = '+(fullRowCount*fit.perRow)+'장');
+    }
+    if(isPartial){
+      lines.push('   └ 자투리줄 1줄 → '+lastRowPieces+'개만 사용'+(fit.perRow-lastRowPieces>0?' ('+( fit.perRow-lastRowPieces)+'개 미사용)':''));
+      var usedW=lastRowPieces*fit.w;
+      var leftW=fabricW-usedW;
+      lines.push('');
+      lines.push('   자투리줄 남는 폭:');
+      lines.push('   '+fabricW+' - ('+lastRowPieces+'×'+fit.w+') = '+Math.round(leftW)+'cm');
+      // 최대한 피스 끼워넣기 가능 여부
+      var added=false;
+      pieces.forEach(function(pc2,j){
+        if(targetQties[j]!==null)return;
+        var fit2=fits[j];
+        if(fit2.h>fit.h*1.5)return;
+        var ex=Math.floor(leftW/fit2.w);
+        if(ex>0){
+          lines.push('   → '+pc2.name+'('+fit2.w+'cm): '+Math.round(leftW)+'÷'+fit2.w+' = '+ex+'개 추가!');
+          added=true;
+        }
+      });
+      if(!added) lines.push('   → 다른 피스 추가 불가 (공간 부족)');
+    }else{
+      lines.push('   └ 모든 줄 완전 사용');
+    }
+    lines.push('');
+    lines.push('   소비 길이: '+Math.round(pieceTotalLen)+'cm');
+    usedSoFar+=pieceTotalLen;
+  });
+
+  // 최대한 피스
+  pieces.forEach(function(pc,i){
+    var need=targetQties[i];
+    if(need!==null)return;
+    var fit=fits[i];
+    var remainLen=Math.max(0,fabricLen-usedSoFar+marginCm*2);
+    var extraRows=Math.floor(remainLen/fit.h);
+    lines.push('');
+    lines.push(step+'️⃣  '+pc.name+' ('+pc.w+'×'+pc.h+'cm'+(fit.rotated?' ↩회전':'')+') — 최대한');
+    step++;
+    lines.push('   폭 '+fabricW+'cm ÷ '+fit.w+'cm = '+fit.perRow+'개/줄');
+    lines.push('   필수 피스 소비 후 남은 원단 ≈ '+Math.round(remainLen)+'cm');
+    lines.push('   '+Math.round(remainLen)+'cm ÷ '+fit.h+'cm = '+extraRows+'줄 가능');
+    lines.push('   → 세로방향 최대 '+(extraRows*fit.perRow)+'개');
+    lines.push('   (자투리줄 끼워넣기 포함 시 더 많을 수 있음)');
+  });
+
+  lines.push('');
+  lines.push('─────────────────────────');
+  lines.push('▶ 실제 배치 결과');
+  pieces.forEach(function(pc,i){
+    var cut=layout.cut[i],need=targetQties[i];
+    if(need===null)lines.push('   '+pc.name+': '+cut+'장 (최대한)');
+    else lines.push('   '+pc.name+': '+cut+'장 / '+need+'장 '+(cut>=need?'✅':'⚠️ 부족'));
+  });
+  lines.push('   총 사용: '+Math.round(layout.totalLen)+'cm');
+  lines.push('   남는 원단: '+Math.round(Math.max(0,fabricLen-layout.totalLen))+'cm');
+  return lines.join('\n');
 }
 
 // ==================== Calculate ====================
@@ -643,7 +806,7 @@ function calculate(){
     if(!targetQty||targetQty<=0){alert('목표 수량을 입력해주세요');return;}
     var results=pieces.map(function(pc){return{piece:pc,plan:calcPiecePlan(pc,fabricW,targetQty,guideLines,marginCm)};});
     var totalLen=results.reduce(function(s,r){return s+r.plan.totalLen;},0);
-    var mixed=pieces.length>=2?calcMixedLayout(pieces,fabricW,pieces.map(function(){return targetQty;}),marginCm):null;
+    var mixed=pieces.length>=2?calcMixedLayout(pieces,fabricW,pieces.map(function(){return targetQty;}),marginCm,null):null;
     renderResultB(targetQty,results,fabricW,totalLen,mixed);
 
   }else{ // C
@@ -651,8 +814,10 @@ function calculate(){
     if(!v||v<=0){alert('원단 길이를 입력해주세요');return;}
     var fabricLen=lengthUnit==='yard'?v*91.44:v;
     var targetQties=pieces.map(function(pc,i){
+      var chk=document.getElementById('modeC-max-'+i);
+      if(chk&&chk.checked)return null; // 최대한
       var val=document.getElementById('modeC-qty-'+i).value.trim();
-      return val===''?null:parseInt(val)||0;
+      return val===''?0:parseInt(val)||0;
     });
     if(targetQties.every(function(q){return q===null;})){alert('피스별 목표 수량을 하나 이상 입력해주세요');return;}
     renderResultC(pieces,fabricW,fabricLen,targetQties);
@@ -848,8 +1013,8 @@ function renderResultB(targetQty,results,fabricW,totalLen,mixed){
 
 function renderResultC(pieces,fabricW,fabricLen,targetQties){
   document.getElementById('result-subtitle').textContent=currentProduct.name;
-  // 혼합 배치로 계산
-  var layout=calcMixedLayout(pieces,fabricW,targetQties,marginCm);
+  // fabricLen을 전달해서 "최대한" 피스가 남은 원단 안에서만 계산되도록
+  var layout=calcMixedLayout(pieces,fabricW,targetQties,marginCm,fabricLen);
   if(!layout){alert('계산할 수 없어요');return;}
 
   var allOk=pieces.every(function(pc,i){return targetQties[i]===null||layout.cut[i]>=targetQties[i];});
@@ -869,7 +1034,7 @@ function renderResultC(pieces,fabricW,fabricLen,targetQties){
     html+='<div class="result-label">필요 '+Math.round(layout.totalLen)+'cm · 보유 '+Math.round(fabricLen)+'cm · '+Math.round(layout.totalLen-fabricLen)+'cm 부족</div>';
     html+='</div>';
   }else{
-    html+='<div class="result-hero info">';
+    html+='<div class="result-hero">';
     html+='<div class="result-num">📊</div>';
     html+='<div class="result-unit-text">최적 배치 결과</div>';
     html+='<div class="result-label">'+Math.round(layout.totalLen)+'cm 필요</div>';
@@ -890,6 +1055,13 @@ function renderResultC(pieces,fabricW,fabricLen,targetQties){
     else html+=(ok?'✅ ':'⚠️ ')+cut+' / '+need+'장';
     html+='</div></div>';
   });
+  html+='</div>';
+
+  // 📐 수치 브리핑 카드
+  var briefing=buildBriefing(pieces,fabricW,fabricLen,targetQties,layout);
+  html+='<div class="card">';
+  html+='<div class="card-title">📐 계산 과정</div>';
+  html+='<pre style="font-size:12px;font-weight:600;color:var(--text2);line-height:1.8;white-space:pre-wrap;word-break:break-all;">'+briefing+'</pre>';
   html+='</div>';
 
   html+=renderMixedCard(layout,fabricW,allOk&&fitsInFabric,'혼합 배치 계획');
@@ -990,4 +1162,3 @@ setMode('A');
 </script>
 </body>
 </html>
-
