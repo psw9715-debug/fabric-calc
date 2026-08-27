@@ -26,18 +26,22 @@ Everything lives in `index.html` as five `.screen` divs shown/hidden via `showSc
 
 | screen | role |
 |---|---|
-| `screen-main` | product list (home) |
+| `screen-main` | product list (home), grouped by company |
 | `screen-sync` | GitHub Gist sync settings |
+| `screen-manage` | company / fabric-list maintenance (⚙️ in main header) |
 | `screen-register` | product create/edit |
 | `screen-calc` | cutting-layout calculation input |
 | `screen-result` | calculation results |
 
 ### Data model
 
-- `localStorage['fabric_home_v4']` — array of products, each `{ name, pieces: [{ name, w, h, qty, rotatable }] }`.
+- `localStorage['fabric_home_v4']` — array of products. Schema: `{ company, name, pieces: [{ name, w, h, qty, rotatable, fabrics: [{ name, width }] }] }`.
 - `localStorage['fabric_sync_v1']` — `{ token, gistId, autoSync }` for Gist sync. **Never hardcode a GitHub token in code** — this is a public repo, GitHub auto-revokes committed tokens. Tokens are only ever entered by the user at runtime.
+- `localStorage['fabric_vendors_v1']` — `{ [companyName]: [{ name, width }] }`. Per-company fabric list, kept **separate from product data**. It is only an autocomplete/picker source: products store a **copy** of each fabric value, so a product never breaks if this map is missing (e.g. a device that synced products but not vendors). Renaming a fabric here therefore does *not* silently rewrite products — `editVendorFabric()` asks before propagating.
+- `localStorage['fabric_ui_v1']` — `{ [companyName]: collapsedBool }`, the main list's fold state.
 - Gist filename: `fabric_data.json`; description: `홈패션 연단 계산기 데이터`.
-- Product schema: `{ company, name, pieces: [{ name, w, h, qty, rotatable, fabricName, fabricWidth }] }`. `migrateProducts()` backfills `company:''`, `fabricName:''`, `fabricWidth:0` on every read path (localStorage load, Gist pull, file restore) — route any new read path through it, and extend it rather than assuming new fields exist.
+- Product identity is **(company, name)**, not name — the same product name legitimately recurs across companies (`손수건` under two vendors). `findDuplicate()` scopes its check to one company; never dedupe on name alone.
+- `migrateProducts()` runs on every read path (localStorage load, Gist pull, file restore) and backfills `company:''` plus converts the older single-fabric fields (`fabricName`/`fabricWidth`) into the `fabrics[]` array. Route any new read path through it and extend it rather than assuming fields exist.
 
 ### Calculation engine
 
@@ -55,6 +59,10 @@ Three calculation modes exist in the UI, all built on `calcMixedLayout`/`calcPie
 - **Mode C**: fabric width + length + per-piece targets (or "max" toggle per piece) → feasibility + per-piece achievement + formula briefing + layout diagram.
 
 Known tuning knob: mixed-row eligibility uses `jFit.h <= rowH * 1.5` — lowering this threshold prevents smaller pieces from sharing a row with much taller ones.
+
+Per-piece participation (`pieceRoles[i]`) gates every mode: `'off'` (excluded from this job), `'qty'` (target quantity), `'max'` (fill leftover). Modes A/B only offer off/qty. `calculate()` filters to `activePieceIdx()` before doing anything, so results, legends and canvases only ever contain pieces being cut. In `calcMixedLayout()` stage 2, multiple `'max'` pieces are assigned rows **round-robin** — picking the shortest piece each time let one piece monopolise the fabric.
+
+Row geometry: each row carries `leftoverW`/`leftover` (unused fabric width) and `usedW`. `calcPiecePlan()` returns `fabricW`/`leftoverW` too, so single-piece layouts report their leftover strip as well. `rowWidthTableHtml()` and `widthUsage()` render those; keep both key names on row objects — `drawFabricCanvas()` reads `leftover`.
 
 ### Conventions
 
