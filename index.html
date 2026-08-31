@@ -123,10 +123,7 @@ canvas{display:block;width:100%;}
 .manage-row:last-of-type{border-bottom:none;}
 .manage-row-name{flex:1;font-size:14px;font-weight:800;}
 .manage-row-sub{font-size:12px;color:var(--text3);font-weight:600;}
-.fabric-block{margin-top:12px;padding-top:12px;border-top:1px dashed var(--border);}
 .fab-empty{font-size:13px;color:var(--text3);font-weight:600;padding:10px 0;display:inline-block;}
-.fab-pool-label{font-size:11px;font-weight:800;color:var(--text3);margin:10px 0 6px;}
-.chip.chip-add{border-style:dashed;}
 .btn-add-fab{padding:0 16px;min-height:52px;border:2px solid var(--accent);border-radius:var(--radius-sm);background:var(--accent2);color:var(--accent);font-size:15px;font-weight:800;cursor:pointer;touch-action:manipulation;white-space:nowrap;}
 .row-table{margin-top:10px;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;background:var(--surface);}
 .row-table-head,.row-table-row{display:flex;gap:6px;padding:8px 10px;font-size:12px;font-weight:700;align-items:center;}
@@ -148,7 +145,6 @@ canvas{display:block;width:100%;}
 .piece-role-name{flex:1;font-size:15px;font-weight:800;}
 .piece-role-sub{font-size:12px;color:var(--text3);font-weight:600;}
 .piece-role-row.is-off{opacity:0.45;}
-.fabric-tag{font-size:11px;background:var(--surface2);color:var(--text2);padding:2px 6px;border-radius:8px;font-weight:700;margin-left:4px;}
 .bottom-bar{padding:14px 16px;padding-bottom:max(14px,env(safe-area-inset-bottom));background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-top:1px solid var(--border);}
 .info-text{font-size:13px;color:var(--text3);line-height:1.7;font-weight:500;}
 .btn-link{background:none;border:none;color:var(--accent);font-size:14px;font-weight:700;cursor:pointer;text-decoration:underline;padding:4px;touch-action:manipulation;}
@@ -268,6 +264,7 @@ canvas{display:block;width:100%;}
     </div>
     <div class="card">
       <div class="card-title">피스 구성 (최대 4종류)</div>
+      <div class="info-text" style="margin-bottom:10px">원단은 업체 단위로 관리해요. 등록·수정은 메인 화면 ⚙️ 업체 · 원단 관리에서 하세요.</div>
       <div id="pieces-container"></div>
       <button class="btn-secondary" id="add-piece-btn" onclick="addPiece()" style="margin-top:8px">+ 피스 추가</button>
     </div>
@@ -287,7 +284,7 @@ canvas{display:block;width:100%;}
     </div>
   </div>
   <div class="content">
-    <div class="info-text" style="margin-bottom:12px">원단은 제품을 저장할 때 자동으로 등록돼요. 여기서는 이름·폭을 고치거나 지울 수 있어요.</div>
+    <div class="info-text" style="margin-bottom:12px">원단은 업체 단위로 관리해요. 여기에 등록해 두면 계산 화면에서 탭 한 번으로 폭이 들어가요.</div>
     <div id="manage-list"></div>
     <div style="height:20px"></div>
   </div>
@@ -317,6 +314,7 @@ canvas{display:block;width:100%;}
         <label class="form-label">원단 폭 (cm)</label>
         <div class="chip-row" id="fabric-width-chips" style="display:none;margin-bottom:8px"></div>
         <input type="number" id="fabric-width" class="form-input" placeholder="예: 150" inputmode="decimal">
+        <div class="info-text" id="fabric-chip-hint" style="margin-top:6px;display:none">이 업체에 등록된 원단이 없어요. ⚙️ 업체 · 원단 관리에서 등록하면 여기에 버튼으로 떠요.</div>
       </div>
       <div id="fabric-length-group">
         <div class="form-group">
@@ -393,27 +391,36 @@ canvas{display:block;width:100%;}
 // ==================== Storage & Sync ====================
 var STORAGE_KEY='fabric_home_v4', SYNC_KEY='fabric_sync_v1', UI_KEY='fabric_ui_v1', VENDOR_KEY='fabric_vendors_v1';
 function saveToStorage(d){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(d));return true;}catch(e){return false;}}
-function loadFromStorage(){try{var d=localStorage.getItem(STORAGE_KEY);if(d)return migrateProducts(JSON.parse(d));}catch(e){}return[];}
-// 구버전(fabric_home_v4) 데이터에 company / fabricName / fabricWidth 채워넣기
+function loadFromStorage(){try{var d=localStorage.getItem(STORAGE_KEY);if(d){var m=migrateProducts(JSON.parse(d));saveToStorage(m);return m;}}catch(e){}return[];}
+// 구버전 데이터 정리.
+// ① company 백필  ② 피스에 달려 있던 원단 정보(fabricName/fabricWidth, fabrics[])를
+//    그 제품 업체의 원단 목록(fabric_vendors_v1)으로 옮기고 피스에서는 제거.
+// 업체가 비어 있는 제품의 원단은 companyLabel() 규칙대로 '기타'로 모인다.
 function migrateProducts(arr){
   if(!Array.isArray(arr))return[];
+  var moved=false;
   arr.forEach(function(p){
     if(typeof p.company!=='string')p.company='';
     if(!Array.isArray(p.pieces))p.pieces=[];
     p.pieces.forEach(function(pc){
-      if(!Array.isArray(pc.fabrics)){
-        // 구버전: 피스당 원단 1개(fabricName/fabricWidth) → 후보 배열로
+      var old=Array.isArray(pc.fabrics)?pc.fabrics:[];
+      if(!old.length){
         var fw=parseFloat(pc.fabricWidth);
         var nm=typeof pc.fabricName==='string'?pc.fabricName.trim():'';
-        pc.fabrics=(fw>0||nm)?[{name:nm,width:fw>0?fw:0}]:[];
+        if(fw>0||nm)old=[{name:nm,width:fw>0?fw:0}];
       }
-      pc.fabrics=pc.fabrics.filter(function(f){return f&&(f.name||f.width>0);}).map(function(f){
+      old.forEach(function(f){
+        if(!f)return;
         var w=parseFloat(f.width);
-        return{name:typeof f.name==='string'?f.name.trim():'',width:w>0?w:0};
+        var g={name:typeof f.name==='string'?f.name.trim():'',width:w>0?w:0};
+        if(!g.name&&!(g.width>0))return;
+        addVendorFabric(p.company,g);
+        moved=true;
       });
-      delete pc.fabricName;delete pc.fabricWidth;
+      delete pc.fabrics;delete pc.fabricName;delete pc.fabricWidth;
     });
   });
+  if(moved)saveVendors();
   return arr;
 }
 
@@ -450,7 +457,7 @@ async function verifyToken(){
 function toggleAutoSync(){document.getElementById('auto-sync-toggle').classList.toggle('on');syncConfig.autoSync=document.getElementById('auto-sync-toggle').classList.contains('on');saveSyncConfig();}
 async function syncPush(){
   if(!syncConfig.token){alert('토큰을 먼저 설정해주세요');return;}
-  var body={description:'홈패션 연단 계산기 데이터',public:false,files:{'fabric_data.json':{content:JSON.stringify({products:products,updatedAt:new Date().toISOString()},null,2)}}};
+  var body={description:'홈패션 연단 계산기 데이터',public:false,files:{'fabric_data.json':{content:JSON.stringify({products:products,vendors:vendorFabricMap,updatedAt:new Date().toISOString()},null,2)}}};
   try{
     var url='https://api.github.com/gists',method='POST';
     if(syncConfig.gistId){url+='/'+syncConfig.gistId;method='PATCH';}
@@ -466,13 +473,17 @@ async function syncPull(){
     var res=await fetch('https://api.github.com/gists/'+syncConfig.gistId,{headers:{'Authorization':'token '+syncConfig.token}});
     var gist=await res.json();
     var fc=gist.files&&gist.files['fabric_data.json']?gist.files['fabric_data.json'].content:null;
-    if(fc){var d=JSON.parse(fc);if(d.products){products=migrateProducts(d.products);saveToStorage(products);renderProductList();alert('✅ '+products.length+'개 제품 불러왔어요!');showScreen('screen-main');}}
+    if(fc){var d=JSON.parse(fc);if(d.products){
+      // 원단 목록을 먼저 세팅해야, 구버전 제품에서 이관되는 원단이 여기에 얹힌다
+      if(d.vendors&&typeof d.vendors==='object'){vendorFabricMap=d.vendors;saveVendors();}
+      products=migrateProducts(d.products);saveToStorage(products);
+      renderProductList();alert('✅ '+products.length+'개 제품 불러왔어요!');showScreen('screen-main');}}
     else alert('Gist에 데이터가 없어요');
   }catch(e){alert('오류: '+e.message);}
 }
 async function autoSyncIfEnabled(){if(syncConfig.autoSync&&syncConfig.token&&syncConfig.gistId)await syncPush();}
 function backupFile(){
-  var blob=new Blob([JSON.stringify(products,null,2)],{type:'application/json'});
+  var blob=new Blob([JSON.stringify({products:products,vendors:vendorFabricMap},null,2)],{type:'application/json'});
   var url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download='fabric_'+new Date().toISOString().slice(0,10)+'.json';
   document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
@@ -481,7 +492,9 @@ function restoreFile(input){
   var file=input.files[0];if(!file)return;
   var reader=new FileReader();
   reader.onload=function(e){
-    try{var d=JSON.parse(e.target.result);products=migrateProducts(Array.isArray(d)?d:(d.products||[]));saveToStorage(products);renderProductList();alert('✅ '+products.length+'개 제품 복원됨');showScreen('screen-main');}
+    try{var d=JSON.parse(e.target.result);
+      if(!Array.isArray(d)&&d.vendors&&typeof d.vendors==='object'){vendorFabricMap=d.vendors;saveVendors();}
+      products=migrateProducts(Array.isArray(d)?d:(d.products||[]));saveToStorage(products);renderProductList();alert('✅ '+products.length+'개 제품 복원됨');showScreen('screen-main');}
     catch(e){alert('파일을 읽을 수 없어요');}
   };
   reader.readAsText(file);input.value='';
@@ -511,7 +524,6 @@ function fabricLabel(f){
   if(n)return n;
   return f.width+'cm';
 }
-function pieceFabricList(pc){return Array.isArray(pc.fabrics)?pc.fabrics:[];}
 
 // ==================== State ====================
 var products=loadFromStorage(),currentProduct=null,editingIndex=-1;
@@ -521,7 +533,7 @@ var COLORS=['#2D5A3D','#B03020','#1A4A7A','#7A5C10'];
 var collapsedCompanies={};
 try{var uiRaw=localStorage.getItem(UI_KEY);if(uiRaw)collapsedCompanies=JSON.parse(uiRaw)||{};}catch(e){}
 function saveUiState(){try{localStorage.setItem(UI_KEY,JSON.stringify(collapsedCompanies));}catch(e){}}
-var companyOrder=[],companyChipList=[],fabricChipList=[],pieceRoles=[],pieceQtyMemo=[],lastOffNames=[],pieceFabrics={};
+var companyOrder=[],companyChipList=[],fabricChipList=[],pieceRoles=[],pieceQtyMemo=[],lastOffNames=[];
 function companyLabel(c){c=(c||'').trim();return c?c:'기타';}
 
 // ==================== Navigation ====================
@@ -531,10 +543,7 @@ function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;
 // ==================== Product List ====================
 function pieceLineHtml(pc){
   var tag=pc.rotatable?'<span style="font-size:11px;background:var(--accent2);color:var(--accent);padding:2px 6px;border-radius:8px;font-weight:700;margin-left:4px;">회전가능</span>':'<span style="font-size:11px;background:var(--warn2);color:var(--warn);padding:2px 6px;border-radius:8px;font-weight:700;margin-left:4px;">식서고정</span>';
-  var fab=pieceFabricList(pc).map(function(f){
-    return '<span class="fabric-tag">🧵 '+esc(fabricLabel(f))+'</span>';
-  }).join('');
-  return esc(pc.name)+' '+pc.w+'×'+pc.h+'cm × '+pc.qty+'장'+tag+fab;
+  return esc(pc.name)+' '+pc.w+'×'+pc.h+'cm × '+pc.qty+'장'+tag;
 }
 function productItemHtml(p,i){
   return '<div class="product-item">'+
@@ -585,7 +594,7 @@ function toggleCompany(oi){
 // ==================== Register ====================
 function goToRegister(idx){
   if(typeof idx==='undefined')idx=-1;
-  editingIndex=idx;pieceCount=0;pieceIdCounter=0;pieceFabrics={};
+  editingIndex=idx;pieceCount=0;pieceIdCounter=0;
   document.getElementById('pieces-container').innerHTML='';
   document.getElementById('reg-title').textContent=idx>=0?'제품 수정':'제품 등록';
   if(idx>=0){
@@ -622,78 +631,11 @@ function addPiece(data){
         '<button type="button" class="toggle '+(isRot?'on':'')+'" id="p'+uid+'-rot" onclick="this.classList.toggle(\'on\');updateRotLabel('+uid+')"><div class="toggle-knob"></div></button>'+
         '<span style="font-size:12px;color:var(--text3);margin-top:4px;font-weight:700;" id="p'+uid+'-rot-label">'+(isRot?'회전가능':'식서고정')+'</span>'+
       '</div>'+
-    '</div>'+
-    '<div class="fabric-block">'+
-      '<label class="form-label">이 피스에 쓰는 원단</label>'+
-      '<div id="p'+uid+'-fab"></div>'+
-      '<div class="input-row" style="margin-bottom:0;margin-top:8px">'+
-        '<input type="text" class="form-input" id="p'+uid+'-fname" placeholder="원단 이름">'+
-        '<input type="number" class="form-input" id="p'+uid+'-fw" placeholder="폭" inputmode="decimal" style="max-width:84px">'+
-        '<button type="button" class="btn-add-fab" onclick="addPieceFabricManual('+uid+')">추가</button>'+
-      '</div>'+
     '</div>';
-  pieceFabrics[uid]=(data&&Array.isArray(data.fabrics))?data.fabrics.map(function(f){return{name:f.name||'',width:Number(f.width)||0};}):[];
   document.getElementById('pieces-container').appendChild(div);
-  renderPieceFabricUI(uid);
   updateAddBtn();
 }
 function registerCompany(){return (document.getElementById('prod-company').value||'').trim();}
-function renderPieceFabricUI(uid){
-  var el=document.getElementById('p'+uid+'-fab');
-  if(!el)return;
-  var mine=pieceFabrics[uid]||[];
-  var h='<div class="chip-row">';
-  if(mine.length){
-    mine.forEach(function(f,fi){
-      h+='<button type="button" class="chip active" onclick="removePieceFabric('+uid+','+fi+')">'+esc(fabricLabel(f))+' \u00d7</button>';
-    });
-  }else{
-    h+='<span class="fab-empty">아직 없음 — 아래에서 추가하세요</span>';
-  }
-  h+='</div>';
-  // 같은 업체의 다른 원단을 탭 한 번으로
-  var pool=vendorFabrics(registerCompany()).filter(function(f){
-    return !mine.some(function(m){return sameFabric(m,f);});
-  });
-  if(pool.length){
-    h+='<div class="fab-pool-label">업체 원단</div><div class="chip-row">';
-    pool.forEach(function(f,pi){
-      h+='<button type="button" class="chip chip-add" onclick="addPieceFabricFromVendor('+uid+','+pi+')">+ '+esc(fabricLabel(f))+'</button>';
-    });
-    h+='</div>';
-  }
-  el.innerHTML=h;
-}
-function renderPieceFabricPickers(){
-  document.querySelectorAll('.piece-card').forEach(function(card){
-    renderPieceFabricUI(parseInt(card.id.replace('piece-uid-','')));
-  });
-}
-function addPieceFabricFromVendor(uid,pi){
-  var mine=pieceFabrics[uid]||[];
-  var pool=vendorFabrics(registerCompany()).filter(function(f){
-    return !mine.some(function(m){return sameFabric(m,f);});
-  });
-  if(!pool[pi])return;
-  mine.push({name:pool[pi].name,width:pool[pi].width});
-  pieceFabrics[uid]=mine;
-  renderPieceFabricUI(uid);
-}
-function removePieceFabric(uid,fi){
-  (pieceFabrics[uid]||[]).splice(fi,1);
-  renderPieceFabricUI(uid);
-}
-function addPieceFabricManual(uid){
-  var nEl=document.getElementById('p'+uid+'-fname'),wEl=document.getElementById('p'+uid+'-fw');
-  var name=nEl.value.trim(),width=parseFloat(wEl.value);
-  if(!name&&!(width>0)){alert('원단 이름이나 폭을 입력해주세요');return;}
-  var f={name:name,width:width>0?width:0};
-  var mine=pieceFabrics[uid]||[];
-  if(mine.some(function(m){return sameFabric(m,f);})){alert('이미 추가된 원단이에요');return;}
-  mine.push(f);pieceFabrics[uid]=mine;
-  nEl.value='';wEl.value='';
-  renderPieceFabricUI(uid);
-}
 function updateRotLabel(uid){var b=document.getElementById('p'+uid+'-rot'),l=document.getElementById('p'+uid+'-rot-label');if(b&&l)l.textContent=b.classList.contains('on')?'회전가능':'식서고정';}
 function removePiece(id){var el=document.getElementById(id);if(el){el.remove();pieceCount--;updateAddBtn();}}
 function updateAddBtn(){document.getElementById('add-piece-btn').style.display=pieceCount>=4?'none':'block';}
@@ -707,8 +649,7 @@ function getPieceData(){
       name:document.getElementById('p'+uid+'-name').value.trim()||'피스',
       w:w,h:h,
       qty:parseInt(document.getElementById('p'+uid+'-qty').value)||1,
-      rotatable:document.getElementById('p'+uid+'-rot').classList.contains('on'),
-      fabrics:(pieceFabrics[uid]||[]).slice()
+      rotatable:document.getElementById('p'+uid+'-rot').classList.contains('on')
     });
   });
   return results;
@@ -721,8 +662,8 @@ function saveProduct(){
   var dup=findDuplicate(company,name,editingIndex);
   if(dup>=0&&!confirm('"'+companyLabel(company)+'"에 이미 "'+name+'"이 있어요.\n그래도 저장할까요?'))return;
   var prod={company:company,name:name,pieces:pieces};
-  // 입력한 원단을 그 업체 목록에 자동 등록 → 다음 제품부터는 탭 한 번
-  pieces.forEach(function(pc){pieceFabricList(pc).forEach(function(f){addVendorFabric(company,f);});});
+  // 새 업체면 원단 목록 자리만 만들어 둔다 (원단은 ⚙️ 업체·원단 관리에서 등록)
+  if(!Array.isArray(vendorFabricMap[companyLabel(company)]))vendorFabricMap[companyLabel(company)]=[];
   saveVendors();
   if(editingIndex>=0)products[editingIndex]=prod;else products.push(prod);
   saveToStorage(products);autoSyncIfEnabled();renderProductList();showScreen('screen-main');
@@ -764,7 +705,7 @@ function duplicateProduct(i){
   document.getElementById('prod-company').value=src.company||'';
   document.getElementById('prod-name').value=src.name+' 복사';
   document.getElementById('pieces-container').innerHTML='';
-  pieceCount=0;pieceIdCounter=0;pieceFabrics={};
+  pieceCount=0;pieceIdCounter=0;
   src.pieces.forEach(function(pc){addPiece(pc);});
   updateAddBtn();renderCompanyChips();
   document.getElementById('reg-title').textContent='제품 복제';
@@ -785,15 +726,6 @@ function manageCompanies(){
   return list;
 }
 function productsOf(key){return products.filter(function(p){return companyLabel(p.company)===key;});}
-// 이 원단을 실제로 쓰고 있는 피스 수
-function fabricUsage(key,f){
-  var n=0;
-  products.forEach(function(p){
-    if(companyLabel(p.company)!==key)return;
-    p.pieces.forEach(function(pc){if(pieceFabricList(pc).some(function(x){return sameFabric(x,f);}))n++;});
-  });
-  return n;
-}
 function renderManage(){
   var el=document.getElementById('manage-list');
   var keys=manageCompanies();
@@ -810,10 +742,9 @@ function renderManage(){
     h+='<div class="card-title">원단</div>';
     if(fabs.length){
       fabs.forEach(function(f,fi){
-        var used=fabricUsage(key,f);
         h+='<div class="manage-row">';
         h+='<div class="manage-row-name">'+esc(f.name||'(이름 없음)')+
-           '<br><span class="manage-row-sub">'+(f.width>0?f.width+'cm':'폭 미지정')+' · 사용 '+used+'피스</span></div>';
+           '<br><span class="manage-row-sub">'+(f.width>0?f.width+'cm':'폭 미지정')+'</span></div>';
         h+='<button class="btn-sm btn-edit" onclick="editVendorFabric('+ki+','+fi+')">수정</button>';
         h+='<button class="btn-sm btn-del" onclick="deleteVendorFabric('+ki+','+fi+')">삭제</button>';
         h+='</div>';
@@ -870,28 +801,14 @@ function editVendorFabric(ki,fi){
   var width=parseFloat(wStr);
   var nf={name:name.trim(),width:width>0?width:0};
   if(!nf.name&&!(nf.width>0)){alert('이름이나 폭 중 하나는 있어야 해요');return;}
-  var used=fabricUsage(key,f);
+  if(vendorFabrics(key).some(function(x,xi){return xi!==fi&&sameFabric(x,nf);})){alert('같은 원단이 이미 있어요');return;}
   vendorFabricMap[key][fi]=nf;saveVendors();
-  // 제품은 원단 값을 복사해서 갖고 있으므로 전파 여부를 물어본다
-  if(used>0&&confirm('이 원단을 쓰는 제품 '+used+'피스도 같이 바꿀까요?')){
-    products.forEach(function(p){
-      if(companyLabel(p.company)!==key)return;
-      p.pieces.forEach(function(pc){
-        pieceFabricList(pc).forEach(function(x,xi){if(sameFabric(x,f))pc.fabrics[xi]={name:nf.name,width:nf.width};});
-      });
-    });
-    saveToStorage(products);autoSyncIfEnabled();renderProductList();
-  }
   renderManage();
 }
 function deleteVendorFabric(ki,fi){
   var key=manageCompanies()[ki],f=vendorFabrics(key)[fi];
   if(!f)return;
-  var used=fabricUsage(key,f);
-  var msg=used>0
-    ? '"'+fabricLabel(f)+'"을 목록에서 지울까요?\n제품 '+used+'피스가 쓰고 있어요 — 제품 데이터는 그대로 두고 선택지에서만 빠져요.'
-    : '"'+fabricLabel(f)+'"을 지울까요?';
-  if(!confirm(msg))return;
+  if(!confirm('"'+fabricLabel(f)+'"을 지울까요?\n제품 데이터에는 영향이 없어요.'))return;
   vendorFabricMap[key].splice(fi,1);saveVendors();renderManage();
 }
 function renameCompany(ki){
@@ -944,21 +861,21 @@ function goToCalc(i){
   setMode('A');setUnit('cm');setGuide(1);setMargin(1);
   showScreen('screen-calc');
 }
-// 제품 피스에 저장된 원단(이름+폭)을 빠른 선택 버튼으로
+// 이 제품 업체에 등록된 원단(이름+폭)을 빠른 선택 버튼으로
 function renderFabricChips(){
   var el=document.getElementById('fabric-width-chips'),seen={};
   fabricChipList=[];
   if(currentProduct){
-    activePieceIdx().forEach(function(i){
-      pieceFabricList(currentProduct.pieces[i]).forEach(function(f){
-        if(!(f.width>0))return;
-        var key=(f.name||'')+'|'+f.width;
-        if(seen[key])return;seen[key]=1;
-        fabricChipList.push({name:f.name||'',width:f.width});
-      });
+    vendorFabrics(currentProduct.company).forEach(function(f){
+      if(!(f.width>0))return;
+      var key=(f.name||'')+'|'+f.width;
+      if(seen[key])return;seen[key]=1;
+      fabricChipList.push({name:f.name||'',width:f.width});
     });
   }
-  if(!fabricChipList.length){el.innerHTML='';el.style.display='none';return;}
+  var hint=document.getElementById('fabric-chip-hint');
+  if(!fabricChipList.length){el.innerHTML='';el.style.display='none';if(hint)hint.style.display='block';return;}
+  if(hint)hint.style.display='none';
   el.style.display='flex';
   el.innerHTML=fabricChipList.map(function(f,i){
     return '<button type="button" class="chip" id="fabric-chip-'+i+'" onclick="pickFabricWidth('+i+')">'+(f.name?esc(f.name)+' ':'')+f.width+'</button>';
@@ -1003,8 +920,6 @@ function renderPieceRoles(){
     var role=pieceRoles[i]||'qty';
     var c=COLORS[i%COLORS.length];
     var sub=pc.w+'×'+pc.h+'cm';
-    var fl=pieceFabricList(pc);
-    if(fl.length)sub+=' · '+fl.map(function(f){return f.name||(f.width+'cm');}).join(', ');
     var h='<div class="piece-role-row'+(role==='off'?' is-off':'')+'" id="role-row-'+i+'">';
     h+='<div class="piece-role-head">';
     h+='<div class="piece-qty-dot" style="background:'+c+'"></div>';
@@ -1036,7 +951,6 @@ function setPieceRole(i,role){
   snapshotQtyInputs();
   pieceRoles[i]=role;
   renderPieceRoles();
-  renderFabricChips();
 }
 function activePieceIdx(){
   if(!currentProduct)return[];
@@ -1056,7 +970,7 @@ function setMargin(n){marginCm=n;[0,1,2,3,5].forEach(function(i){document.getEle
 document.addEventListener('input',function(e){
   if(e.target.id==='fabric-length')updateYardInfo();
   if(e.target.id==='fabric-width')syncFabricChips();
-  if(e.target.id==='prod-company'){syncCompanyChips();renderPieceFabricPickers();}
+  if(e.target.id==='prod-company'){syncCompanyChips();}
   if(/^modeC-qty-\d+$/.test(e.target.id))pieceQtyMemo[parseInt(e.target.id.replace('modeC-qty-',''))]=e.target.value;
 });
 

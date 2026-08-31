@@ -11,7 +11,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Entire app is one file: `index.html` (HTML + CSS + JS, no build step, no dependencies)
 - `products.json` exists only as a Gist-sync artifact; it's not source data to edit by hand.
 
-There is a duplicate nested clone of this same repo at `fabric-calc/fabric-calc/` (its own `.git`, tracking `main` instead of `master`, otherwise identical `index.html`). Treat the top-level `index.html` as the one to edit; don't let edits diverge between the two checkouts.
+작업 환경은 **GitHub 저장소 하나뿐**이다. 로컬 PC 작업 폴더도, 예전에 있던 중첩 클론 `fabric-calc/fabric-calc/`도 더 이상 없다. 정본은 `main` 브랜치의 최상위 `index.html`이다. 사용자는 iPhone의 Claude 앱으로 작업하므로, 코드는 **부분 diff가 아니라 완성된 `index.html` 전체**로 전달한다 (자세한 내용은 `HANDOVER.md`).
+
+`index.html`을 고치기 전에 `backup/index_YYYYMMDD-HHMM.html`(한국 시간)로 수정 직전 상태를 복사해 둔다. 되돌릴 때는 그 파일을 `index.html`로 덮어쓰면 된다.
 
 ## Commands
 
@@ -29,19 +31,19 @@ Everything lives in `index.html` as five `.screen` divs shown/hidden via `showSc
 | `screen-main` | product list (home), grouped by company |
 | `screen-sync` | GitHub Gist sync settings |
 | `screen-manage` | company / fabric-list maintenance (⚙️ in main header) |
-| `screen-register` | product create/edit |
+| `screen-register` | product create/edit (피스 치수만 — 원단 입력란 없음) |
 | `screen-calc` | cutting-layout calculation input |
 | `screen-result` | calculation results |
 
 ### Data model
 
-- `localStorage['fabric_home_v4']` — array of products. Schema: `{ company, name, pieces: [{ name, w, h, qty, rotatable, fabrics: [{ name, width }] }] }`.
+- `localStorage['fabric_home_v4']` — array of products. Schema: `{ company, name, pieces: [{ name, w, h, qty, rotatable }] }`. 피스는 **원단 정보를 갖지 않는다** — 원단은 업체 단위(`fabric_vendors_v1`)로만 관리한다.
 - `localStorage['fabric_sync_v1']` — `{ token, gistId, autoSync }` for Gist sync. **Never hardcode a GitHub token in code** — this is a public repo, GitHub auto-revokes committed tokens. Tokens are only ever entered by the user at runtime.
-- `localStorage['fabric_vendors_v1']` — `{ [companyName]: [{ name, width }] }`. Per-company fabric list, kept **separate from product data**. It is only an autocomplete/picker source: products store a **copy** of each fabric value, so a product never breaks if this map is missing (e.g. a device that synced products but not vendors). Renaming a fabric here therefore does *not* silently rewrite products — `editVendorFabric()` asks before propagating.
+- `localStorage['fabric_vendors_v1']` — `{ [companyName]: [{ name, width }] }`. 업체별 원단 목록이자 원단 정보의 **유일한 저장소**. 실무에서 원단은 업체 단위로 고정되므로 제품마다 다시 입력하지 않는다. 제품 데이터와 완전히 분리돼 있어서, 이 맵이 없는 기기에서도 제품 계산은 정상 동작한다(계산 화면에서 폭을 직접 입력하면 된다). 관리 화면(`screen-manage`)에서 추가·수정·삭제하고, 계산 화면은 이 목록을 폭 빠른선택 버튼으로 쓴다. Gist 동기화와 파일 백업 payload는 `{ products, vendors }` 형태로, 원단 목록도 같이 싣는다(이전 형식인 배열/`{products}`만 있는 파일도 계속 읽힌다). 받아오기는 제품과 마찬가지로 원단 목록도 통째로 덮어쓴다.
 - `localStorage['fabric_ui_v1']` — `{ [companyName]: collapsedBool }`, the main list's fold state.
 - Gist filename: `fabric_data.json`; description: `홈패션 연단 계산기 데이터`.
 - Product identity is **(company, name)**, not name — the same product name legitimately recurs across companies (`손수건` under two vendors). `findDuplicate()` scopes its check to one company; never dedupe on name alone.
-- `migrateProducts()` runs on every read path (localStorage load, Gist pull, file restore) and backfills `company:''` plus converts the older single-fabric fields (`fabricName`/`fabricWidth`) into the `fabrics[]` array. Route any new read path through it and extend it rather than assuming fields exist.
+- `migrateProducts()` runs on every read path (localStorage load, Gist pull, file restore). `company:''`를 백필하고, 피스에 붙어 있던 예전 원단 정보(`fabricName`/`fabricWidth`, 그리고 그 다음 세대의 `fabrics[]`)를 **그 제품 업체의 `fabric_vendors_v1` 목록으로 옮긴 뒤 피스에서 지운다**. 업체가 빈 문자열이면 `companyLabel()` 규칙대로 `'기타'`로 모인다. 이름+폭이 같으면 중복 등록하지 않고, 여러 번 돌려도 결과가 같다(멱등). 새 읽기 경로는 반드시 이 함수를 거치게 하고, 필드가 있다고 가정하지 말고 이 함수를 확장할 것.
 
 ### Calculation engine
 

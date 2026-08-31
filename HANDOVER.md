@@ -43,11 +43,15 @@ fabric_v4_final.html   ← 구버전. index.html과 혼동을 유발하므로 �
 ```
 fabric-calc/
 ├── index.html      ← 앱 전체 (유일한 편집 대상)
+├── backup/         ← 수정 직전 index.html 사본 (index_YYYYMMDD-HHMM.html)
 ├── CLAUDE.md       ← 프로젝트 가이드
 ├── HANDOVER.md     ← 이 문서
 ├── README.md
 └── products.json   ← Gist 산출물 (편집 금지)
 ```
+
+`index.html`을 고치기 전에는 항상 `backup/index_YYYYMMDD-HHMM.html`(한국 시간)로 직전 상태를 남긴다.
+되돌려야 할 때는 그 파일 내용을 `index.html`에 그대로 붙여넣으면 된다.
 
 ---
 

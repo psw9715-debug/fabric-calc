@@ -25,7 +25,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sa
 .screen.active{display:flex;}
 .header{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:52px 16px 12px;position:sticky;top:0;z-index:100;}
 .header-row{display:flex;align-items:center;gap:10px;}
-.back-btn{width:40px;height:40px;border:none;background:var(--surface2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;flex-shrink:0;touch-action:manipulation;}
+.back-btn{width:44px;height:44px;border:none;background:var(--surface2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;flex-shrink:0;touch-action:manipulation;}
 .header h1{font-size:20px;font-weight:800;letter-spacing:-0.6px;}
 .header p{font-size:13px;color:var(--text2);margin-top:2px;font-weight:500;}
 .content{flex:1;overflow-y:auto;padding:12px 16px 24px;-webkit-overflow-scrolling:touch;}
@@ -110,6 +110,45 @@ canvas{display:block;width:100%;}
 .empty-icon{font-size:56px;margin-bottom:20px;}
 .empty-text{font-size:19px;font-weight:800;margin-bottom:10px;}
 .empty-sub{font-size:15px;color:var(--text2);line-height:1.7;}
+.company-group{margin-bottom:16px;}
+.company-head{display:flex;align-items:center;gap:8px;width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;min-height:48px;font-size:15px;font-weight:800;color:var(--text);cursor:pointer;touch-action:manipulation;text-align:left;}
+.company-arrow{font-size:11px;color:var(--text2);transition:transform 0.15s;display:inline-block;}
+.company-head.collapsed .company-arrow{transform:rotate(-90deg);}
+.company-count{margin-left:auto;font-size:12px;font-weight:800;color:var(--text2);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:3px 9px;}
+.company-body{margin-top:10px;}
+.chip-row{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{padding:8px 14px;min-height:44px;border:2px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text2);font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;}
+.chip.active{border-color:var(--accent);background:var(--accent2);color:var(--accent);}
+.manage-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border);}
+.manage-row:last-of-type{border-bottom:none;}
+.manage-row-name{flex:1;font-size:14px;font-weight:800;}
+.manage-row-sub{font-size:12px;color:var(--text3);font-weight:600;}
+.fabric-block{margin-top:12px;padding-top:12px;border-top:1px dashed var(--border);}
+.fab-empty{font-size:13px;color:var(--text3);font-weight:600;padding:10px 0;display:inline-block;}
+.fab-pool-label{font-size:11px;font-weight:800;color:var(--text3);margin:10px 0 6px;}
+.chip.chip-add{border-style:dashed;}
+.btn-add-fab{padding:0 16px;min-height:52px;border:2px solid var(--accent);border-radius:var(--radius-sm);background:var(--accent2);color:var(--accent);font-size:15px;font-weight:800;cursor:pointer;touch-action:manipulation;white-space:nowrap;}
+.row-table{margin-top:10px;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;background:var(--surface);}
+.row-table-head,.row-table-row{display:flex;gap:6px;padding:8px 10px;font-size:12px;font-weight:700;align-items:center;}
+.row-table-head{background:var(--surface2);color:var(--text3);font-size:11px;}
+.row-table-row{border-top:1px solid var(--border);color:var(--text2);}
+.row-table-row span:nth-child(2),.row-table-head span:nth-child(2){flex:1;}
+.row-table-n{width:18px;color:var(--text3);flex-shrink:0;}
+.row-table-num{white-space:nowrap;font-variant-numeric:tabular-nums;}
+.row-table-num b{color:var(--text2);}
+.row-table-num b.left-warn{color:var(--warn);}
+.row-table-more{padding:8px 10px;border-top:1px solid var(--border);font-size:11px;color:var(--text3);font-weight:700;}
+.role-group{display:flex;background:var(--surface2);border-radius:var(--radius-sm);padding:4px;gap:4px;margin-top:8px;}
+.role-btn{flex:1;padding:8px 2px;border:none;background:transparent;border-radius:10px;font-size:13px;font-weight:700;color:var(--text2);cursor:pointer;touch-action:manipulation;min-height:44px;transition:all 0.15s;}
+.role-btn.active{background:var(--surface);color:var(--accent);box-shadow:var(--shadow);}
+.role-btn.active.off{color:var(--text3);}
+.piece-role-row{padding:14px 0;border-bottom:1px solid var(--border);}
+.piece-role-row:last-child{border-bottom:none;}
+.piece-role-head{display:flex;align-items:center;gap:9px;}
+.piece-role-name{flex:1;font-size:15px;font-weight:800;}
+.piece-role-sub{font-size:12px;color:var(--text3);font-weight:600;}
+.piece-role-row.is-off{opacity:0.45;}
+.fabric-tag{font-size:11px;background:var(--surface2);color:var(--text2);padding:2px 6px;border-radius:8px;font-weight:700;margin-left:4px;}
 .bottom-bar{padding:14px 16px;padding-bottom:max(14px,env(safe-area-inset-bottom));background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-top:1px solid var(--border);}
 .info-text{font-size:13px;color:var(--text3);line-height:1.7;font-weight:500;}
 .btn-link{background:none;border:none;color:var(--accent);font-size:14px;font-weight:700;cursor:pointer;text-decoration:underline;padding:4px;touch-action:manipulation;}
@@ -141,6 +180,7 @@ canvas{display:block;width:100%;}
   <div class="header no-print">
     <div class="header-row">
       <div style="flex:1"><h1>🏠 홈패션 연단 계산기</h1><p>제품을 선택하거나 새로 등록하세요</p></div>
+      <button class="back-btn" onclick="goToManage()" aria-label="업체·원단 관리">⚙️</button>
     </div>
   </div>
   <div class="content">
@@ -217,6 +257,11 @@ canvas{display:block;width:100%;}
     <div class="card">
       <div class="card-title">제품 정보</div>
       <div class="form-group">
+        <label class="form-label">업체</label>
+        <input type="text" id="prod-company" class="form-input" placeholder="예: 혀니네홈패션">
+        <div class="chip-row" id="company-chips" style="margin-top:8px"></div>
+      </div>
+      <div class="form-group">
         <label class="form-label">제품 이름</label>
         <input type="text" id="prod-name" class="form-input" placeholder="예: 쿠션커버 40cm">
       </div>
@@ -230,6 +275,21 @@ canvas{display:block;width:100%;}
   </div>
   <div class="bottom-bar no-print">
     <button class="btn-primary" onclick="saveProduct()">저장하기</button>
+  </div>
+</div>
+
+<!-- MANAGE -->
+<div id="screen-manage" class="screen">
+  <div class="header no-print">
+    <div class="header-row">
+      <button class="back-btn" onclick="showScreen('screen-main')">←</button>
+      <div><h1>⚙️ 업체 · 원단 관리</h1><p>업체 이름과 원단 목록을 정리하세요</p></div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="info-text" style="margin-bottom:12px">원단은 제품을 저장할 때 자동으로 등록돼요. 여기서는 이름·폭을 고치거나 지울 수 있어요.</div>
+    <div id="manage-list"></div>
+    <div style="height:20px"></div>
   </div>
 </div>
 
@@ -255,6 +315,7 @@ canvas{display:block;width:100%;}
       <div class="card-title">원단 정보</div>
       <div class="form-group">
         <label class="form-label">원단 폭 (cm)</label>
+        <div class="chip-row" id="fabric-width-chips" style="display:none;margin-bottom:8px"></div>
         <input type="number" id="fabric-width" class="form-input" placeholder="예: 150" inputmode="decimal">
       </div>
       <div id="fabric-length-group">
@@ -275,11 +336,11 @@ canvas{display:block;width:100%;}
         </div>
       </div>
     </div>
-    <!-- 모드C: 피스별 목표 수량 -->
-    <div class="card" id="modeC-qty-card" style="display:none">
-      <div class="card-title">피스별 목표 수량</div>
-      <div class="info-text" style="margin-bottom:12px">"최대한"은 남는 원단에 욱여넣기</div>
-      <div id="modeC-qty-list"></div>
+    <!-- 이번 작업에 참여할 피스 (전 모드 공용) -->
+    <div class="card" id="piece-role-card">
+      <div class="card-title">재단할 피스</div>
+      <div class="info-text" id="piece-role-desc" style="margin-bottom:4px"></div>
+      <div id="piece-role-list"></div>
     </div>
     <div class="card">
       <div class="card-title">재단 설정</div>
@@ -330,9 +391,31 @@ canvas{display:block;width:100%;}
 
 <script>
 // ==================== Storage & Sync ====================
-var STORAGE_KEY='fabric_home_v4', SYNC_KEY='fabric_sync_v1';
+var STORAGE_KEY='fabric_home_v4', SYNC_KEY='fabric_sync_v1', UI_KEY='fabric_ui_v1', VENDOR_KEY='fabric_vendors_v1';
 function saveToStorage(d){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(d));return true;}catch(e){return false;}}
-function loadFromStorage(){try{var d=localStorage.getItem(STORAGE_KEY);if(d)return JSON.parse(d);}catch(e){}return[];}
+function loadFromStorage(){try{var d=localStorage.getItem(STORAGE_KEY);if(d)return migrateProducts(JSON.parse(d));}catch(e){}return[];}
+// 구버전(fabric_home_v4) 데이터에 company / fabricName / fabricWidth 채워넣기
+function migrateProducts(arr){
+  if(!Array.isArray(arr))return[];
+  arr.forEach(function(p){
+    if(typeof p.company!=='string')p.company='';
+    if(!Array.isArray(p.pieces))p.pieces=[];
+    p.pieces.forEach(function(pc){
+      if(!Array.isArray(pc.fabrics)){
+        // 구버전: 피스당 원단 1개(fabricName/fabricWidth) → 후보 배열로
+        var fw=parseFloat(pc.fabricWidth);
+        var nm=typeof pc.fabricName==='string'?pc.fabricName.trim():'';
+        pc.fabrics=(fw>0||nm)?[{name:nm,width:fw>0?fw:0}]:[];
+      }
+      pc.fabrics=pc.fabrics.filter(function(f){return f&&(f.name||f.width>0);}).map(function(f){
+        var w=parseFloat(f.width);
+        return{name:typeof f.name==='string'?f.name.trim():'',width:w>0?w:0};
+      });
+      delete pc.fabricName;delete pc.fabricWidth;
+    });
+  });
+  return arr;
+}
 
 var syncConfig={token:'',gistId:'',autoSync:false};
 try{var sc=localStorage.getItem(SYNC_KEY);if(sc)syncConfig=JSON.parse(sc);}catch(e){}
@@ -383,7 +466,7 @@ async function syncPull(){
     var res=await fetch('https://api.github.com/gists/'+syncConfig.gistId,{headers:{'Authorization':'token '+syncConfig.token}});
     var gist=await res.json();
     var fc=gist.files&&gist.files['fabric_data.json']?gist.files['fabric_data.json'].content:null;
-    if(fc){var d=JSON.parse(fc);if(d.products){products=d.products;saveToStorage(products);renderProductList();alert('✅ '+products.length+'개 제품 불러왔어요!');showScreen('screen-main');}}
+    if(fc){var d=JSON.parse(fc);if(d.products){products=migrateProducts(d.products);saveToStorage(products);renderProductList();alert('✅ '+products.length+'개 제품 불러왔어요!');showScreen('screen-main');}}
     else alert('Gist에 데이터가 없어요');
   }catch(e){alert('오류: '+e.message);}
 }
@@ -398,50 +481,120 @@ function restoreFile(input){
   var file=input.files[0];if(!file)return;
   var reader=new FileReader();
   reader.onload=function(e){
-    try{var d=JSON.parse(e.target.result);products=Array.isArray(d)?d:(d.products||[]);saveToStorage(products);renderProductList();alert('✅ '+products.length+'개 제품 복원됨');showScreen('screen-main');}
+    try{var d=JSON.parse(e.target.result);products=migrateProducts(Array.isArray(d)?d:(d.products||[]));saveToStorage(products);renderProductList();alert('✅ '+products.length+'개 제품 복원됨');showScreen('screen-main');}
     catch(e){alert('파일을 읽을 수 없어요');}
   };
   reader.readAsText(file);input.value='';
 }
+
+// ==================== 업체별 원단 목록 ====================
+// 제품 데이터와 분리된 "선택지 공급원". 제품은 원단 값을 복사해서 보관하므로
+// 이 목록이 비어도 제품 계산은 정상 동작한다.
+var vendorFabricMap={};
+try{var vRaw=localStorage.getItem(VENDOR_KEY);if(vRaw)vendorFabricMap=JSON.parse(vRaw)||{};}catch(e){}
+function saveVendors(){try{localStorage.setItem(VENDOR_KEY,JSON.stringify(vendorFabricMap));}catch(e){}}
+function vendorFabrics(company){
+  var k=companyLabel(company);
+  return Array.isArray(vendorFabricMap[k])?vendorFabricMap[k]:[];
+}
+function sameFabric(a,b){return (a.name||'')===(b.name||'')&&Number(a.width||0)===Number(b.width||0);}
+function addVendorFabric(company,f){
+  var k=companyLabel(company);
+  if(!f||(!f.name&&!(f.width>0)))return;
+  if(!Array.isArray(vendorFabricMap[k]))vendorFabricMap[k]=[];
+  var exists=vendorFabricMap[k].some(function(x){return sameFabric(x,f);});
+  if(!exists)vendorFabricMap[k].push({name:f.name||'',width:Number(f.width)||0});
+}
+function fabricLabel(f){
+  var n=(f.name||'').trim();
+  if(n&&f.width>0)return n+' '+f.width;
+  if(n)return n;
+  return f.width+'cm';
+}
+function pieceFabricList(pc){return Array.isArray(pc.fabrics)?pc.fabrics:[];}
 
 // ==================== State ====================
 var products=loadFromStorage(),currentProduct=null,editingIndex=-1;
 var calcMode='A',lengthUnit='cm',guideLines=1,marginCm=1;
 var pieceCount=0,pieceIdCounter=0;
 var COLORS=['#2D5A3D','#B03020','#1A4A7A','#7A5C10'];
+var collapsedCompanies={};
+try{var uiRaw=localStorage.getItem(UI_KEY);if(uiRaw)collapsedCompanies=JSON.parse(uiRaw)||{};}catch(e){}
+function saveUiState(){try{localStorage.setItem(UI_KEY,JSON.stringify(collapsedCompanies));}catch(e){}}
+var companyOrder=[],companyChipList=[],fabricChipList=[],pieceRoles=[],pieceQtyMemo=[],lastOffNames=[],pieceFabrics={};
+function companyLabel(c){c=(c||'').trim();return c?c:'기타';}
 
 // ==================== Navigation ====================
 function showScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 
 // ==================== Product List ====================
+function pieceLineHtml(pc){
+  var tag=pc.rotatable?'<span style="font-size:11px;background:var(--accent2);color:var(--accent);padding:2px 6px;border-radius:8px;font-weight:700;margin-left:4px;">회전가능</span>':'<span style="font-size:11px;background:var(--warn2);color:var(--warn);padding:2px 6px;border-radius:8px;font-weight:700;margin-left:4px;">식서고정</span>';
+  var fab=pieceFabricList(pc).map(function(f){
+    return '<span class="fabric-tag">🧵 '+esc(fabricLabel(f))+'</span>';
+  }).join('');
+  return esc(pc.name)+' '+pc.w+'×'+pc.h+'cm × '+pc.qty+'장'+tag+fab;
+}
+function productItemHtml(p,i){
+  return '<div class="product-item">'+
+    '<div class="product-item-name">'+esc(p.name)+'</div>'+
+    '<div class="product-item-info">'+p.pieces.map(pieceLineHtml).join('<br>')+'</div>'+
+    '<div class="product-item-actions">'+
+      '<button class="btn-sm btn-edit" onclick="goToRegister('+i+')">수정</button>'+
+      '<button class="btn-sm btn-edit" onclick="duplicateProduct('+i+')">복제</button>'+
+      '<button class="btn-sm btn-del" onclick="deleteProduct('+i+')">삭제</button>'+
+      '</div><div class="product-item-actions">'+
+      '<button class="btn-sm btn-calc" onclick="goToCalc('+i+')">계산 →</button>'+
+    '</div></div>';
+}
 function renderProductList(){
   var list=document.getElementById('product-list'),empty=document.getElementById('empty-state');
   if(!products.length){empty.style.display='block';list.innerHTML='';return;}
   empty.style.display='none';
-  list.innerHTML=products.map(function(p,i){
-    return '<div class="product-item">'+
-      '<div class="product-item-name">'+esc(p.name)+'</div>'+
-      '<div class="product-item-info">'+p.pieces.map(function(pc){
-        var tag=pc.rotatable?'<span style="font-size:11px;background:var(--accent2);color:var(--accent);padding:2px 6px;border-radius:8px;font-weight:700;margin-left:4px;">회전가능</span>':'<span style="font-size:11px;background:var(--warn2);color:var(--warn);padding:2px 6px;border-radius:8px;font-weight:700;margin-left:4px;">식서고정</span>';
-        return esc(pc.name)+' '+pc.w+'×'+pc.h+'cm × '+pc.qty+'장'+tag;
-      }).join('<br>')+'</div>'+
-      '<div class="product-item-actions">'+
-        '<button class="btn-sm btn-edit" onclick="goToRegister('+i+')">수정</button>'+
-        '<button class="btn-sm btn-del" onclick="deleteProduct('+i+')">삭제</button>'+
-        '<button class="btn-sm btn-calc" onclick="goToCalc('+i+')">계산 →</button>'+
-      '</div></div>';
+  var groups={};companyOrder=[];
+  products.forEach(function(p,i){
+    var key=companyLabel(p.company);
+    if(!groups[key]){groups[key]=[];companyOrder.push(key);}
+    groups[key].push(i);
+  });
+  // 업체 구분이 없으면(전부 미지정) 예전처럼 평평한 목록으로
+  if(companyOrder.length===1&&companyOrder[0]==='기타'){
+    list.innerHTML=products.map(function(p,i){return productItemHtml(p,i);}).join('');
+    return;
+  }
+  list.innerHTML=companyOrder.map(function(key,oi){
+    var collapsed=!!collapsedCompanies[key];
+    var items=groups[key].map(function(i){return productItemHtml(products[i],i);}).join('');
+    return '<div class="company-group">'+
+      '<button class="company-head'+(collapsed?' collapsed':'')+'" onclick="toggleCompany('+oi+')">'+
+        '<span class="company-arrow">▼</span>'+esc(key)+
+        '<span class="company-count">'+groups[key].length+'</span>'+
+      '</button>'+
+      '<div class="company-body" style="display:'+(collapsed?'none':'block')+'">'+items+'</div>'+
+    '</div>';
   }).join('');
+}
+function toggleCompany(oi){
+  var k=companyOrder[oi];
+  collapsedCompanies[k]=!collapsedCompanies[k];
+  saveUiState();
+  renderProductList();
 }
 
 // ==================== Register ====================
 function goToRegister(idx){
   if(typeof idx==='undefined')idx=-1;
-  editingIndex=idx;pieceCount=0;pieceIdCounter=0;
+  editingIndex=idx;pieceCount=0;pieceIdCounter=0;pieceFabrics={};
   document.getElementById('pieces-container').innerHTML='';
   document.getElementById('reg-title').textContent=idx>=0?'제품 수정':'제품 등록';
-  if(idx>=0){document.getElementById('prod-name').value=products[idx].name;products[idx].pieces.forEach(function(pc){addPiece(pc);});}
-  else{document.getElementById('prod-name').value='';addPiece();}
+  if(idx>=0){
+    document.getElementById('prod-name').value=products[idx].name;
+    document.getElementById('prod-company').value=products[idx].company||'';
+    products[idx].pieces.forEach(function(pc){addPiece(pc);});
+  }
+  else{document.getElementById('prod-name').value='';document.getElementById('prod-company').value='';addPiece();}
+  renderCompanyChips();
   showScreen('screen-register');
 }
 function addPiece(data){
@@ -469,9 +622,77 @@ function addPiece(data){
         '<button type="button" class="toggle '+(isRot?'on':'')+'" id="p'+uid+'-rot" onclick="this.classList.toggle(\'on\');updateRotLabel('+uid+')"><div class="toggle-knob"></div></button>'+
         '<span style="font-size:12px;color:var(--text3);margin-top:4px;font-weight:700;" id="p'+uid+'-rot-label">'+(isRot?'회전가능':'식서고정')+'</span>'+
       '</div>'+
+    '</div>'+
+    '<div class="fabric-block">'+
+      '<label class="form-label">이 피스에 쓰는 원단</label>'+
+      '<div id="p'+uid+'-fab"></div>'+
+      '<div class="input-row" style="margin-bottom:0;margin-top:8px">'+
+        '<input type="text" class="form-input" id="p'+uid+'-fname" placeholder="원단 이름">'+
+        '<input type="number" class="form-input" id="p'+uid+'-fw" placeholder="폭" inputmode="decimal" style="max-width:84px">'+
+        '<button type="button" class="btn-add-fab" onclick="addPieceFabricManual('+uid+')">추가</button>'+
+      '</div>'+
     '</div>';
+  pieceFabrics[uid]=(data&&Array.isArray(data.fabrics))?data.fabrics.map(function(f){return{name:f.name||'',width:Number(f.width)||0};}):[];
   document.getElementById('pieces-container').appendChild(div);
+  renderPieceFabricUI(uid);
   updateAddBtn();
+}
+function registerCompany(){return (document.getElementById('prod-company').value||'').trim();}
+function renderPieceFabricUI(uid){
+  var el=document.getElementById('p'+uid+'-fab');
+  if(!el)return;
+  var mine=pieceFabrics[uid]||[];
+  var h='<div class="chip-row">';
+  if(mine.length){
+    mine.forEach(function(f,fi){
+      h+='<button type="button" class="chip active" onclick="removePieceFabric('+uid+','+fi+')">'+esc(fabricLabel(f))+' \u00d7</button>';
+    });
+  }else{
+    h+='<span class="fab-empty">아직 없음 — 아래에서 추가하세요</span>';
+  }
+  h+='</div>';
+  // 같은 업체의 다른 원단을 탭 한 번으로
+  var pool=vendorFabrics(registerCompany()).filter(function(f){
+    return !mine.some(function(m){return sameFabric(m,f);});
+  });
+  if(pool.length){
+    h+='<div class="fab-pool-label">업체 원단</div><div class="chip-row">';
+    pool.forEach(function(f,pi){
+      h+='<button type="button" class="chip chip-add" onclick="addPieceFabricFromVendor('+uid+','+pi+')">+ '+esc(fabricLabel(f))+'</button>';
+    });
+    h+='</div>';
+  }
+  el.innerHTML=h;
+}
+function renderPieceFabricPickers(){
+  document.querySelectorAll('.piece-card').forEach(function(card){
+    renderPieceFabricUI(parseInt(card.id.replace('piece-uid-','')));
+  });
+}
+function addPieceFabricFromVendor(uid,pi){
+  var mine=pieceFabrics[uid]||[];
+  var pool=vendorFabrics(registerCompany()).filter(function(f){
+    return !mine.some(function(m){return sameFabric(m,f);});
+  });
+  if(!pool[pi])return;
+  mine.push({name:pool[pi].name,width:pool[pi].width});
+  pieceFabrics[uid]=mine;
+  renderPieceFabricUI(uid);
+}
+function removePieceFabric(uid,fi){
+  (pieceFabrics[uid]||[]).splice(fi,1);
+  renderPieceFabricUI(uid);
+}
+function addPieceFabricManual(uid){
+  var nEl=document.getElementById('p'+uid+'-fname'),wEl=document.getElementById('p'+uid+'-fw');
+  var name=nEl.value.trim(),width=parseFloat(wEl.value);
+  if(!name&&!(width>0)){alert('원단 이름이나 폭을 입력해주세요');return;}
+  var f={name:name,width:width>0?width:0};
+  var mine=pieceFabrics[uid]||[];
+  if(mine.some(function(m){return sameFabric(m,f);})){alert('이미 추가된 원단이에요');return;}
+  mine.push(f);pieceFabrics[uid]=mine;
+  nEl.value='';wEl.value='';
+  renderPieceFabricUI(uid);
 }
 function updateRotLabel(uid){var b=document.getElementById('p'+uid+'-rot'),l=document.getElementById('p'+uid+'-rot-label');if(b&&l)l.textContent=b.classList.contains('on')?'회전가능':'식서고정';}
 function removePiece(id){var el=document.getElementById(id);if(el){el.remove();pieceCount--;updateAddBtn();}}
@@ -482,7 +703,13 @@ function getPieceData(){
     var uid=card.id.replace('piece-uid-','');
     var w=parseFloat(document.getElementById('p'+uid+'-w').value),h=parseFloat(document.getElementById('p'+uid+'-h').value);
     if(!w||!h||w<=0||h<=0)return;
-    results.push({name:document.getElementById('p'+uid+'-name').value.trim()||'피스',w:w,h:h,qty:parseInt(document.getElementById('p'+uid+'-qty').value)||1,rotatable:document.getElementById('p'+uid+'-rot').classList.contains('on')});
+    results.push({
+      name:document.getElementById('p'+uid+'-name').value.trim()||'피스',
+      w:w,h:h,
+      qty:parseInt(document.getElementById('p'+uid+'-qty').value)||1,
+      rotatable:document.getElementById('p'+uid+'-rot').classList.contains('on'),
+      fabrics:(pieceFabrics[uid]||[]).slice()
+    });
   });
   return results;
 }
@@ -490,13 +717,218 @@ function saveProduct(){
   var name=document.getElementById('prod-name').value.trim();
   if(!name){alert('제품 이름을 입력해주세요');return;}
   var pieces=getPieceData();if(!pieces.length){alert('피스 정보를 입력해주세요');return;}
-  var prod={name:name,pieces:pieces};
+  var company=document.getElementById('prod-company').value.trim();
+  var dup=findDuplicate(company,name,editingIndex);
+  if(dup>=0&&!confirm('"'+companyLabel(company)+'"에 이미 "'+name+'"이 있어요.\n그래도 저장할까요?'))return;
+  var prod={company:company,name:name,pieces:pieces};
+  // 입력한 원단을 그 업체 목록에 자동 등록 → 다음 제품부터는 탭 한 번
+  pieces.forEach(function(pc){pieceFabricList(pc).forEach(function(f){addVendorFabric(company,f);});});
+  saveVendors();
   if(editingIndex>=0)products[editingIndex]=prod;else products.push(prod);
   saveToStorage(products);autoSyncIfEnabled();renderProductList();showScreen('screen-main');
 }
+function renderCompanyChips(){
+  var el=document.getElementById('company-chips'),seen={};
+  companyChipList=[];
+  products.forEach(function(p){
+    var c=(p.company||'').trim();
+    if(c&&!seen[c]){seen[c]=1;companyChipList.push(c);}
+  });
+  el.innerHTML=companyChipList.map(function(c,i){
+    return '<button type="button" class="chip" id="company-chip-'+i+'" onclick="pickCompany('+i+')">'+esc(c)+'</button>';
+  }).join('');
+  syncCompanyChips();
+}
+function pickCompany(i){document.getElementById('prod-company').value=companyChipList[i];syncCompanyChips();}
+function syncCompanyChips(){
+  var v=(document.getElementById('prod-company').value||'').trim();
+  companyChipList.forEach(function(c,i){
+    var b=document.getElementById('company-chip-'+i);
+    if(b)b.classList.toggle('active',c===v);
+  });
+}
+
+// 같은 업체에 같은 이름이 있는지 (업체가 다르면 동명 제품은 정상)
+function findDuplicate(company,name,exceptIdx){
+  var c=companyLabel(company),n=name.trim();
+  for(var i=0;i<products.length;i++){
+    if(i===exceptIdx)continue;
+    if(companyLabel(products[i].company)===c&&products[i].name.trim()===n)return i;
+  }
+  return -1;
+}
+// 치수가 같고 업체·원단만 다른 제품이 잦아서 복제를 둠
+function duplicateProduct(i){
+  var src=products[i];
+  goToRegister();
+  document.getElementById('prod-company').value=src.company||'';
+  document.getElementById('prod-name').value=src.name+' 복사';
+  document.getElementById('pieces-container').innerHTML='';
+  pieceCount=0;pieceIdCounter=0;pieceFabrics={};
+  src.pieces.forEach(function(pc){addPiece(pc);});
+  updateAddBtn();renderCompanyChips();
+  document.getElementById('reg-title').textContent='제품 복제';
+}
+
 function deleteProduct(i){
   if(!confirm('"'+products[i].name+'"을 삭제할까요?'))return;
   products.splice(i,1);saveToStorage(products);autoSyncIfEnabled();renderProductList();
+}
+
+// ==================== 업체 · 원단 관리 ====================
+var manageOpen={},mergeTarget={};
+function goToManage(){renderManage();showScreen('screen-manage');}
+function manageCompanies(){
+  var seen={},list=[];
+  products.forEach(function(p){var k=companyLabel(p.company);if(!seen[k]){seen[k]=1;list.push(k);}});
+  Object.keys(vendorFabricMap).forEach(function(k){if(!seen[k]){seen[k]=1;list.push(k);}});
+  return list;
+}
+function productsOf(key){return products.filter(function(p){return companyLabel(p.company)===key;});}
+// 이 원단을 실제로 쓰고 있는 피스 수
+function fabricUsage(key,f){
+  var n=0;
+  products.forEach(function(p){
+    if(companyLabel(p.company)!==key)return;
+    p.pieces.forEach(function(pc){if(pieceFabricList(pc).some(function(x){return sameFabric(x,f);}))n++;});
+  });
+  return n;
+}
+function renderManage(){
+  var el=document.getElementById('manage-list');
+  var keys=manageCompanies();
+  if(!keys.length){el.innerHTML='<div class="empty"><div class="empty-icon">🏢</div><div class="empty-text">아직 업체가 없어요</div><div class="empty-sub">제품을 등록하면 업체가 여기에 나타나요</div></div>';return;}
+  el.innerHTML=keys.map(function(key,ki){
+    var open=!!manageOpen[key];
+    var fabs=vendorFabrics(key),prods=productsOf(key);
+    var h='<div class="company-group">';
+    h+='<button class="company-head'+(open?'':' collapsed')+'" onclick="toggleManage('+ki+')">'+
+       '<span class="company-arrow">▼</span>'+esc(key)+
+       '<span class="company-count">제품 '+prods.length+' · 원단 '+fabs.length+'</span></button>';
+    h+='<div class="company-body" style="display:'+(open?'block':'none')+'">';
+    h+='<div class="card" style="margin-bottom:8px">';
+    h+='<div class="card-title">원단</div>';
+    if(fabs.length){
+      fabs.forEach(function(f,fi){
+        var used=fabricUsage(key,f);
+        h+='<div class="manage-row">';
+        h+='<div class="manage-row-name">'+esc(f.name||'(이름 없음)')+
+           '<br><span class="manage-row-sub">'+(f.width>0?f.width+'cm':'폭 미지정')+' · 사용 '+used+'피스</span></div>';
+        h+='<button class="btn-sm btn-edit" onclick="editVendorFabric('+ki+','+fi+')">수정</button>';
+        h+='<button class="btn-sm btn-del" onclick="deleteVendorFabric('+ki+','+fi+')">삭제</button>';
+        h+='</div>';
+      });
+    }else{
+      h+='<div class="fab-empty">등록된 원단이 없어요</div>';
+    }
+    h+='<div class="input-row" style="margin-bottom:0;margin-top:10px">'+
+       '<input type="text" class="form-input" id="mgr-fname-'+ki+'" placeholder="원단 이름">'+
+       '<input type="number" class="form-input" id="mgr-fw-'+ki+'" placeholder="폭" inputmode="decimal" style="max-width:84px">'+
+       '<button type="button" class="btn-add-fab" onclick="addVendorFabricManual('+ki+')">추가</button>'+
+       '</div>';
+    h+='</div>';
+    h+='<div class="card" style="margin-bottom:0">';
+    h+='<div class="card-title">업체</div>';
+    h+='<div class="btn-row"><button class="btn-secondary" onclick="renameCompany('+ki+')">이름 변경</button>';
+    if(keys.length>1)h+='<button class="btn-ghost" onclick="toggleMerge('+ki+')">다른 업체로 병합</button>';
+    h+='</div>';
+    if(mergeTarget[key]!==undefined){
+      var others=keys.filter(function(k){return k!==key;});
+      h+='<div style="margin-top:10px"><label class="form-label">합칠 대상 업체</label>';
+      h+='<select class="form-input" id="mgr-merge-'+ki+'">'+others.map(function(o){return '<option value="'+esc(o)+'">'+esc(o)+'</option>';}).join('')+'</select>';
+      h+='<button class="btn-secondary" style="margin-top:8px" onclick="doMerge('+ki+')">'+esc(key)+' → 선택한 업체로 합치기</button></div>';
+    }
+    h+='</div></div></div>';
+    return h;
+  }).join('');
+}
+function toggleManage(ki){
+  var key=manageCompanies()[ki];
+  manageOpen[key]=!manageOpen[key];
+  renderManage();
+}
+function toggleMerge(ki){
+  var key=manageCompanies()[ki];
+  if(mergeTarget[key]===undefined)mergeTarget[key]=1;else delete mergeTarget[key];
+  renderManage();
+}
+function addVendorFabricManual(ki){
+  var key=manageCompanies()[ki];
+  var nEl=document.getElementById('mgr-fname-'+ki),wEl=document.getElementById('mgr-fw-'+ki);
+  var name=nEl.value.trim(),width=parseFloat(wEl.value);
+  if(!name&&!(width>0)){alert('원단 이름이나 폭을 입력해주세요');return;}
+  addVendorFabric(key,{name:name,width:width>0?width:0});
+  saveVendors();renderManage();
+}
+function editVendorFabric(ki,fi){
+  var key=manageCompanies()[ki],f=vendorFabrics(key)[fi];
+  if(!f)return;
+  var name=prompt('원단 이름',f.name||'');
+  if(name===null)return;
+  var wStr=prompt('원단 폭 (cm)',f.width>0?String(f.width):'');
+  if(wStr===null)return;
+  var width=parseFloat(wStr);
+  var nf={name:name.trim(),width:width>0?width:0};
+  if(!nf.name&&!(nf.width>0)){alert('이름이나 폭 중 하나는 있어야 해요');return;}
+  var used=fabricUsage(key,f);
+  vendorFabricMap[key][fi]=nf;saveVendors();
+  // 제품은 원단 값을 복사해서 갖고 있으므로 전파 여부를 물어본다
+  if(used>0&&confirm('이 원단을 쓰는 제품 '+used+'피스도 같이 바꿀까요?')){
+    products.forEach(function(p){
+      if(companyLabel(p.company)!==key)return;
+      p.pieces.forEach(function(pc){
+        pieceFabricList(pc).forEach(function(x,xi){if(sameFabric(x,f))pc.fabrics[xi]={name:nf.name,width:nf.width};});
+      });
+    });
+    saveToStorage(products);autoSyncIfEnabled();renderProductList();
+  }
+  renderManage();
+}
+function deleteVendorFabric(ki,fi){
+  var key=manageCompanies()[ki],f=vendorFabrics(key)[fi];
+  if(!f)return;
+  var used=fabricUsage(key,f);
+  var msg=used>0
+    ? '"'+fabricLabel(f)+'"을 목록에서 지울까요?\n제품 '+used+'피스가 쓰고 있어요 — 제품 데이터는 그대로 두고 선택지에서만 빠져요.'
+    : '"'+fabricLabel(f)+'"을 지울까요?';
+  if(!confirm(msg))return;
+  vendorFabricMap[key].splice(fi,1);saveVendors();renderManage();
+}
+function renameCompany(ki){
+  var key=manageCompanies()[ki];
+  var nv=prompt('업체 이름',key==='기타'?'':key);
+  if(nv===null)return;
+  nv=nv.trim();
+  if(!nv){alert('업체 이름을 입력해주세요');return;}
+  if(nv===key)return;
+  var exists=manageCompanies().indexOf(nv)>=0;
+  if(exists&&!confirm('"'+nv+'"가 이미 있어요. 두 업체를 합칠까요?'))return;
+  applyCompanyRename(key,nv);
+  alert('✅ "'+nv+'"로 바꿨어요');
+}
+function applyCompanyRename(from,to){
+  products.forEach(function(p){if(companyLabel(p.company)===from)p.company=to;});
+  var src=vendorFabrics(from);
+  if(src.length){
+    if(!Array.isArray(vendorFabricMap[to]))vendorFabricMap[to]=[];
+    src.forEach(function(f){addVendorFabric(to,f);});
+  }
+  delete vendorFabricMap[from];
+  delete manageOpen[from];delete mergeTarget[from];
+  if(collapsedCompanies[from]!==undefined){delete collapsedCompanies[from];saveUiState();}
+  saveToStorage(products);saveVendors();autoSyncIfEnabled();
+  renderProductList();renderManage();
+}
+function doMerge(ki){
+  var key=manageCompanies()[ki];
+  var sel=document.getElementById('mgr-merge-'+ki);
+  if(!sel)return;
+  var to=sel.value;
+  if(!to||to===key)return;
+  if(!confirm('"'+key+'"의 제품과 원단을 "'+to+'"로 옮길까요?'))return;
+  delete mergeTarget[key];
+  applyCompanyRename(key,to);
+  alert('✅ "'+to+'"로 합쳤어요');
 }
 
 // ==================== Calc Setup ====================
@@ -504,45 +936,113 @@ function goToCalc(i){
   currentProduct=products[i];
   document.getElementById('calc-prod-name').textContent=currentProduct.name;
   document.getElementById('fabric-width').value='';
+  pieceRoles=currentProduct.pieces.map(function(){return 'qty';});
+  pieceQtyMemo=currentProduct.pieces.map(function(){return '';});
+  renderFabricChips();
   document.getElementById('fabric-length').value='';
   document.getElementById('target-qty').value='';
   setMode('A');setUnit('cm');setGuide(1);setMargin(1);
   showScreen('screen-calc');
 }
+// 제품 피스에 저장된 원단(이름+폭)을 빠른 선택 버튼으로
+function renderFabricChips(){
+  var el=document.getElementById('fabric-width-chips'),seen={};
+  fabricChipList=[];
+  if(currentProduct){
+    activePieceIdx().forEach(function(i){
+      pieceFabricList(currentProduct.pieces[i]).forEach(function(f){
+        if(!(f.width>0))return;
+        var key=(f.name||'')+'|'+f.width;
+        if(seen[key])return;seen[key]=1;
+        fabricChipList.push({name:f.name||'',width:f.width});
+      });
+    });
+  }
+  if(!fabricChipList.length){el.innerHTML='';el.style.display='none';return;}
+  el.style.display='flex';
+  el.innerHTML=fabricChipList.map(function(f,i){
+    return '<button type="button" class="chip" id="fabric-chip-'+i+'" onclick="pickFabricWidth('+i+')">'+(f.name?esc(f.name)+' ':'')+f.width+'</button>';
+  }).join('');
+  // 저장된 원단이 하나뿐이고 아직 입력 전이면 바로 채워줌
+  var cur=document.getElementById('fabric-width').value;
+  if(fabricChipList.length===1&&!cur)pickFabricWidth(0);
+  else syncFabricChips();
+}
+function pickFabricWidth(i){
+  document.getElementById('fabric-width').value=fabricChipList[i].width;
+  syncFabricChips();
+}
+// 폭을 직접 고치면 버튼 선택 해제 (값이 다시 맞으면 재선택)
+function syncFabricChips(){
+  var v=parseFloat(document.getElementById('fabric-width').value);
+  fabricChipList.forEach(function(f,i){
+    var b=document.getElementById('fabric-chip-'+i);
+    if(b)b.classList.toggle('active',v>0&&f.width===v);
+  });
+}
+
 function setMode(m){
   calcMode=m;
   ['A','B','C'].forEach(function(x){document.getElementById('mode'+x+'-tab').classList.toggle('active',x===m);});
   document.getElementById('fabric-length-group').style.display=(m==='A'||m==='C')?'block':'none';
   document.getElementById('fabric-qty-group').style.display=m==='B'?'block':'none';
-  document.getElementById('modeC-qty-card').style.display=m==='C'?'block':'none';
   var descs={A:'원단 길이 입력 → 최대 생산 수량 계산',B:'목표 수량 입력 → 필요 원단 길이 계산',C:'원단 길이 + 피스별 목표 수량 → 가능 여부 및 최적 배치'};
   document.getElementById('mode-desc').textContent=descs[m];
-  if(m==='C'&&currentProduct)renderModeCQtyInputs();
+  snapshotQtyInputs();
+  renderPieceRoles();
 }
-function renderModeCQtyInputs(){
-  var list=document.getElementById('modeC-qty-list');
+// 피스별 개입도: off(미사용) / qty(지정수량) / max(최대한 욱여넣기)
+function renderPieceRoles(){
+  var list=document.getElementById('piece-role-list');
+  var desc=document.getElementById('piece-role-desc');
   if(!currentProduct){list.innerHTML='';return;}
+  desc.textContent=calcMode==='C'
+    ? '"최대한"은 남는 원단에 욱여넣어요'
+    : '이번 작업에서 재단하지 않을 피스는 미사용으로 두세요';
   list.innerHTML=currentProduct.pieces.map(function(pc,i){
+    var role=pieceRoles[i]||'qty';
     var c=COLORS[i%COLORS.length];
-    return '<div class="piece-qty-row" id="modeC-row-'+i+'">' +
-      '<div class="piece-qty-dot" style="background:'+c+'"></div>'+
-      '<div class="piece-qty-name">'+esc(pc.name)+'<br><span style="font-size:12px;color:var(--text3);font-weight:600;">'+pc.w+'×'+pc.h+'cm</span></div>'+
-      '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">'+
-        '<input type="number" class="piece-qty-input" id="modeC-qty-'+i+'" placeholder="수량" inputmode="numeric" min="0">'+
-        '<label style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--accent);cursor:pointer;">'+
-          '<input type="checkbox" id="modeC-max-'+i+'" onchange="toggleModeCMax('+i+')" style="width:16px;height:16px;accent-color:var(--accent);">'+
-          '최대한 욱여넣기'+
-        '</label>'+
-      '</div>'+
-    '</div>';
+    var sub=pc.w+'×'+pc.h+'cm';
+    var fl=pieceFabricList(pc);
+    if(fl.length)sub+=' · '+fl.map(function(f){return f.name||(f.width+'cm');}).join(', ');
+    var h='<div class="piece-role-row'+(role==='off'?' is-off':'')+'" id="role-row-'+i+'">';
+    h+='<div class="piece-role-head">';
+    h+='<div class="piece-qty-dot" style="background:'+c+'"></div>';
+    h+='<div class="piece-role-name">'+esc(pc.name)+'<br><span class="piece-role-sub">'+esc(sub)+'</span></div>';
+    h+='</div>';
+    h+='<div class="role-group">';
+    h+='<button type="button" class="role-btn'+(role==='off'?' active off':'')+'" onclick="setPieceRole('+i+',&quot;off&quot;)">미사용</button>';
+    h+='<button type="button" class="role-btn'+(role==='qty'?' active':'')+'" onclick="setPieceRole('+i+',&quot;qty&quot;)">'+(calcMode==='C'?'지정수량':'사용')+'</button>';
+    if(calcMode==='C')h+='<button type="button" class="role-btn'+(role==='max'?' active':'')+'" onclick="setPieceRole('+i+',&quot;max&quot;)">최대한</button>';
+    h+='</div>';
+    if(calcMode==='C'){
+      h+='<div id="role-qty-wrap-'+i+'" style="display:'+(role==='qty'?'block':'none')+';margin-top:8px;">';
+      h+='<input type="number" class="form-input" id="modeC-qty-'+i+'" placeholder="목표 수량 (장)" inputmode="numeric" min="0" value="'+(pieceQtyMemo[i]||'')+'">';
+      h+='</div>';
+    }
+    return h+'</div>';
   }).join('');
 }
-function toggleModeCMax(i){
-  var chk=document.getElementById('modeC-max-'+i);
-  var inp=document.getElementById('modeC-qty-'+i);
-  if(chk.checked){inp.value='';inp.disabled=true;inp.placeholder='최대한';}
-  else{inp.disabled=false;inp.placeholder='수량';}
+function snapshotQtyInputs(){
+  if(!currentProduct)return;
+  currentProduct.pieces.forEach(function(pc,i){
+    var el=document.getElementById('modeC-qty-'+i);
+    if(el)pieceQtyMemo[i]=el.value;
+  });
 }
+function setPieceRole(i,role){
+  // 모드 A/B에는 "최대한"이 없으므로 qty로 흡수
+  if(calcMode!=='C'&&role==='max')role='qty';
+  snapshotQtyInputs();
+  pieceRoles[i]=role;
+  renderPieceRoles();
+  renderFabricChips();
+}
+function activePieceIdx(){
+  if(!currentProduct)return[];
+  return currentProduct.pieces.map(function(pc,i){return i;}).filter(function(i){return (pieceRoles[i]||'qty')!=='off';});
+}
+
 function setUnit(u){
   lengthUnit=u;
   document.getElementById('unit-cm').classList.toggle('active',u==='cm');
@@ -553,7 +1053,12 @@ function setUnit(u){
 function updateYardInfo(){var v=parseFloat(document.getElementById('fabric-length').value);document.getElementById('yard-info').textContent=(lengthUnit==='yard'&&v)?'= '+(v*91.44).toFixed(0)+'cm':'';}
 function setGuide(n){guideLines=n;[1,2,3,4].forEach(function(i){document.getElementById('guide-'+i).classList.toggle('active',i===n);});}
 function setMargin(n){marginCm=n;[0,1,2,3,5].forEach(function(i){document.getElementById('margin-'+i).classList.toggle('active',i===n);});}
-document.addEventListener('input',function(e){if(e.target.id==='fabric-length')updateYardInfo();});
+document.addEventListener('input',function(e){
+  if(e.target.id==='fabric-length')updateYardInfo();
+  if(e.target.id==='fabric-width')syncFabricChips();
+  if(e.target.id==='prod-company'){syncCompanyChips();renderPieceFabricPickers();}
+  if(/^modeC-qty-\d+$/.test(e.target.id))pieceQtyMemo[parseInt(e.target.id.replace('modeC-qty-',''))]=e.target.value;
+});
 
 // ==================== Core Engine ====================
 function getBestFit(piece,fabricWidth){
@@ -562,11 +1067,12 @@ function getBestFit(piece,fabricWidth){
   return{w:w,h:h,perRow:Math.max(1,Math.floor(fabricWidth/w)),rotated:rotated};
 }
 function calcPiecePlan(piece,fabricWidth,targetQty,guide,margin){
+  // 반환값에 fabricW 포함 (자투리 폭 계산용)
   var fit=getBestFit(piece,fabricWidth);
   var totalPieces=targetQty*piece.qty,totalRows=Math.ceil(totalPieces/fit.perRow);
   var sheetLen=guide*fit.h+margin*2,fullSheets=Math.floor(totalRows/guide),remRows=totalRows%guide;
   var remSheetLen=remRows>0?remRows*fit.h+margin*2:0,totalLen=fullSheets*sheetLen+remSheetLen;
-  return{perRow:fit.perRow,totalPieces:totalPieces,totalRows:totalRows,sheetLen:sheetLen,fullSheets:fullSheets,remRows:remRows,remSheetLen:remSheetLen,totalLen:totalLen,w:fit.w,h:fit.h,rotated:fit.rotated};
+  return{perRow:fit.perRow,totalPieces:totalPieces,totalRows:totalRows,sheetLen:sheetLen,fullSheets:fullSheets,remRows:remRows,remSheetLen:remSheetLen,totalLen:totalLen,w:fit.w,h:fit.h,rotated:fit.rotated,fabricW:fabricWidth,leftoverW:Math.max(0,fabricWidth-fit.perRow*fit.w)};
 }
 function calcMaxSets(piece,fabricWidth,fabricLen,guide,margin){
   var lo=0,hi=50000,best=0;
@@ -638,7 +1144,7 @@ function calcMixedLayout(pieces,fabricWidth,targetQties,margin,fabricLen){
       }
     }
 
-    rows.push({cells:cells,rowH:rowH,leftoverW:leftoverW});
+    rows.push({cells:cells,rowH:rowH,leftoverW:leftoverW,leftover:leftoverW,usedW:fabricWidth-leftoverW});
     usedLen+=rowH;
   }
 
@@ -647,13 +1153,13 @@ function calcMixedLayout(pieces,fabricWidth,targetQties,margin,fabricLen){
   if(hasMax&&fabricLen!=null){
     var maxIdxList=[];
     for(var i=0;i<pieces.length;i++){if(needs[i]===null)maxIdxList.push(i);}
-    var iter2=0,maxIter2=10000;
+    var iter2=0,maxIter2=10000,turn=0;
     while(iter2++<maxIter2){
-      // 가장 높이가 작은 최대한 피스 선택 (원단 효율)
-      var bestIdx=-1,bestH=9999;
-      for(var k=0;k<maxIdxList.length;k++){
-        var idx=maxIdxList[k];
-        if(fits[idx].h<bestH&&usedLen+fits[idx].h<=fabricLen+0.001){bestH=fits[idx].h;bestIdx=idx;}
+      // 최대한 피스들에 돌아가며 줄을 배정 (한 피스가 원단을 독식하지 않도록)
+      var bestIdx=-1;
+      for(var t=0;t<maxIdxList.length;t++){
+        var cand=maxIdxList[(turn+t)%maxIdxList.length];
+        if(usedLen+fits[cand].h<=fabricLen+0.001){bestIdx=cand;turn=(turn+t+1)%maxIdxList.length;break;}
       }
       if(bestIdx<0)break;
 
@@ -673,7 +1179,7 @@ function calcMixedLayout(pieces,fabricWidth,targetQties,margin,fabricLen){
       }
 
       if(cells2.length===0)break;
-      rows.push({cells:cells2,rowH:rowH2,leftoverW:leftoverW2});
+      rows.push({cells:cells2,rowH:rowH2,leftoverW:leftoverW2,leftover:leftoverW2,usedW:fabricWidth-leftoverW2});
       usedLen+=rowH2;
     }
   }
@@ -790,7 +1296,10 @@ function buildBriefing(pieces,fabricW,fabricLen,targetQties,layout){
 function calculate(){
   var fabricW=parseFloat(document.getElementById('fabric-width').value);
   if(!fabricW||fabricW<=0){alert('원단 폭을 입력해주세요');return;}
-  var pieces=currentProduct.pieces;
+  var actIdx=activePieceIdx();
+  if(!actIdx.length){alert('재단할 피스를 하나 이상 선택해주세요');return;}
+  var pieces=actIdx.map(function(i){return currentProduct.pieces[i];});
+  lastOffNames=currentProduct.pieces.filter(function(pc,i){return actIdx.indexOf(i)<0;}).map(function(pc){return pc.name;});
 
   if(calcMode==='A'){
     var v=parseFloat(document.getElementById('fabric-length').value);
@@ -813,17 +1322,68 @@ function calculate(){
     var v=parseFloat(document.getElementById('fabric-length').value);
     if(!v||v<=0){alert('원단 길이를 입력해주세요');return;}
     var fabricLen=lengthUnit==='yard'?v*91.44:v;
-    var targetQties=pieces.map(function(pc,i){
-      var chk=document.getElementById('modeC-max-'+i);
-      if(chk&&chk.checked)return null; // 최대한
-      var val=document.getElementById('modeC-qty-'+i).value.trim();
+    var targetQties=actIdx.map(function(i){
+      if(pieceRoles[i]==='max')return null;
+      var el=document.getElementById('modeC-qty-'+i);
+      var val=el?el.value.trim():'';
       return val===''?0:parseInt(val)||0;
     });
-    if(targetQties.every(function(q){return q===null;})){alert('피스별 목표 수량을 하나 이상 입력해주세요');return;}
+    if(targetQties.every(function(q){return q===0;})){alert('목표 수량을 입력하거나 "최대한"을 선택해주세요');return;}
     renderResultC(pieces,fabricW,fabricLen,targetQties);
     return;
   }
   showScreen('screen-result');
+}
+
+// 결과 화면 제목: 업체명까지 (제품명은 업체 간 중복될 수 있음)
+function resultSubtitle(){
+  if(!currentProduct)return '';
+  var c=(currentProduct.company||'').trim();
+  return (c?c+' · ':'')+currentProduct.name;
+}
+// 미사용 피스 안내
+function offNoticeHtml(){
+  if(!lastOffNames.length)return '';
+  return '<div class="highlight-box blue"><div class="highlight-box-title">이번 작업에서 제외</div>'+
+    '<div class="highlight-box-val">'+esc(lastOffNames.join(', '))+' — 미사용</div></div>';
+}
+// 줄별 폭 사용 내역 (원단 폭이 몇 cm 쓰이고 몇 cm 남는지)
+function rowWidthTableHtml(rows,pieces,fabricW){
+  if(!rows.length)return '';
+  var h='<div class="row-table">';
+  h+='<div class="row-table-head"><span>줄</span><span>배치</span><span>사용 / 자투리</span></div>';
+  var shown=0;
+  rows.forEach(function(row,ri){
+    if(!row.cells||!row.cells.length)return;
+    shown++;
+    if(shown>12)return;
+    var used=0,parts=[];
+    row.cells.forEach(function(cell){
+      used+=cell.count*cell.w;
+      parts.push(esc(pieces[cell.pieceIdx]?pieces[cell.pieceIdx].name:'?')+' '+cell.count+'장');
+    });
+    var left=Math.max(0,fabricW-used);
+    h+='<div class="row-table-row">';
+    h+='<span class="row-table-n">'+(ri+1)+'</span>';
+    h+='<span>'+parts.join(' + ')+'</span>';
+    h+='<span class="row-table-num">'+fmtCm(used)+' / <b'+(left>0.5?' class="left-warn"':'')+'>'+fmtCm(left)+'</b></span>';
+    h+='</div>';
+  });
+  if(shown>12)h+='<div class="row-table-more">…외 '+(shown-12)+'줄 (같은 패턴 반복)</div>';
+  h+='</div>';
+  return h;
+}
+function fmtCm(v){return (Math.round(v*10)/10)+'cm';}
+// 폭 사용률 = 실제 피스가 덮은 면적 / 원단 면적
+function widthUsage(rows,fabricW){
+  var used=0,total=0;
+  rows.forEach(function(row){
+    if(!row.cells||!row.cells.length)return;
+    var u=0;
+    row.cells.forEach(function(cell){u+=cell.count*cell.w;});
+    used+=u*row.rowH;total+=fabricW*row.rowH;
+  });
+  return total>0?Math.round(used/total*100):0;
 }
 
 // ==================== Canvas Drawing ====================
@@ -924,27 +1484,9 @@ function drawStripe(ctx,x,y,w,h,bg){
 }
 
 // 단일 피스 배치도용 rows 생성
-function makeSinglePieceRows(plan,guide){
-  var rows=[];
-  // fullSheets
-  for(var s=0;s<Math.min(plan.fullSheets,3);s++){
-    var cells=[{pieceIdx:0,count:plan.perRow,w:plan.w,h:plan.h}];
-    var leftover=0; // 단일피스는 자투리 없음 (이미 perRow로 최대)
-    rows.push({cells:cells,rowH:plan.h*guide,leftover:leftover,label:(s+1)+'번째 연단'});
-  }
-  if(plan.fullSheets>3){
-    rows.push({cells:[],rowH:0,leftover:0,label:'skip',skipCount:plan.fullSheets-3});
-  }
-  // 자투리 연단
-  if(plan.remRows>0){
-    rows.push({cells:[{pieceIdx:0,count:plan.perRow,w:plan.w,h:plan.h}],rowH:plan.h*plan.remRows,leftover:0,label:'자투리 연단'});
-  }
-  return rows;
-}
-
 // ==================== Render ====================
 function renderResultA(maxSets,results,fabricW,fabricLen,mixed){
-  document.getElementById('result-subtitle').textContent=currentProduct.name;
+  document.getElementById('result-subtitle').textContent=resultSubtitle();
   var bottleneck=results.reduce(function(m,r){return r.plan.totalLen>m.plan.totalLen?r:m;},results[0]);
   var usedLen=bottleneck.plan.totalLen,remain=Math.max(0,fabricLen-usedLen);
   var mixedSets=mixed?mixed.maxSets:0,mixedLen=mixed&&mixed.layout?mixed.layout.totalLen:0;
@@ -960,6 +1502,7 @@ function renderResultA(maxSets,results,fabricW,fabricLen,mixed){
   html+='<div class="stat-box"><div class="stat-val">'+Math.round(isBetter?mixedLen:usedLen)+'cm</div><div class="stat-label">사용 길이</div></div>';
   html+='<div class="stat-box"><div class="stat-val">'+Math.round(fabricLen-(isBetter?mixedLen:usedLen))+'cm</div><div class="stat-label">남는 길이</div></div>';
   html+='</div>';
+  html+=offNoticeHtml();
 
   if(mixed&&mixed.layout){html+=renderMixedCard(mixed.layout,fabricW,isBetter,'혼합 배치'+(isBetter?' (추천!)':''));}
 
@@ -984,7 +1527,7 @@ function renderResultA(maxSets,results,fabricW,fabricLen,mixed){
 }
 
 function renderResultB(targetQty,results,fabricW,totalLen,mixed){
-  document.getElementById('result-subtitle').textContent=currentProduct.name;
+  document.getElementById('result-subtitle').textContent=resultSubtitle();
   var mixedLen=mixed?mixed.totalLen:null,isBetter=mixedLen&&mixedLen<totalLen;
 
   var html='';
@@ -997,6 +1540,7 @@ function renderResultB(targetQty,results,fabricW,totalLen,mixed){
   html+='<div class="stat-box"><div class="stat-val">'+targetQty+'</div><div class="stat-label">목표 수량</div></div>';
   html+='<div class="stat-box"><div class="stat-val">'+((isBetter?mixedLen:totalLen)/91.44).toFixed(1)+'야드</div><div class="stat-label">필요 야드</div></div>';
   html+='</div>';
+  html+=offNoticeHtml();
 
   if(mixed)html+=renderMixedCard(mixed,fabricW,isBetter,'혼합 배치'+(isBetter?' (추천!)':''));
   if(results.length>1){html+='<div class="divider"><div class="divider-line"></div><div class="divider-text">피스별 구간 분리 계산</div><div class="divider-line"></div></div>';}
@@ -1012,7 +1556,7 @@ function renderResultB(targetQty,results,fabricW,totalLen,mixed){
 }
 
 function renderResultC(pieces,fabricW,fabricLen,targetQties){
-  document.getElementById('result-subtitle').textContent=currentProduct.name;
+  document.getElementById('result-subtitle').textContent=resultSubtitle();
   // fabricLen을 전달해서 "최대한" 피스가 남은 원단 안에서만 계산되도록
   var layout=calcMixedLayout(pieces,fabricW,targetQties,marginCm,fabricLen);
   if(!layout){alert('계산할 수 없어요');return;}
@@ -1041,6 +1585,7 @@ function renderResultC(pieces,fabricW,fabricLen,targetQties){
     html+='</div>';
   }
 
+  html+=offNoticeHtml();
   // 피스별 달성 현황
   html+='<div class="card">';
   html+='<div class="card-title">피스별 달성 현황</div>';
@@ -1061,7 +1606,7 @@ function renderResultC(pieces,fabricW,fabricLen,targetQties){
   var briefing=buildBriefing(pieces,fabricW,fabricLen,targetQties,layout);
   html+='<div class="card">';
   html+='<div class="card-title">📐 계산 과정</div>';
-  html+='<pre style="font-size:12px;font-weight:600;color:var(--text2);line-height:1.8;white-space:pre-wrap;word-break:break-all;">'+briefing+'</pre>';
+  html+='<pre style="font-size:12px;font-weight:600;color:var(--text2);line-height:1.8;white-space:pre-wrap;word-break:break-all;">'+esc(briefing)+'</pre>';
   html+='</div>';
 
   html+=renderMixedCard(layout,fabricW,allOk&&fitsInFabric,'혼합 배치 계획');
@@ -1084,6 +1629,7 @@ function renderPlanCard(piece,plan,idx,fabricW){
   html+='</div>';
   html+='<div class="plan-body">';
   html+='폭에 <strong>'+plan.perRow+'개</strong> 배치 · 총 <strong>'+plan.totalRows+'줄</strong><br>';
+  html+='줄당 폭: '+fmtCm(plan.perRow*plan.w)+' 사용 / <strong'+(plan.leftoverW>0.5?' style="color:var(--warn)"':'')+'>'+fmtCm(plan.leftoverW)+' 자투리</strong><br>';
   html+='연단 <strong>'+plan.sheetLen+'cm</strong> × <strong>'+plan.fullSheets+'장</strong>';
   if(plan.remRows>0)html+=' + 자투리 <strong>'+plan.remSheetLen+'cm</strong> × <strong>1장</strong>';
   html+='<br>총 길이: <strong>'+Math.round(plan.totalLen)+'cm</strong>';
@@ -1098,6 +1644,8 @@ function renderPlanCard(piece,plan,idx,fabricW){
   return html;
 }
 
+// 단일 피스 줄의 남는 폭 = 원단폭 - (줄당 개수 × 피스폭)
+function planLeftover(plan){return Math.max(0,plan.fabricW-plan.perRow*plan.w);}
 function buildSingleRows(plan,guide){
   var rows=[];
   var fullRows=plan.fullSheets*guide;
@@ -1107,17 +1655,16 @@ function buildSingleRows(plan,guide){
     for(var r=0;r<guide;r++){
       cells.push({pieceIdx:0,count:plan.perRow,w:plan.w,h:plan.h});
     }
-    var leftoverW=0; // 단일피스 자투리폭은 없음 (perRow로 이미 최적)
-    rows.push({cells:[{pieceIdx:0,count:plan.perRow,w:plan.w,h:plan.h}],rowH:plan.h,leftover:0});
+    rows.push({cells:[{pieceIdx:0,count:plan.perRow,w:plan.w,h:plan.h}],rowH:plan.h,leftover:planLeftover(plan)});
   }
   if(plan.fullSheets>2){
     // 중간 생략 표시용 더미 행
     for(var s=2;s<plan.fullSheets;s++){
-      rows.push({cells:[{pieceIdx:0,count:plan.perRow,w:plan.w,h:plan.h}],rowH:plan.h,leftover:0});
+      rows.push({cells:[{pieceIdx:0,count:plan.perRow,w:plan.w,h:plan.h}],rowH:plan.h,leftover:planLeftover(plan)});
     }
   }
   if(plan.remRows>0){
-    rows.push({cells:[{pieceIdx:0,count:plan.perRow,w:plan.w,h:plan.h}],rowH:plan.h,leftover:0,isRem:true,remCount:plan.remRows});
+    rows.push({cells:[{pieceIdx:0,count:plan.perRow,w:plan.w,h:plan.h}],rowH:plan.h,leftover:planLeftover(plan),isRem:true,remCount:plan.remRows});
   }
   return rows;
 }
@@ -1132,7 +1679,9 @@ function renderMixedCard(layout,fabricW,isBetter,title){
     html+=esc(pc.name)+': <strong>'+cut+'장</strong>'+(need&&need<999999?' / '+need+'장 목표':'')+'<br>';
   });
   html+='총 길이: <strong>'+Math.round(layout.totalLen)+'cm</strong>';
+  html+=' · 폭 사용률 <strong>'+widthUsage(layout.rows,fabricW)+'%</strong>';
   html+='</div>';
+  html+=rowWidthTableHtml(layout.rows,layout.pieces,fabricW);
   html+='<div class="canvas-wrap"><div class="canvas-label">혼합 배치도 — '+fabricW+'cm 폭 기준</div>';
   html+='<canvas id="canvas-mixed"></canvas>';
   // 범례
@@ -1149,7 +1698,7 @@ function drawMixedCanvas(cid,fabricW,layout){
   setTimeout(function(){
     // layout.rows를 drawFabricCanvas용 rows로 변환
     var rows=layout.rows.map(function(row){
-      return{cells:row.cells,rowH:row.rowH,leftover:row.leftover||0};
+      return{cells:row.cells,rowH:row.rowH,leftover:row.leftoverW!=null?row.leftoverW:(row.leftover||0)};
     });
     drawFabricCanvas(cid,fabricW,rows,marginCm,layout.pieces);
   },50);
