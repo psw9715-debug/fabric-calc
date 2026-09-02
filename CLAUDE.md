@@ -39,7 +39,7 @@ Everything lives in `index.html` as five `.screen` divs shown/hidden via `showSc
 ### Data model
 
 - `localStorage['fabric_home_v4']` — array of products. Schema: `{ company, name, pieces: [{ name, w, h, qty, rotatable }] }`. 피스는 **원단 정보를 갖지 않는다** — 원단은 업체 단위(`fabric_vendors_v1`)로만 관리한다.
-- `localStorage['fabric_sync_v1']` — `{ token, gistId, autoSync }` for Gist sync. **Never hardcode a GitHub token in code** — this is a public repo, GitHub auto-revokes committed tokens. Tokens are only ever entered by the user at runtime.
+- `localStorage['fabric_sync_v1']` — `{ token, gistId, autoSync, repoSlug, repoPath, repoBranch, repoAuto, repoSha, repoSavedAt }`. `repo*`는 저장소 저장용(주 경로), `gistId`/`autoSync`는 예전 Gist 경로. **Never hardcode a GitHub token in code** — this is a public repo, GitHub auto-revokes committed tokens. Tokens are only ever entered by the user at runtime.
 - `localStorage['fabric_vendors_v1']` — `{ [companyName]: [{ name, width }] }`. 업체별 원단 목록이자 원단 정보의 **유일한 저장소**. 실무에서 원단은 업체 단위로 고정되므로 제품마다 다시 입력하지 않는다. 제품 데이터와 완전히 분리돼 있어서, 이 맵이 없는 기기에서도 제품 계산은 정상 동작한다(계산 화면에서 폭을 직접 입력하면 된다). 관리 화면(`screen-manage`)에서 추가·수정·삭제하고, 계산 화면은 이 목록을 폭 빠른선택 버튼으로 쓴다. Gist 동기화와 파일 백업 payload는 `{ products, vendors }` 형태로, 원단 목록도 같이 싣는다(이전 형식인 배열/`{products}`만 있는 파일도 계속 읽힌다). 받아오기는 제품과 마찬가지로 원단 목록도 통째로 덮어쓴다.
 - `localStorage['fabric_ui_v1']` — `{ [companyName]: collapsedBool }`, the main list's fold state.
 - Gist filename: `fabric_data.json`; description: `홈패션 연단 계산기 데이터`.
@@ -66,6 +66,17 @@ Known tuning knob: mixed-row eligibility uses `jFit.h <= rowH * 1.5` — lowerin
 Per-piece participation (`pieceRoles[i]`) gates every mode: `'off'` (excluded from this job), `'qty'` (target quantity), `'max'` (fill leftover). Modes A/B only offer off/qty. `calculate()` filters to `activePieceIdx()` before doing anything, so results, legends and canvases only ever contain pieces being cut. In `calcMixedLayout()` stage 2, multiple `'max'` pieces are assigned rows **round-robin** — picking the shortest piece each time let one piece monopolise the fabric.
 
 Row geometry: each row carries `leftoverW`/`leftover` (unused fabric width) and `usedW`. `calcPiecePlan()` returns `fabricW`/`leftoverW` too, so single-piece layouts report their leftover strip as well. `rowWidthTableHtml()` and `widthUsage()` render those; keep both key names on row objects — `drawFabricCanvas()` reads `leftover`.
+
+### GitHub 저장소 저장 (주 동기화 경로)
+
+Gist·파일 대신 사용자의 저장소 안 JSON 파일 하나(`repoSlug` + `repoPath`, 기본 `psw9715-debug/fabric-calc` · `data/fabric_data.json`)에 `{app, version, updatedAt, vendors, products}`를 통째로 넣는다. Contents API(`GET/PUT /repos/{owner}/{repo}/contents/{path}`)만 쓴다.
+
+- `repoSave(silent)` — 먼저 현재 파일을 읽어 `sha`를 얻고 PUT. 원격 `sha`가 저장해 둔 `repoSha`와 다르면 **다른 기기가 먼저 저장한 것**이므로 덮어쓰기 전에 확인을 받는다(자동 저장 중에는 조용히 건너뛴다 — 사용자 확인 없이 남의 저장을 지우지 않는다).
+- `repoLoad()` — 받아서 `vendors`를 먼저 넣고 `migrateProducts()`를 태운 뒤 제품을 덮어쓴다. 받아온 `sha`를 `repoSha`에 저장해 다음 저장이 충돌로 잡히지 않게 한다.
+- `checkRepo()` — 저장소 메타를 읽어 `default_branch`를 잡고, **공개 저장소면 경고를 띄운다**(업체·원단 이름이 인터넷에 공개되므로).
+- 한글이 들어가므로 base64는 `TextEncoder`/`TextDecoder` 경유(`b64encode`/`b64decode`). `btoa(str)` 직접 호출 금지.
+- `autoSyncIfEnabled()`가 저장소 저장과 Gist 업로드를 모두 태운다. 제품 저장·삭제뿐 아니라 **원단 추가·수정·삭제에서도 호출**해야 한다(원단이 제품에 안 붙어 있어서 제품 저장만으로는 안 올라간다).
+- 토큰은 런타임 입력 → localStorage. 공개 저장소이므로 **코드에 절대 넣지 않는다**.
 
 ### 앱 업데이트 (사파리 캐시 우회)
 

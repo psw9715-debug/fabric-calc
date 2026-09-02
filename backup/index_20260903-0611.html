@@ -45,7 +45,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sa
 .btn-secondary{width:100%;padding:14px;background:var(--surface2);color:var(--text);border:none;border-radius:var(--radius);font-size:16px;font-weight:700;cursor:pointer;min-height:52px;touch-action:manipulation;}
 .btn-ghost{width:100%;padding:12px;background:transparent;color:var(--text2);border:1.5px solid var(--border);border-radius:var(--radius);font-size:14px;font-weight:700;cursor:pointer;min-height:48px;touch-action:manipulation;}
 .btn-row{display:flex;gap:10px;}
-.btn-row .btn-primary,.btn-row .btn-secondary,.btn-row .btn-ghost{flex:1;min-width:0;}
+.btn-row .btn-primary,.btn-row .btn-secondary{flex:1;}
 .form-group{margin-bottom:16px;}
 .form-label{font-size:14px;font-weight:700;color:var(--text2);margin-bottom:8px;display:block;}
 .form-input{width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:18px;background:var(--surface);color:var(--text);outline:none;-webkit-appearance:none;transition:border-color 0.15s;font-weight:600;min-height:52px;}
@@ -201,7 +201,7 @@ canvas{display:block;width:100%;}
   <div class="header no-print">
     <div class="header-row">
       <button class="back-btn" onclick="showScreen('screen-main')">←</button>
-      <div><h1>☁️ 저장 · 동기화</h1><p>GitHub 저장소에 자료를 보관해요</p></div>
+      <div><h1>☁️ 동기화 설정</h1><p>GitHub Gist로 여러 기기 동기화</p></div>
     </div>
   </div>
   <div class="content">
@@ -216,32 +216,8 @@ canvas{display:block;width:100%;}
       <button class="btn-primary" onclick="verifyToken()" style="margin-bottom:10px">토큰 확인 & 연결</button>
       <div id="sync-verify-result"></div>
     </div>
-    <div class="card" id="repo-card" style="display:none">
-      <div class="card-title">GitHub 저장소에 보관</div>
-      <div class="info-text" style="margin-bottom:12px">업체 · 원단 · 제품을 저장소 파일 하나에 담아둬요. 다른 기기에서는 받아오기만 누르면 돼요.</div>
-      <div class="form-group">
-        <label class="form-label">저장소 (아이디/저장소이름)</label>
-        <input type="text" id="repo-slug" class="form-input" placeholder="psw9715-debug/fabric-calc" autocapitalize="off" autocorrect="off" spellcheck="false">
-      </div>
-      <div class="form-group">
-        <label class="form-label">파일 경로</label>
-        <input type="text" id="repo-path" class="form-input" placeholder="data/fabric_data.json" autocapitalize="off" autocorrect="off" spellcheck="false">
-      </div>
-      <button class="btn-secondary" onclick="checkRepo()">저장소 확인</button>
-      <div id="repo-check-result" style="margin-top:10px"></div>
-      <div class="btn-row" style="margin-top:12px">
-        <button class="btn-secondary" onclick="repoLoad()">📥 받아오기</button>
-        <button class="btn-primary" onclick="repoSave()">📤 저장하기</button>
-      </div>
-      <div class="info-text" id="repo-status" style="margin-top:10px"></div>
-      <div class="toggle-row" style="border-bottom:none">
-        <div><div class="toggle-label">자동 저장</div><div class="toggle-sub">제품 · 원단을 고칠 때마다 저장소에 반영</div></div>
-        <button class="toggle" id="repo-auto-toggle" onclick="toggleRepoAuto()"><div class="toggle-knob"></div></button>
-      </div>
-    </div>
     <div class="card" id="sync-action-card" style="display:none">
-      <div class="card-title">예전 방식 · Gist</div>
-      <div class="info-text" style="margin-bottom:12px">위 저장소 방식으로 옮기셨으면 여기는 안 쓰셔도 돼요. 예전에 Gist로 올려둔 자료를 꺼낼 때만 쓰세요.</div>
+      <div class="card-title">동기화 관리</div>
       <div id="sync-gist-info" class="info-text" style="color:var(--text);font-weight:700;margin-bottom:14px"></div>
       <div class="btn-row" style="margin-bottom:12px">
         <button class="btn-secondary" onclick="syncPull()">📥 받아오기</button>
@@ -254,7 +230,7 @@ canvas{display:block;width:100%;}
     </div>
     <div class="card">
       <div class="card-title">파일 백업 / 복원</div>
-      <div class="info-text" style="margin-bottom:12px">인터넷이 안 될 때 쓰는 최후 수단이에요. 평소에는 위 저장소 저장을 쓰세요.</div>
+      <div class="info-text" style="margin-bottom:12px">토큰 없이도 파일로 기기 간 데이터를 옮길 수 있어요</div>
       <div class="btn-row">
         <button class="btn-secondary" onclick="backupFile()">💾 파일 저장</button>
         <button class="btn-ghost" onclick="document.getElementById('restore-input').click()">📂 파일 불러오기</button>
@@ -421,150 +397,10 @@ canvas{display:block;width:100%;}
 </div>
 
 <script>
-// ==================== GitHub 저장소 저장 ====================
-// Gist 대신 사용자의 저장소 안 JSON 파일 하나에 제품·업체·원단을 통째로 넣는다.
-// 토큰은 이 기기 localStorage에만 있고 코드에는 절대 넣지 않는다.
-function repoSlugParts(){
-  var raw=(syncConfig.repoSlug||'').trim().replace(/^https?:\/\/github\.com\//,'').replace(/\.git$/,'').replace(/\/+$/,'');
-  var parts=raw.split('/').filter(function(x){return x;});
-  if(parts.length<2)return null;
-  return{owner:parts[0],repo:parts[1]};
-}
-function repoFilePath(){return (syncConfig.repoPath||'data/fabric_data.json').trim().replace(/^\/+/,'');}
-function b64encode(str){
-  var bytes=new TextEncoder().encode(str),bin='';
-  for(var i=0;i<bytes.length;i++)bin+=String.fromCharCode(bytes[i]);
-  return btoa(bin);
-}
-function b64decode(b64){
-  var bin=atob(String(b64).replace(/\s/g,'')),bytes=new Uint8Array(bin.length);
-  for(var i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
-  return new TextDecoder().decode(bytes);
-}
-async function ghFetch(url,opts){
-  opts=opts||{};
-  opts.headers=opts.headers||{};
-  opts.headers['Authorization']='token '+syncConfig.token;
-  opts.headers['Accept']='application/vnd.github+json';
-  opts.cache='no-store';
-  return await fetch('https://api.github.com'+url,opts);
-}
-function ghErrorText(res,body){
-  if(res.status===401)return '토큰이 유효하지 않아요. 다시 발급받아 주세요.';
-  if(res.status===403)return '권한이 없어요. 토큰에 repo 권한을 체크했는지 확인해주세요.';
-  if(res.status===404)return '저장소나 경로를 찾을 수 없어요. 아이디/저장소이름을 확인해주세요.';
-  if(res.status===409||res.status===422)return '다른 기기가 먼저 저장했어요. 받아오기를 한 뒤 다시 저장해주세요.';
-  return (body&&body.message)?body.message:('오류 '+res.status);
-}
-function repoDataPayload(){
-  return JSON.stringify({app:'홈패션 연단 계산기',version:APP_VERSION,updatedAt:new Date().toISOString(),
-    vendors:vendorFabricMap,products:products},null,2);
-}
-function renderRepoStatus(){
-  var el=document.getElementById('repo-status');
-  if(!el)return;
-  el.textContent=syncConfig.repoSavedAt
-    ? '마지막 저장: '+shortTime(syncConfig.repoSavedAt)+' · 제품 '+products.length+'개 · 업체 '+Object.keys(vendorFabricMap).length+'곳'
-    : '아직 저장소에 올린 적이 없어요.';
-}
-function repoBox(kind,msg){
-  var el=document.getElementById('repo-check-result');
-  if(el)el.innerHTML='<div class="highlight-box '+kind+'"><div class="highlight-box-val">'+msg+'</div></div>';
-}
-function readRepoInputs(){
-  var slug=document.getElementById('repo-slug'),path=document.getElementById('repo-path');
-  if(slug)syncConfig.repoSlug=slug.value.trim();
-  if(path)syncConfig.repoPath=path.value.trim()||'data/fabric_data.json';
-}
-async function checkRepo(){
-  readRepoInputs();
-  if(!syncConfig.token){repoBox('yellow','토큰을 먼저 확인해주세요');return null;}
-  var rp=repoSlugParts();
-  if(!rp){repoBox('yellow','저장소를 <b>아이디/저장소이름</b> 형태로 적어주세요');return null;}
-  repoBox('','확인 중...');
-  try{
-    var res=await ghFetch('/repos/'+rp.owner+'/'+rp.repo);
-    var body=await res.json();
-    if(!res.ok){repoBox('yellow','❌ '+esc(ghErrorText(res,body)));return null;}
-    syncConfig.repoBranch=body.default_branch||'main';
-    saveSyncConfig();
-    var warn=body.private?'🔒 비공개 저장소예요. 안심하고 쓰셔도 돼요.'
-      :'⚠️ <b>공개 저장소</b>예요. 여기에 저장하면 업체·원단·제품 이름이 인터넷에 공개돼요. 감추고 싶으시면 비공개 저장소를 하나 만들어 그 이름을 적어주세요.';
-    repoBox(body.private?'green':'yellow','✅ '+esc(rp.owner+'/'+rp.repo)+' (브랜치 '+esc(syncConfig.repoBranch)+')<br>'+warn);
-    return rp;
-  }catch(e){repoBox('yellow','❌ 연결 실패 — 인터넷을 확인해주세요');return null;}
-}
-// 저장소에 있는 파일을 읽어온다. 없으면 null (아직 한 번도 저장 안 한 상태)
-async function repoGetFile(rp){
-  var url='/repos/'+rp.owner+'/'+rp.repo+'/contents/'+encodeURI(repoFilePath())+'?ref='+encodeURIComponent(syncConfig.repoBranch||'main')+'&_='+Date.now();
-  var res=await ghFetch(url);
-  if(res.status===404)return null;
-  var body=await res.json();
-  if(!res.ok)throw new Error(ghErrorText(res,body));
-  return body;
-}
-async function repoSave(silent){
-  readRepoInputs();
-  if(!syncConfig.token){if(!silent)alert('토큰을 먼저 설정해주세요');return false;}
-  var rp=repoSlugParts();
-  if(!rp){if(!silent)alert('저장소를 아이디/저장소이름 형태로 적어주세요');return false;}
-  if(!syncConfig.repoBranch){var ok=await checkRepo();if(!ok)return false;rp=ok;}
-  try{
-    var cur=await repoGetFile(rp);
-    // 다른 기기가 먼저 바꿔놨으면 덮어쓰기 전에 물어본다
-    if(cur&&syncConfig.repoSha&&cur.sha!==syncConfig.repoSha){
-      var msg='저장소에 다른 기기가 저장한 내용이 있어요.\n지금 이 기기 내용으로 덮어쓸까요?\n(먼저 받아오기를 누르면 그쪽 내용을 가져와요)';
-      if(silent||!confirm(msg)){if(!silent)renderRepoStatus();return false;}
-    }
-    var body={message:'연단 계산기 데이터 저장 '+new Date().toISOString(),
-      content:b64encode(repoDataPayload()),branch:syncConfig.repoBranch||'main'};
-    if(cur&&cur.sha)body.sha=cur.sha;
-    var res=await ghFetch('/repos/'+rp.owner+'/'+rp.repo+'/contents/'+encodeURI(repoFilePath()),
-      {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-    var out=await res.json();
-    if(!res.ok)throw new Error(ghErrorText(res,out));
-    syncConfig.repoSha=(out.content&&out.content.sha)||'';
-    syncConfig.repoSavedAt=new Date().toISOString();
-    saveSyncConfig();renderRepoStatus();
-    if(!silent)repoBox('green','✅ 저장했어요 — 제품 '+products.length+'개 · 업체 '+Object.keys(vendorFabricMap).length+'곳');
-    return true;
-  }catch(e){
-    if(!silent)repoBox('yellow','❌ '+esc(e.message||'저장 실패'));
-    return false;
-  }
-}
-async function repoLoad(){
-  readRepoInputs();
-  if(!syncConfig.token){alert('토큰을 먼저 설정해주세요');return;}
-  var rp=repoSlugParts();
-  if(!rp){alert('저장소를 아이디/저장소이름 형태로 적어주세요');return;}
-  if(!syncConfig.repoBranch){var ok=await checkRepo();if(!ok)return;rp=ok;}
-  repoBox('','받아오는 중...');
-  try{
-    var cur=await repoGetFile(rp);
-    if(!cur){repoBox('yellow','저장소에 아직 파일이 없어요. 먼저 저장하기를 눌러주세요.');return;}
-    var d=JSON.parse(b64decode(cur.content||''));
-    var incoming=Array.isArray(d)?d:(d.products||[]);
-    if(!confirm('저장소 내용으로 이 기기를 덮어쓸까요?\n제품 '+incoming.length+'개'+(d.vendors?' · 업체 '+Object.keys(d.vendors).length+'곳':'')))return;
-    if(!Array.isArray(d)&&d.vendors&&typeof d.vendors==='object'){vendorFabricMap=d.vendors;saveVendors();}
-    products=migrateProducts(incoming);saveToStorage(products);
-    syncConfig.repoSha=cur.sha||'';syncConfig.repoSavedAt=new Date().toISOString();
-    saveSyncConfig();renderProductList();renderRepoStatus();
-    repoBox('green','✅ 받아왔어요 — 제품 '+products.length+'개');
-    showScreen('screen-main');
-  }catch(e){repoBox('yellow','❌ '+esc(e.message||'받아오기 실패'));}
-}
-function toggleRepoAuto(){
-  var t=document.getElementById('repo-auto-toggle');
-  t.classList.toggle('on');
-  syncConfig.repoAuto=t.classList.contains('on');
-  saveSyncConfig();
-}
-
 // ==================== App Version ====================
 // index.html을 고칠 때마다 이 값을 올린다. "최신 버전 가져오기"가 이 문자열을
 // 서버 파일에서 다시 읽어 지금 떠 있는 화면과 비교한다.
-var APP_VERSION='2026.09.03-2';
+var APP_VERSION='2026.09.03-1';
 
 // ==================== Storage & Sync ====================
 var STORAGE_KEY='fabric_home_v4', SYNC_KEY='fabric_sync_v1', UI_KEY='fabric_ui_v1', VENDOR_KEY='fabric_vendors_v1';
@@ -602,43 +438,16 @@ function migrateProducts(arr){
   return arr;
 }
 
-var syncConfig={token:'',gistId:'',autoSync:false,
-  repoSlug:'psw9715-debug/fabric-calc',repoPath:'data/fabric_data.json',repoBranch:'',
-  repoAuto:false,repoSha:'',repoSavedAt:''};
-try{var sc=localStorage.getItem(SYNC_KEY);if(sc){var _s=JSON.parse(sc);for(var _k in _s)if(_s.hasOwnProperty(_k))syncConfig[_k]=_s[_k];}}catch(e){}
-if(!syncConfig.repoSlug)syncConfig.repoSlug='psw9715-debug/fabric-calc';
-if(!syncConfig.repoPath)syncConfig.repoPath='data/fabric_data.json';
+var syncConfig={token:'',gistId:'',autoSync:false};
+try{var sc=localStorage.getItem(SYNC_KEY);if(sc)syncConfig=JSON.parse(sc);}catch(e){}
 function saveSyncConfig(){localStorage.setItem(SYNC_KEY,JSON.stringify(syncConfig));updateSyncBar();}
 function updateSyncBar(){
   var bar=document.getElementById('sync-status'),icon=document.getElementById('sync-icon'),text=document.getElementById('sync-text');
-  if(syncConfig.token&&syncConfig.repoSavedAt){
-    bar.className='sync-bar';icon.textContent='✅';
-    text.textContent=(syncConfig.repoAuto?'저장소 자동 저장 · ':'저장소 연결됨 · ')+shortTime(syncConfig.repoSavedAt);
-  }
-  else if(syncConfig.token&&syncConfig.gistId){bar.className='sync-bar';icon.textContent='✅';text.textContent=syncConfig.autoSync?'자동 동기화 중':'수동 동기화 설정됨';}
-  else{bar.className='sync-bar off';icon.textContent='☁️';text.textContent='저장 · 동기화 설정하기';}
+  if(syncConfig.token&&syncConfig.gistId){bar.className='sync-bar';icon.textContent='✅';text.textContent=syncConfig.autoSync?'자동 동기화 중':'수동 동기화 설정됨';}
+  else{bar.className='sync-bar off';icon.textContent='☁️';text.textContent='동기화 설정하기';}
 }
-function shortTime(iso){
-  try{var d=new Date(iso);if(isNaN(d))return '';
-    var p2=function(n){return (n<10?'0':'')+n;};
-    return (d.getMonth()+1)+'/'+d.getDate()+' '+p2(d.getHours())+':'+p2(d.getMinutes());
-  }catch(e){return '';}
-}
-function goToSync(){
-  showScreen('screen-sync');
-  document.getElementById('github-token').value=syncConfig.token||'';
-  document.getElementById('repo-slug').value=syncConfig.repoSlug||'';
-  document.getElementById('repo-path').value=syncConfig.repoPath||'';
-  document.getElementById('repo-auto-toggle').classList.toggle('on',!!syncConfig.repoAuto);
-  renderRepoStatus();
-  if(syncConfig.token){
-    document.getElementById('repo-card').style.display='block';
-    document.getElementById('sync-action-card').style.display='block';
-    document.getElementById('sync-gist-info').textContent=syncConfig.gistId?'✅ Gist 연결됨: '+syncConfig.gistId.slice(0,8)+'...':'⏳ 아직 Gist 없음';
-    document.getElementById('auto-sync-toggle').classList.toggle('on',syncConfig.autoSync);
-  }
-}
-function showTokenGuide(){alert('토큰 발급 방법:\n\n1. github.com 로그인\n2. 프로필 → Settings → Developer settings\n3. Personal access tokens → Tokens (classic)\n4. Generate new token\n5. Note: 연단계산기\n6. Expiration: No expiration\n7. 체크할 권한\n   ✅ repo (저장소에 자료 저장 — 필수)\n   ✅ gist (예전 Gist 방식을 쓸 때만)\n8. Generate → 복사\n\n⚠️ 토큰은 한 번만 보여요!');}
+function goToSync(){showScreen('screen-sync');document.getElementById('github-token').value=syncConfig.token||'';if(syncConfig.token){document.getElementById('sync-action-card').style.display='block';document.getElementById('sync-gist-info').textContent=syncConfig.gistId?'✅ Gist 연결됨: '+syncConfig.gistId.slice(0,8)+'...':'⏳ 아직 Gist 없음';document.getElementById('auto-sync-toggle').classList.toggle('on',syncConfig.autoSync);}}
+function showTokenGuide(){alert('토큰 발급 방법:\n\n1. github.com 로그인\n2. 프로필 → Settings → Developer settings\n3. Personal access tokens → Tokens (classic)\n4. Generate new token\n5. Note: 연단계산기\n6. Expiration: No expiration\n7. ✅ gist 만 체크\n8. Generate → 복사\n\n⚠️ 토큰은 한 번만 보여요!');}
 async function verifyToken(){
   var token=document.getElementById('github-token').value.trim(),resultDiv=document.getElementById('sync-verify-result');
   if(!token){resultDiv.innerHTML='<div class="highlight-box yellow" style="margin-top:10px"><div class="highlight-box-val">토큰을 입력해주세요</div></div>';return;}
@@ -654,7 +463,6 @@ async function verifyToken(){
     if(existing)syncConfig.gistId=existing.id;
     saveSyncConfig();
     resultDiv.innerHTML='<div class="highlight-box green" style="margin-top:10px"><div class="highlight-box-val">✅ '+user.login+'님 연결됨'+(existing?'<br>기존 데이터 발견. 받아오기를 눌러주세요.':'<br>업로드 버튼으로 저장 시작')+'</div></div>';
-    document.getElementById('repo-card').style.display='block';
     document.getElementById('sync-action-card').style.display='block';
     document.getElementById('sync-gist-info').textContent=existing?'✅ Gist 연결됨: '+existing.id.slice(0,8)+'...':'⏳ 아직 Gist 없음';
     document.getElementById('auto-sync-toggle').classList.toggle('on',syncConfig.autoSync);
@@ -687,11 +495,7 @@ async function syncPull(){
     else alert('Gist에 데이터가 없어요');
   }catch(e){alert('오류: '+e.message);}
 }
-async function autoSyncIfEnabled(){
-  if(syncConfig.repoAuto&&syncConfig.token&&repoSlugParts())await repoSave(true);
-  if(syncConfig.autoSync&&syncConfig.token&&syncConfig.gistId)await syncPush();
-  updateSyncBar();
-}
+async function autoSyncIfEnabled(){if(syncConfig.autoSync&&syncConfig.token&&syncConfig.gistId)await syncPush();}
 function backupFile(){
   var blob=new Blob([JSON.stringify({products:products,vendors:vendorFabricMap},null,2)],{type:'application/json'});
   var url=URL.createObjectURL(blob),a=document.createElement('a');
@@ -1004,7 +808,7 @@ function addVendorFabricManual(ki){
   var name=nEl.value.trim(),width=parseFloat(wEl.value);
   if(!name&&!(width>0)){alert('원단 이름이나 폭을 입력해주세요');return;}
   addVendorFabric(key,{name:name,width:width>0?width:0});
-  saveVendors();autoSyncIfEnabled();renderManage();
+  saveVendors();renderManage();
 }
 function editVendorFabric(ki,fi){
   var key=manageCompanies()[ki],f=vendorFabrics(key)[fi];
@@ -1017,14 +821,14 @@ function editVendorFabric(ki,fi){
   var nf={name:name.trim(),width:width>0?width:0};
   if(!nf.name&&!(nf.width>0)){alert('이름이나 폭 중 하나는 있어야 해요');return;}
   if(vendorFabrics(key).some(function(x,xi){return xi!==fi&&sameFabric(x,nf);})){alert('같은 원단이 이미 있어요');return;}
-  vendorFabricMap[key][fi]=nf;saveVendors();autoSyncIfEnabled();
+  vendorFabricMap[key][fi]=nf;saveVendors();
   renderManage();
 }
 function deleteVendorFabric(ki,fi){
   var key=manageCompanies()[ki],f=vendorFabrics(key)[fi];
   if(!f)return;
   if(!confirm('"'+fabricLabel(f)+'"을 지울까요?\n제품 데이터에는 영향이 없어요.'))return;
-  vendorFabricMap[key].splice(fi,1);saveVendors();autoSyncIfEnabled();renderManage();
+  vendorFabricMap[key].splice(fi,1);saveVendors();renderManage();
 }
 function renameCompany(ki){
   var key=manageCompanies()[ki];
