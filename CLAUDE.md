@@ -20,6 +20,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 No build/lint/test tooling — it's a static HTML file. To develop:
 - Open `index.html` directly in a browser, or serve the directory (e.g. `python -m http.server`) to test on a phone via LAN IP.
 - Deploy = commit and push `index.html` to the repo; GitHub Pages serves it automatically.
+- **`index.html`을 고칠 때마다 스크립트 맨 위의 `APP_VERSION`을 올린다.** 관리 화면의 "최신 버전 가져오기"가 서버 파일에서 이 문자열을 정규식으로 다시 읽어 지금 떠 있는 화면과 비교하므로, 안 올리면 새 버전이 있어도 "이미 최신"이라고 나온다.
 - Test on a 375px viewport (iPhone 13 mini) as the primary target.
 
 ## Architecture
@@ -30,7 +31,7 @@ Everything lives in `index.html` as five `.screen` divs shown/hidden via `showSc
 |---|---|
 | `screen-main` | product list (home), grouped by company |
 | `screen-sync` | GitHub Gist sync settings |
-| `screen-manage` | company / fabric-list maintenance (⚙️ in main header) |
+| `screen-manage` | company / fabric-list maintenance + 앱 버전·업데이트 (⚙️ in main header) |
 | `screen-register` | product create/edit (피스 치수만 — 원단 입력란 없음) |
 | `screen-calc` | cutting-layout calculation input |
 | `screen-result` | calculation results |
@@ -65,6 +66,15 @@ Known tuning knob: mixed-row eligibility uses `jFit.h <= rowH * 1.5` — lowerin
 Per-piece participation (`pieceRoles[i]`) gates every mode: `'off'` (excluded from this job), `'qty'` (target quantity), `'max'` (fill leftover). Modes A/B only offer off/qty. `calculate()` filters to `activePieceIdx()` before doing anything, so results, legends and canvases only ever contain pieces being cut. In `calcMixedLayout()` stage 2, multiple `'max'` pieces are assigned rows **round-robin** — picking the shortest piece each time let one piece monopolise the fabric.
 
 Row geometry: each row carries `leftoverW`/`leftover` (unused fabric width) and `usedW`. `calcPiecePlan()` returns `fabricW`/`leftoverW` too, so single-piece layouts report their leftover strip as well. `rowWidthTableHtml()` and `widthUsage()` render those; keep both key names on row objects — `drawFabricCanvas()` reads `leftover`.
+
+### 앱 업데이트 (사파리 캐시 우회)
+
+사파리가 GitHub Pages의 `index.html`을 오래 붙잡고 있어서, 새로 배포해도 폰에서는 옛 화면이 뜬다. 관리 화면 아래 "앱 버전" 카드가 이걸 해결한다.
+
+- `checkForUpdate()` — `location.pathname`을 `?_=타임스탬프` + `cache:'no-store'`로 다시 받아 `APP_VERSION`을 정규식으로 뽑아 비교한다. 다르면 바로 `forceReload()`, 같으면 "이미 최신", 실패하면 오프라인 안내(앱은 그대로 쓸 수 있다).
+- `forceReload()` — Cache Storage를 비우고 `location.replace(origin+pathname+'?v='+Date.now())`. 쿼리를 매번 새로 붙이므로 `?v=`가 중첩되지 않는다. `#force-reload-btn`이 직접 호출하는 최후 수단이기도 하다.
+- localStorage는 쿼리스트링이 달라져도 같은 오리진이라 그대로 남는다 — 업데이트해도 제품·원단 데이터는 유실되지 않는다.
+- 정규식이 `APP_VERSION` **정의부**를 먼저 만나야 하므로, 이 변수는 항상 스크립트 최상단에 둔다.
 
 ### Conventions
 

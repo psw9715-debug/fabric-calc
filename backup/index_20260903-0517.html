@@ -286,15 +286,6 @@ canvas{display:block;width:100%;}
   <div class="content">
     <div class="info-text" style="margin-bottom:12px">원단은 업체 단위로 관리해요. 여기에 등록해 두면 계산 화면에서 탭 한 번으로 폭이 들어가요.</div>
     <div id="manage-list"></div>
-    <div class="card" style="margin-top:14px">
-      <div class="card-title">앱 버전</div>
-      <div class="manage-row">
-        <div class="manage-row-name">현재 버전<br><span class="manage-row-sub" id="app-version-label"></span></div>
-      </div>
-      <button class="btn-secondary" id="update-btn" style="margin-top:10px" onclick="checkForUpdate()">⬇️ 최신 버전 가져오기</button>
-      <div class="info-text" id="update-info" style="margin-top:8px">사파리가 예전 화면을 붙잡고 있을 때 눌러주세요. 저장된 제품·원단은 그대로예요.</div>
-      <button class="btn-ghost" id="force-reload-btn" style="margin-top:8px" onclick="forceReload()">그래도 안 바뀌면 · 강제로 다시 받기</button>
-    </div>
     <div style="height:20px"></div>
   </div>
 </div>
@@ -397,11 +388,6 @@ canvas{display:block;width:100%;}
 </div>
 
 <script>
-// ==================== App Version ====================
-// index.html을 고칠 때마다 이 값을 올린다. "최신 버전 가져오기"가 이 문자열을
-// 서버 파일에서 다시 읽어 지금 떠 있는 화면과 비교한다.
-var APP_VERSION='2026.09.03-1';
-
 // ==================== Storage & Sync ====================
 var STORAGE_KEY='fabric_home_v4', SYNC_KEY='fabric_sync_v1', UI_KEY='fabric_ui_v1', VENDOR_KEY='fabric_vendors_v1';
 function saveToStorage(d){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(d));return true;}catch(e){return false;}}
@@ -732,12 +718,7 @@ function deleteProduct(i){
 
 // ==================== 업체 · 원단 관리 ====================
 var manageOpen={},mergeTarget={};
-function goToManage(){
-  renderManage();
-  var el=document.getElementById('app-version-label');
-  if(el)el.textContent='v'+APP_VERSION;
-  showScreen('screen-manage');
-}
+function goToManage(){renderManage();showScreen('screen-manage');}
 function manageCompanies(){
   var seen={},list=[];
   products.forEach(function(p){var k=companyLabel(p.company);if(!seen[k]){seen[k]=1;list.push(k);}});
@@ -865,52 +846,6 @@ function doMerge(ki){
   delete mergeTarget[key];
   applyCompanyRename(key,to);
   alert('✅ "'+to+'"로 합쳤어요');
-}
-
-// ==================== App Update ====================
-// 사파리는 GitHub Pages가 준 index.html을 오래 붙잡고 있어서, 주소를 바꿔주지 않으면
-// 새로 올린 버전이 안 뜬다. 주소 뒤에 ?v=타임스탬프를 붙여 다시 여는 걸 버튼 하나로.
-function appBaseUrl(){return location.origin+location.pathname;}
-async function clearAppCaches(){
-  try{
-    if(window.caches&&caches.keys){
-      var ks=await caches.keys();
-      for(var i=0;i<ks.length;i++)await caches.delete(ks[i]);
-    }
-  }catch(e){}
-}
-async function forceReload(){
-  await clearAppCaches();
-  location.replace(appBaseUrl()+'?v='+Date.now());
-}
-async function checkForUpdate(){
-  var btn=document.getElementById('update-btn'),info=document.getElementById('update-info');
-  if(location.protocol==='file:'){info.textContent='파일을 직접 열어둔 상태라 확인할 수 없어요. 주소창으로 접속해서 눌러주세요.';return;}
-  var label=btn.textContent;
-  btn.disabled=true;btn.textContent='확인 중...';
-  info.textContent='서버에서 최신 파일을 확인하고 있어요...';
-  try{
-    var res=await fetch(location.pathname+'?_='+Date.now(),{cache:'no-store'});
-    if(!res.ok)throw new Error('HTTP '+res.status);
-    var txt=await res.text();
-    var m=txt.match(/APP_VERSION\s*=\s*'([^']+)'/);
-    var latest=m?m[1]:'';
-    if(!latest)throw new Error('버전 표시를 찾지 못함');
-    if(latest===APP_VERSION){
-      info.textContent='✅ 이미 최신이에요 (v'+esc(APP_VERSION)+')';
-      btn.disabled=false;btn.textContent=label;
-      return;
-    }
-    info.textContent='🎉 새 버전 v'+esc(latest)+' 발견 — 다시 여는 중...';
-    await forceReload();
-  }catch(e){
-    var msg=String(e&&e.message||'');
-    var offline=(!navigator.onLine)||msg.indexOf('fetch')>=0||msg.indexOf('Network')>=0||msg.indexOf('네트워크')>=0;
-    info.textContent=offline
-      ? '❌ 인터넷에 연결되어 있지 않아요. 지금 화면 그대로 쓰셔도 되고, 연결된 뒤 다시 눌러주세요.'
-      : '❌ 확인 실패 ('+esc(msg||'알 수 없는 오류')+'). 잠시 뒤 다시 눌러주세요.';
-    btn.disabled=false;btn.textContent=label;
-  }
 }
 
 // ==================== Calc Setup ====================
