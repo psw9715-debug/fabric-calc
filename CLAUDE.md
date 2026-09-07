@@ -32,7 +32,7 @@ Everything lives in `index.html` as five `.screen` divs shown/hidden via `showSc
 | `screen-main` | product list (home), grouped by company |
 | `screen-sync` | GitHub Gist sync settings |
 | `screen-manage` | company / fabric-list maintenance + 앱 버전·업데이트 (⚙️ in main header) |
-| `screen-register` | product create/edit (피스 치수만 — 원단 입력란 없음) |
+| `screen-register` | product create/edit + **이 제품의 원단** 등록 (일상 동선은 여기서 끝난다) |
 | `screen-calc` | cutting-layout calculation input |
 | `screen-result` | calculation results |
 
@@ -41,7 +41,8 @@ Everything lives in `index.html` as five `.screen` divs shown/hidden via `showSc
 - `localStorage['fabric_home_v4']` — array of products. Schema: `{ company, name, pieces: [{ name, w, h, qty, rotatable }] }`. 피스는 **원단 정보를 갖지 않는다** — 원단은 (업체 → 제품) 단위(`fabric_fabrics_v2`)로만 관리한다. 제품 식별자는 `(company, name)`이고, 원단 맵도 같은 키를 쓴다.
 - `localStorage['fabric_sync_v1']` — `{ token, gistId, autoSync, repoSlug, repoPath, repoBranch, repoAuto, repoSha, repoSavedAt }`. `repo*`는 저장소 저장용(주 경로), `gistId`/`autoSync`는 예전 Gist 경로. **Never hardcode a GitHub token in code** — this is a public repo, GitHub auto-revokes committed tokens. Tokens are only ever entered by the user at runtime.
 - `localStorage['fabric_fabrics_v2']` — `{ [companyName]: { [productName]: [{ name, width }] } }`. **업체 → 제품 → 원단** 3단이 원단 정보의 유일한 저장소다. 실무에서 `속지`/`겉지` 같은 이름은 제품마다 다른 원단을 가리키므로 업체 단위로 묶으면 구분이 안 된다(핀블랑 각티슈의 속지 ≠ 다른 업체 제품의 속지). 제품 데이터와 분리돼 있어서 이 맵이 없는 기기에서도 계산은 정상 동작한다(폭을 직접 입력하면 된다). 관리 화면(`screen-manage`)이 업체 → 제품 순으로 펼쳐 추가·수정·삭제하고, 계산 화면은 **그 제품의** 목록만 폭 빠른선택 버튼으로 쓴다.
-  - 제품 이름·업체가 바뀌면 원단 목록도 따라가야 한다. `goToRegister()`/`duplicateProduct()`가 `registerOrigin`에 원래 위치를 기록해 두고, `saveProduct()`가 `moveProductFabrics()`로 옮긴다(복제는 복사). `deleteProduct()`는 같은 키를 쓰는 제품이 더 없을 때만 목록을 지운다.
+  - 원단은 **등록 화면에서 편집한다.** `goToRegister()`가 그 제품의 목록을 `regFabrics`로 읽어오고, `saveProduct()`가 `setProductFabrics()`로 (업체, 제품) 자리에 통째로 기록한다. 이름·업체가 바뀌었으면 `registerOrigin`에 적어둔 예전 자리를 먼저 비운다(복제는 비우지 않고 복사). `deleteProduct()`는 같은 키를 쓰는 제품이 더 없을 때만 목록을 지운다. 관리 화면은 사후 정리용이다.
+  - `saveFabrics()`는 저장 전에 `pruneFabricMap()`으로 빈 제품·빈 업체 껍데기를 걷어낸다 — payload와 관리 목록에 유령 업체가 남지 않게.
   - 제품은 지웠는데 원단만 남은 항목은 관리 화면에 "지워진 제품"으로 표시하고 `dropGhostProduct()`로 정리한다.
   - 예전 업체 단위 목록(`fabric_vendors_v1`)은 v2 키가 없을 때 **한 번만** `promoteLegacyVendors()`로 승격된다(그 업체의 모든 제품에 복사). 승격 후 v2가 생기므로 다시 돌지 않아 지운 원단이 되살아나지 않는다.
   - 저장 payload(`syncPayloadObject()`)는 `{ products, fabrics, vendors }` — `fabrics`가 정본이고 `vendors`는 예전 버전 기기를 위한 업체 단위 평탄화본이다. 읽을 때는 `applyIncomingFabrics()`가 `fabrics` → 없으면 `vendors` 승격 순으로 처리한다.
