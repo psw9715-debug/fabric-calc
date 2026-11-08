@@ -10,6 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Live: `https://psw9715-debug.github.io/fabric-calc`
 - Entire app is one file: `index.html` (HTML + CSS + JS, no build step, no dependencies)
 - `products.json` exists only as a Gist-sync artifact; it's not source data to edit by hand.
+- `puller/` is a **separate hardware project** (스텝모터 전자 종감속기/풀러: Arduino firmware + design doc). It has nothing to do with `index.html`; don't bump `APP_VERSION` or make a `backup/` copy for changes there. Core logic test: `g++ -std=c++11 -O2 puller/test/test_core.cpp -o /tmp/t && /tmp/t`.
 
 작업 환경은 **GitHub 저장소 하나뿐**이다. 로컬 PC 작업 폴더도, 예전에 있던 중첩 클론 `fabric-calc/fabric-calc/`도 더 이상 없다. 정본은 `main` 브랜치의 최상위 `index.html`이다. 사용자는 iPhone의 Claude 앱으로 작업하므로, 코드는 **부분 diff가 아니라 완성된 `index.html` 전체**로 전달한다 (자세한 내용은 `HANDOVER.md`).
 
